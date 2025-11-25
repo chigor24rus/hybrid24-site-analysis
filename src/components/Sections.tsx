@@ -209,9 +209,11 @@ const Sections = ({ setIsBookingOpen }: SectionsProps) => {
                 Записаться онлайн
                 <Icon name="ArrowRight" className="ml-2" size={20} />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg">
-                <Icon name="Phone" className="mr-2" size={20} />
-                +7 (923) 016-67-50
+              <Button size="lg" variant="outline" className="text-lg" asChild>
+                <a href="tel:+79230166750">
+                  <Icon name="Phone" className="mr-2" size={20} />
+                  +7 (923) 016-67-50
+                </a>
               </Button>
             </div>
           </div>
@@ -497,7 +499,11 @@ const Sections = ({ setIsBookingOpen }: SectionsProps) => {
                     <Icon name="Phone" size={24} className="text-white" />
                   </div>
                   <CardTitle>Телефон</CardTitle>
-                  <CardDescription className="text-lg">+7 (923) 016-67-50</CardDescription>
+                  <CardDescription className="text-lg">
+                    <a href="tel:+79230166750" className="hover:text-primary transition-colors">
+                      +7 (923) 016-67-50
+                    </a>
+                  </CardDescription>
                 </CardHeader>
               </Card>
               <Card className="hover-scale">
