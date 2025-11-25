@@ -501,10 +501,10 @@ const Index = () => {
             {brands.map((brand, index) => (
               <Card
                 key={index}
-                className="hover-scale cursor-pointer text-center p-6 animate-fade-in bg-white"
+                className="hover-scale cursor-pointer text-center p-8 animate-fade-in bg-white"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <img src={brand.logo} alt={brand.name} className="w-full h-16 object-contain" />
+                <img src={brand.logo} alt={brand.name} className="w-full h-24 object-contain" />
               </Card>
             ))}
           </div>
