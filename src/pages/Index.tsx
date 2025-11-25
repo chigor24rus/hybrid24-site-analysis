@@ -361,7 +361,7 @@ const Index = () => {
               </Button>
               <Button size="lg" variant="outline" className="text-lg">
                 <Icon name="Phone" className="mr-2" size={20} />
-                +7 (495) 123-45-67
+                +7 (923) 016-67-50
               </Button>
             </div>
           </div>
@@ -650,7 +650,7 @@ const Index = () => {
                     <Icon name="Phone" size={24} className="text-white" />
                   </div>
                   <CardTitle>Телефон</CardTitle>
-                  <CardDescription className="text-lg">+7 (495) 123-45-67</CardDescription>
+                  <CardDescription className="text-lg">+7 (923) 016-67-50</CardDescription>
                 </CardHeader>
               </Card>
               <Card className="hover-scale">
