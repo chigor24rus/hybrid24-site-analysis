@@ -194,10 +194,10 @@ const Sections = ({ setIsBookingOpen }: SectionsProps) => {
       <section 
         className="py-12 md:py-20 lg:py-32 bg-cover bg-center bg-no-repeat relative"
         style={{
-          backgroundImage: 'url(https://cdn.poehali.dev/files/690e89b6-5b7c-486e-a234-151943ca4841.png)',
+          backgroundImage: 'url(https://cdn.poehali.dev/files/dedff21f-3f3e-4280-8a99-627b8e13e525.jpeg)',
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-white/98 via-white/95 to-white/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-white/98 via-white/95 to-white/80"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl">
             <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
