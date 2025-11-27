@@ -7,13 +7,36 @@ import Icon from '@/components/ui/icon';
 
 const brands = [
   { name: 'Toyota', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/4e08abc9-6dc7-4175-88e7-4506631ccebe.jpg' },
-  { name: 'BMW', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/4de578b1-4cb2-4791-8ab0-306463ecef8f.jpg' },
-  { name: 'Mercedes', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/5fcb3172-9037-4e6e-8252-979e327dd734.jpg' },
-  { name: 'Audi', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/ba02db5f-9801-4420-8836-39f52c1eb11f.jpg' },
-  { name: 'Volkswagen', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/84abd4d1-43db-449e-a754-37eaca2356b7.jpg' },
+  { name: 'Honda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Honda' },
+  { name: 'Nissan', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/94c95c26-2e2d-4849-929a-bbc56961a2b5.jpg' },
+  { name: 'Lexus', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Lexus' },
+  { name: 'Mazda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mazda' },
+  { name: 'Mitsubishi', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mitsubishi' },
+  { name: 'Subaru', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Subaru' },
+  { name: 'Suzuki', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Suzuki' },
+  { name: 'Acura', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Acura' },
   { name: 'Hyundai', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/b96818be-6317-4095-a3eb-ed039af61550.jpg' },
   { name: 'Kia', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/97ee8ca9-4c2a-4454-81ee-3c05a54f2661.jpg' },
-  { name: 'Nissan', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/94c95c26-2e2d-4849-929a-bbc56961a2b5.jpg' }
+  { name: 'Haval', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Haval' },
+  { name: 'Geely', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Geely' },
+  { name: 'Changan', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Changan' },
+  { name: 'Belgee', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Belgee' },
+  { name: 'Lifan', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Lifan' },
+  { name: 'Jetour', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Jetour' },
+  { name: 'Tank', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Tank' },
+  { name: 'Exeed', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Exeed' },
+  { name: 'Omoda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Omoda' },
+  { name: 'GAC', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=GAC' },
+  { name: 'Li AUTO', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Li+AUTO' },
+  { name: 'JAC', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=JAC' },
+  { name: 'Voyah', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Voyah' },
+  { name: 'Zeekr', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Zeekr' },
+  { name: 'Hongqi', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Hongqi' },
+  { name: 'FAW', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=FAW' },
+  { name: 'Dongfeng', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Dongfeng' },
+  { name: 'Jaecoo', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Jaecoo' },
+  { name: 'Bestune', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Bestune' },
+  { name: 'Chery', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Chery' }
 ];
 
 const promotions = [

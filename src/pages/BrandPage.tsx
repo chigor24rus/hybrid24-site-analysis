@@ -33,53 +33,53 @@ const brandData: Record<string, {
     ],
     features: ['Оригинальные запчасти Toyota', 'Гарантия на все работы', 'Специализированное оборудование', 'Обученные мастера']
   },
-  bmw: {
-    name: 'BMW',
-    description: 'Профессиональный сервис BMW. Немецкое качество обслуживания.',
-    logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/4de578b1-4cb2-4791-8ab0-306463ecef8f.jpg',
+  honda: {
+    name: 'Honda',
+    description: 'Профессиональное обслуживание Honda. Японская надежность и технологии.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Honda',
     services: [
-      { title: 'Техническое обслуживание', description: 'ТО по стандартам BMW', price: 'от 5 000 ₽', icon: 'Settings' },
-      { title: 'Диагностика', description: 'Диагностика всех систем BMW', price: 'от 2 000 ₽', icon: 'Search' },
-      { title: 'Ремонт подвески', description: 'Замена амортизаторов, стоек', price: 'от 6 000 ₽', icon: 'Wrench' },
-      { title: 'Обслуживание тормозов', description: 'Замена колодок, дисков', price: 'от 4 500 ₽', icon: 'AlertCircle' },
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Honda', price: 'от 3 400 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 400 ₽', icon: 'Search' },
+      { title: 'Ремонт двигателя VTEC', description: 'Обслуживание системы VTEC', price: 'от 7 000 ₽', icon: 'Wrench' },
+      { title: 'Замена масла', description: 'Оригинальное масло Honda', price: 'от 2 300 ₽', icon: 'Droplet' },
     ],
-    features: ['Оригинальные запчасти BMW', 'Специализированная диагностика', 'Сертифицированные мастера', 'Гарантия качества']
+    features: ['Оригинальные запчасти Honda', 'Опыт работы с VTEC', 'Качественная диагностика', 'Гарантия на работы']
   },
-  mercedes: {
-    name: 'Mercedes-Benz',
-    description: 'Премиальное обслуживание Mercedes-Benz. Высочайшие стандарты качества.',
-    logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/5fcb3172-9037-4e6e-8252-979e327dd734.jpg',
+  lexus: {
+    name: 'Lexus',
+    description: 'Премиальное обслуживание Lexus. Роскошь и качество.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Lexus',
     services: [
-      { title: 'Техническое обслуживание', description: 'ТО премиум-класса', price: 'от 5 500 ₽', icon: 'Settings' },
-      { title: 'Диагностика Star Diagnosis', description: 'Фирменная диагностика Mercedes', price: 'от 2 500 ₽', icon: 'Search' },
-      { title: 'Обслуживание АКПП', description: 'Диагностика и ремонт коробки передач', price: 'от 8 000 ₽', icon: 'Cog' },
-      { title: 'Кузовной ремонт', description: 'Восстановление кузова', price: 'от 10 000 ₽', icon: 'Car' },
+      { title: 'Техническое обслуживание', description: 'ТО премиум-класса', price: 'от 4 500 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Полная диагностика Lexus', price: 'от 2 000 ₽', icon: 'Search' },
+      { title: 'Обслуживание гибридов', description: 'Ремонт гибридных систем', price: 'от 9 000 ₽', icon: 'Zap' },
+      { title: 'Детейлинг салона', description: 'Премиальная химчистка', price: 'от 8 000 ₽', icon: 'Sparkles' },
     ],
-    features: ['Оригинальные запчасти Mercedes', 'Премиальное обслуживание', 'Современное оборудование', 'Полная гарантия']
+    features: ['Оригинальные запчасти Lexus', 'Премиальное обслуживание', 'Опыт с гибридами', 'Полная гарантия']
   },
-  audi: {
-    name: 'Audi',
-    description: 'Специализированное обслуживание Audi. Технологии будущего сегодня.',
-    logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/ba02db5f-9801-4420-8836-39f52c1eb11f.jpg',
+  mazda: {
+    name: 'Mazda',
+    description: 'Качественное обслуживание Mazda. Технологии SKYACTIV.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mazda',
     services: [
-      { title: 'Техническое обслуживание', description: 'ТО по регламенту Audi', price: 'от 4 800 ₽', icon: 'Settings' },
-      { title: 'Диагностика Quattro', description: 'Диагностика полного привода', price: 'от 2 200 ₽', icon: 'Search' },
-      { title: 'Обслуживание Quattro', description: 'Ремонт системы полного привода', price: 'от 7 000 ₽', icon: 'Gauge' },
-      { title: 'Настройка MMI', description: 'Обновление и настройка мультимедиа', price: 'от 3 000 ₽', icon: 'Monitor' },
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Mazda', price: 'от 3 300 ₽', icon: 'Settings' },
+      { title: 'Диагностика SKYACTIV', description: 'Диагностика двигателей SKYACTIV', price: 'от 1 500 ₽', icon: 'Search' },
+      { title: 'Ремонт подвески', description: 'Замена амортизаторов, стоек', price: 'от 5 000 ₽', icon: 'Wrench' },
+      { title: 'Замена масла', description: 'Оригинальное масло Mazda', price: 'от 2 200 ₽', icon: 'Droplet' },
     ],
-    features: ['Оригинальные запчасти Audi', 'Специалисты Quattro', 'Современная диагностика', 'Гарантия на работы']
+    features: ['Оригинальные запчасти Mazda', 'Специалисты SKYACTIV', 'Быстрое обслуживание', 'Гарантия качества']
   },
-  volkswagen: {
-    name: 'Volkswagen',
-    description: 'Надежное обслуживание Volkswagen. Немецкая точность и качество.',
-    logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/84abd4d1-43db-449e-a754-37eaca2356b7.jpg',
+  mitsubishi: {
+    name: 'Mitsubishi',
+    description: 'Надежное обслуживание Mitsubishi. Японские технологии.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mitsubishi',
     services: [
-      { title: 'Техническое обслуживание', description: 'Регламентное ТО VW', price: 'от 3 800 ₽', icon: 'Settings' },
-      { title: 'Диагностика DSG', description: 'Диагностика робота DSG', price: 'от 1 800 ₽', icon: 'Search' },
-      { title: 'Обслуживание TSI/TDI', description: 'Ремонт турбированных двигателей', price: 'от 6 500 ₽', icon: 'Wind' },
-      { title: 'Замена ГРМ', description: 'Замена ремня/цепи ГРМ', price: 'от 5 000 ₽', icon: 'RotateCw' },
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Mitsubishi', price: 'от 3 200 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 300 ₽', icon: 'Search' },
+      { title: 'Ремонт полного привода', description: 'Обслуживание 4WD систем', price: 'от 6 500 ₽', icon: 'Gauge' },
+      { title: 'Замена ГРМ', description: 'Замена ремня ГРМ', price: 'от 4 800 ₽', icon: 'RotateCw' },
     ],
-    features: ['Оригинальные запчасти VW', 'Опыт работы с DSG', 'Специализированная диагностика', 'Гарантия качества']
+    features: ['Оригинальные запчасти Mitsubishi', 'Опыт работы с 4WD', 'Доступные цены', 'Гарантия на работы']
   },
   hyundai: {
     name: 'Hyundai',
@@ -116,6 +116,90 @@ const brandData: Record<string, {
       { title: 'Ремонт двигателя', description: 'Ремонт моторов Nissan', price: 'от 8 000 ₽', icon: 'Engine' },
     ],
     features: ['Оригинальные запчасти Nissan', 'Опыт работы с вариаторами', 'Качественная диагностика', 'Гарантия на работы']
+  },
+  subaru: {
+    name: 'Subaru',
+    description: 'Обслуживание Subaru. Оппозитные двигатели и полный привод.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Subaru',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Subaru', price: 'от 3 600 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Диагностика оппозитного двигателя', price: 'от 1 600 ₽', icon: 'Search' },
+      { title: 'Обслуживание AWD', description: 'Ремонт системы полного привода', price: 'от 7 000 ₽', icon: 'Gauge' },
+      { title: 'Замена масла', description: 'Оригинальное масло Subaru', price: 'от 2 400 ₽', icon: 'Droplet' },
+    ],
+    features: ['Оригинальные запчасти', 'Опыт с оппозитниками', 'Специалисты AWD', 'Гарантия качества']
+  },
+  suzuki: {
+    name: 'Suzuki',
+    description: 'Обслуживание Suzuki. Компактные и надежные автомобили.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Suzuki',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Suzuki', price: 'от 2 800 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 200 ₽', icon: 'Search' },
+      { title: 'Замена масла', description: 'Замена моторного масла', price: 'от 2 000 ₽', icon: 'Droplet' },
+      { title: 'Ремонт ходовой', description: 'Ремонт подвески', price: 'от 3 500 ₽', icon: 'Wrench' },
+    ],
+    features: ['Доступные цены', 'Быстрое обслуживание', 'Качественные запчасти', 'Гарантия на работы']
+  },
+  acura: {
+    name: 'Acura',
+    description: 'Премиальное обслуживание Acura. Технологии Honda премиум-класса.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Acura',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Премиальное ТО', price: 'от 4 200 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Полная диагностика систем', price: 'от 1 800 ₽', icon: 'Search' },
+      { title: 'Обслуживание SH-AWD', description: 'Ремонт интеллектуального полного привода', price: 'от 8 500 ₽', icon: 'Gauge' },
+      { title: 'Детейлинг', description: 'Премиальная химчистка салона', price: 'от 7 000 ₽', icon: 'Sparkles' },
+    ],
+    features: ['Оригинальные запчасти', 'Премиальный сервис', 'Опытные мастера', 'Полная гарантия']
+  },
+  haval: {
+    name: 'Haval',
+    description: 'Обслуживание Haval. Современные китайские SUV.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Haval',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Haval', price: 'от 3 000 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 400 ₽', icon: 'Search' },
+      { title: 'Замена масла', description: 'Замена моторного масла', price: 'от 2 200 ₽', icon: 'Droplet' },
+      { title: 'Ремонт подвески', description: 'Ремонт ходовой части', price: 'от 4 500 ₽', icon: 'Wrench' },
+    ],
+    features: ['Оригинальные запчасти', 'Доступные цены', 'Быстрое обслуживание', 'Гарантия качества']
+  },
+  geely: {
+    name: 'Geely',
+    description: 'Обслуживание Geely. Надежные китайские автомобили.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Geely',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Geely', price: 'от 2 900 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Полная диагностика', price: 'от 1 300 ₽', icon: 'Search' },
+      { title: 'Замена масла', description: 'Замена моторного масла', price: 'от 2 100 ₽', icon: 'Droplet' },
+      { title: 'Ремонт АКПП', description: 'Обслуживание коробки передач', price: 'от 6 000 ₽', icon: 'Cog' },
+    ],
+    features: ['Качественные запчасти', 'Доступные цены', 'Опытные мастера', 'Гарантия на работы']
+  },
+  changan: {
+    name: 'Changan',
+    description: 'Обслуживание Changan. Современные технологии.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Changan',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО', price: 'от 2 800 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 200 ₽', icon: 'Search' },
+      { title: 'Замена масла', description: 'Замена моторного масла', price: 'от 2 000 ₽', icon: 'Droplet' },
+      { title: 'Ремонт ходовой', description: 'Ремонт подвески', price: 'от 4 000 ₽', icon: 'Wrench' },
+    ],
+    features: ['Доступные цены', 'Качественный сервис', 'Быстрое обслуживание', 'Гарантия']
+  },
+  chery: {
+    name: 'Chery',
+    description: 'Обслуживание Chery. Проверенные китайские автомобили.',
+    logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Chery',
+    services: [
+      { title: 'Техническое обслуживание', description: 'Регламентное ТО Chery', price: 'от 2 700 ₽', icon: 'Settings' },
+      { title: 'Диагностика', description: 'Компьютерная диагностика', price: 'от 1 200 ₽', icon: 'Search' },
+      { title: 'Замена масла', description: 'Замена моторного масла', price: 'от 2 000 ₽', icon: 'Droplet' },
+      { title: 'Ремонт двигателя', description: 'Ремонт силового агрегата', price: 'от 7 000 ₽', icon: 'Engine' },
+    ],
+    features: ['Оригинальные запчасти', 'Доступные цены', 'Опыт работы', 'Гарантия качества']
   }
 };
 
