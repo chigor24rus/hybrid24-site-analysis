@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -170,6 +170,15 @@ interface SectionsProps {
 
 const Sections = ({ setIsBookingOpen }: SectionsProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleService = (id: number) => {
     setSelectedServices(prev =>
@@ -192,9 +201,10 @@ const Sections = ({ setIsBookingOpen }: SectionsProps) => {
   return (
     <>
       <section 
-        className="py-12 md:py-20 lg:py-32 bg-cover bg-center bg-no-repeat relative animate-fade-in"
+        className="py-12 md:py-20 lg:py-32 bg-cover bg-center bg-no-repeat relative animate-fade-in overflow-hidden"
         style={{
           backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/6197d68f-2afa-469a-bbfc-68154f818e8e.jpg)',
+          backgroundPositionY: `${scrollY * 0.5}px`,
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-white/98 via-white/95 to-white/70"></div>
