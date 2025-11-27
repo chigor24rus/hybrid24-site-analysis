@@ -162,6 +162,33 @@
   .btn-glow:active {
     transform: translateY(0);
   }
+
+  .hero-banner {
+    background-size: 80%;
+    background-position: right center;
+  }
+
+  .hero-gradient {
+    background: linear-gradient(
+      to right,
+      white 0%,
+      white 40%,
+      rgba(255, 255, 255, 0.95) 60%,
+      transparent 100%
+    );
+  }
+
+  @media (min-width: 768px) {
+    .hero-banner {
+      background-size: 60%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-banner {
+      background-size: 50%;
+    }
+  }
 }
 
 @keyframes fadeIn {
