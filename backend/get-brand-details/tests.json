@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Get brand details with slug",
+      "method": "GET",
+      "path": "/?slug=toyota",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "brand": "object",
+        "services": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

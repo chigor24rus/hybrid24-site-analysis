@@ -1,93 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 
-const services = [
-  {
-    id: 1,
-    title: 'Техническое обслуживание',
-    description: 'Комплексная проверка и обслуживание автомобиля',
-    price: 'от 3 500 ₽',
-    duration: '2 часа',
-    icon: 'Wrench'
-  },
-  {
-    id: 2,
-    title: 'Диагностика двигателя',
-    description: 'Компьютерная диагностика и выявление неисправностей',
-    price: 'от 1 500 ₽',
-    duration: '1 час',
-    icon: 'Settings'
-  },
-  {
-    id: 3,
-    title: 'Замена масла',
-    description: 'Замена моторного масла и масляного фильтра',
-    price: 'от 1 200 ₽',
-    duration: '30 мин',
-    icon: 'Droplet'
-  },
-  {
-    id: 4,
-    title: 'Шиномонтаж',
-    description: 'Сезонная замена шин, балансировка',
-    price: 'от 2 000 ₽',
-    duration: '1 час',
-    icon: 'Disc'
-  },
-  {
-    id: 5,
-    title: 'Ремонт ходовой',
-    description: 'Диагностика и ремонт подвески автомобиля',
-    price: 'от 5 000 ₽',
-    duration: '3 часа',
-    icon: 'Construction'
-  },
-  {
-    id: 6,
-    title: 'Кузовной ремонт',
-    description: 'Восстановление кузова после ДТП',
-    price: 'от 10 000 ₽',
-    duration: 'от 1 дня',
-    icon: 'Car'
-  }
-];
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  duration: string;
+  icon: string;
+}
 
-const brands = [
-  { name: 'Toyota', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/4e08abc9-6dc7-4175-88e7-4506631ccebe.jpg' },
-  { name: 'Honda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Honda' },
-  { name: 'Nissan', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/94c95c26-2e2d-4849-929a-bbc56961a2b5.jpg' },
-  { name: 'Lexus', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Lexus' },
-  { name: 'Mazda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mazda' },
-  { name: 'Mitsubishi', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Mitsubishi' },
-  { name: 'Subaru', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Subaru' },
-  { name: 'Suzuki', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Suzuki' },
-  { name: 'Acura', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Acura' },
-  { name: 'Hyundai', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/b96818be-6317-4095-a3eb-ed039af61550.jpg' },
-  { name: 'Kia', logo: 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/97ee8ca9-4c2a-4454-81ee-3c05a54f2661.jpg' },
-  { name: 'Haval', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Haval' },
-  { name: 'Geely', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Geely' },
-  { name: 'Changan', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Changan' },
-  { name: 'Belgee', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Belgee' },
-  { name: 'Lifan', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Lifan' },
-  { name: 'Jetour', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Jetour' },
-  { name: 'Tank', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Tank' },
-  { name: 'Exeed', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Exeed' },
-  { name: 'Omoda', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Omoda' },
-  { name: 'GAC', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=GAC' },
-  { name: 'Li AUTO', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Li+AUTO' },
-  { name: 'JAC', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=JAC' },
-  { name: 'Voyah', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Voyah' },
-  { name: 'Zeekr', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Zeekr' },
-  { name: 'Hongqi', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Hongqi' },
-  { name: 'FAW', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=FAW' },
-  { name: 'Dongfeng', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Dongfeng' },
-  { name: 'Jaecoo', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Jaecoo' },
-  { name: 'Bestune', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Bestune' },
-  { name: 'Chery', logo: 'https://via.placeholder.com/150x150/ffffff/666666?text=Chery' }
-];
+interface Brand {
+  id: number;
+  name: string;
+  slug: string;
+  logo: string;
+  description: string;
+}
 
 interface ServicesSectionProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -95,6 +27,32 @@ interface ServicesSectionProps {
 
 const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [servicesRes, brandsRes] = await Promise.all([
+          fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
+          fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f')
+        ]);
+        
+        const servicesData = await servicesRes.json();
+        const brandsData = await brandsRes.json();
+        
+        setServices(servicesData.services || []);
+        setBrands(brandsData.brands || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   const toggleService = (id: number) => {
     setSelectedServices(prev =>
@@ -113,6 +71,14 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
     };
     return selectedServices.reduce((sum, id) => sum + basePrices[id], 0);
   };
+
+  if (loading) {
+    return (
+      <div className="py-12 md:py-16 text-center">
+        <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -245,8 +211,8 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 md:gap-4">
             {brands.map((brand, index) => (
               <Link
-                key={index}
-                to={`/brand/${brand.name.toLowerCase()}`}
+                key={brand.id}
+                to={`/brand/${brand.slug}`}
               >
                 <Card
                   className="hover-scale cursor-pointer text-center p-4 md:p-6 lg:p-8 animate-fade-in bg-white"
