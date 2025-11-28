@@ -44,6 +44,7 @@ const AdminDataPage = () => {
   const [brandModalOpen, setBrandModalOpen] = useState(false);
   const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
   const [brandForm, setBrandForm] = useState({ name: '', slug: '', logo_url: '', description: '' });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   
   // Price modal state
   const [priceModalOpen, setPriceModalOpen] = useState(false);
@@ -111,6 +112,32 @@ const AdminDataPage = () => {
       setBrandForm({ name: '', slug: '', logo_url: '', description: '' });
     }
     setBrandModalOpen(true);
+  };
+
+  const uploadLogoFile = async (file: File) => {
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('https://functions.poehali.dev/2083652a-f56c-4d58-85e2-2e0af2b8a48a', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.url) {
+        setBrandForm({ ...brandForm, logo_url: data.url });
+      } else {
+        alert(data.error || 'Ошибка при загрузке файла');
+      }
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Ошибка при загрузке файла');
+    } finally {
+      setUploadingLogo(false);
+    }
   };
 
   const saveBrand = async () => {
@@ -373,11 +400,30 @@ const AdminDataPage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>URL логотипа</Label>
+                <Label>Логотип</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) uploadLogoFile(file);
+                    }}
+                    disabled={uploadingLogo}
+                    className="flex-1"
+                  />
+                  {uploadingLogo && <Icon name="Loader" className="animate-spin" size={20} />}
+                </div>
+                {brandForm.logo_url && (
+                  <div className="mt-2">
+                    <img src={brandForm.logo_url} alt="Preview" className="h-16 object-contain" />
+                  </div>
+                )}
                 <Input
                   value={brandForm.logo_url}
                   onChange={(e) => setBrandForm({ ...brandForm, logo_url: e.target.value })}
-                  placeholder="https://example.com/logo.png"
+                  placeholder="Или вставьте URL логотипа"
+                  className="mt-2"
                 />
               </div>
               <div className="space-y-2">
