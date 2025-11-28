@@ -20,6 +20,9 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
   const [priceModalOpen, setPriceModalOpen] = useState(false);
   const [editingPrice, setEditingPrice] = useState<Price | null>(null);
   const [priceForm, setPriceForm] = useState({ service_id: '', brand_id: '', base_price: '' });
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkForm, setBulkForm] = useState({ service_id: '', base_price: '', brand_ids: [] as number[] });
+  const [savingBulk, setSavingBulk] = useState(false);
 
   const openPriceModal = (price?: Price) => {
     if (price) {
@@ -90,13 +93,78 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
     }
   };
 
+  const openBulkModal = () => {
+    setBulkForm({ service_id: '', base_price: '', brand_ids: [] });
+    setBulkModalOpen(true);
+  };
+
+  const toggleBrandSelection = (brandId: number) => {
+    setBulkForm(prev => ({
+      ...prev,
+      brand_ids: prev.brand_ids.includes(brandId)
+        ? prev.brand_ids.filter(id => id !== brandId)
+        : [...prev.brand_ids, brandId]
+    }));
+  };
+
+  const saveBulkPrices = async () => {
+    if (!bulkForm.service_id || !bulkForm.base_price || bulkForm.brand_ids.length === 0) {
+      alert('Заполните все поля и выберите хотя бы один бренд');
+      return;
+    }
+
+    setSavingBulk(true);
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const brandId of bulkForm.brand_ids) {
+      try {
+        const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service_id: parseInt(bulkForm.service_id),
+            brand_id: brandId,
+            base_price: parseFloat(bulkForm.base_price),
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok && data.success) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+      } catch (error) {
+        console.error('Error saving bulk price:', error);
+        errorCount++;
+      }
+    }
+
+    setSavingBulk(false);
+    setBulkModalOpen(false);
+    onRefresh();
+    
+    if (errorCount === 0) {
+      alert(`Успешно добавлено цен: ${successCount}`);
+    } else {
+      alert(`Добавлено: ${successCount}, Ошибок: ${errorCount}`);
+    }
+  };
+
   return (
     <>
       <TabsContent value="prices" className="space-y-4">
-        <Button onClick={() => openPriceModal()} className="gradient-primary">
-          <Icon name="Plus" className="mr-2" size={18} />
-          Добавить цену
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => openPriceModal()} className="gradient-primary">
+            <Icon name="Plus" className="mr-2" size={18} />
+            Добавить цену
+          </Button>
+          <Button onClick={openBulkModal} variant="outline">
+            <Icon name="ListPlus" className="mr-2" size={18} />
+            Массовое добавление
+          </Button>
+        </div>
 
         <div className="space-y-2">
           {prices.map((price) => (
@@ -183,6 +251,72 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
               </Button>
               <Button onClick={savePrice} className="gradient-primary">
                 Сохранить
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={bulkModalOpen} onOpenChange={setBulkModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Массовое добавление цен</DialogTitle>
+            <DialogDescription>Выберите услугу, укажите цену и отметьте бренды</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Услуга *</Label>
+              <Select value={bulkForm.service_id} onValueChange={(value) => setBulkForm({ ...bulkForm, service_id: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Выберите услугу" />
+                </SelectTrigger>
+                <SelectContent>
+                  {services.map((service) => (
+                    <SelectItem key={service.id} value={service.id.toString()}>
+                      {service.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Базовая цена *</Label>
+              <Input
+                type="number"
+                value={bulkForm.base_price}
+                onChange={(e) => setBulkForm({ ...bulkForm, base_price: e.target.value })}
+                placeholder="5000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Выберите бренды * (выбрано: {bulkForm.brand_ids.length})</Label>
+              <div className="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto border rounded-md p-2">
+                {brands.map((brand) => (
+                  <label key={brand.id} className="flex items-center gap-2 cursor-pointer hover:bg-accent p-2 rounded">
+                    <input
+                      type="checkbox"
+                      checked={bulkForm.brand_ids.includes(brand.id)}
+                      onChange={() => toggleBrandSelection(brand.id)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">{brand.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setBulkModalOpen(false)} disabled={savingBulk}>
+                Отмена
+              </Button>
+              <Button onClick={saveBulkPrices} className="gradient-primary" disabled={savingBulk}>
+                {savingBulk ? (
+                  <>
+                    <Icon name="Loader" className="animate-spin mr-2" size={16} />
+                    Сохранение...
+                  </>
+                ) : (
+                  'Сохранить'
+                )}
               </Button>
             </div>
           </div>
