@@ -19,9 +19,9 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
         <div className="max-w-3xl">
           <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
-            Профессиональный
+            Сертифицированная станция
             <br />
-            <span className="gradient-primary bg-clip-text text-transparent">автосервис</span>
+            <span className="gradient-primary bg-clip-text text-transparent">технического обслуживания</span>
           </h1>
           <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl">
             Техническое обслуживание и ремонт автомобилей любой сложности. 
