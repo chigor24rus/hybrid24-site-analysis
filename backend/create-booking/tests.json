@@ -1,0 +1,51 @@
+{
+  "tests": [
+    {
+      "name": "Create booking with all fields",
+      "method": "POST",
+      "body": {
+        "name": "Иван Петров",
+        "phone": "+79991234567",
+        "email": "ivan@example.com",
+        "service": "Техническое обслуживание",
+        "brand": "Toyota",
+        "model": "Camry",
+        "date": "2025-12-15",
+        "time": "10:00",
+        "comment": "Требуется замена масла"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "booking_id": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create booking with minimum fields",
+      "method": "POST",
+      "body": {
+        "name": "Мария Иванова",
+        "phone": "+79167654321"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject booking without required fields",
+      "method": "POST",
+      "body": {
+        "email": "test@example.com"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

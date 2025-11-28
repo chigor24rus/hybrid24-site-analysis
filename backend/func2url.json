@@ -1,4 +1,5 @@
 {
+  "create-booking": "https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05",
   "get-brands": "https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f",
   "get-brand-details": "https://functions.poehali.dev/9fd8ddff-189b-4246-afc3-73d082eb8699",
   "get-services": "https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc",
