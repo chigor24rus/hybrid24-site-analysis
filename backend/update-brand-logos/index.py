@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Обновляет логотипы всех брендов в базе данных с carlogos.org
+    Business: Обновляет логотипы всех брендов в базе данных с автолого.рф
     Args: event - HTTP запрос, context - контекст выполнения
     Returns: HTTP response с результатом
     '''
@@ -42,37 +42,37 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     logos_map = {
-        'toyota': 'https://www.carlogos.org/logo/Toyota-logo-1989-3700x1200.png',
-        'honda': 'https://www.carlogos.org/logo/Honda-logo-1990-2560x1440.png',
-        'nissan': 'https://www.carlogos.org/logo/Nissan-logo-2013-1440x900.png',
-        'lexus': 'https://www.carlogos.org/logo/Lexus-logo-1988-1440x900.png',
-        'mazda': 'https://www.carlogos.org/logo/Mazda-logo-1997-1440x900.png',
-        'mitsubishi': 'https://www.carlogos.org/logo/Mitsubishi-logo-1990-2560x1440.png',
-        'subaru': 'https://www.carlogos.org/logo/Subaru-logo-2003-2560x1440.png',
-        'suzuki': 'https://www.carlogos.org/logo/Suzuki-logo-5000x2500.png',
-        'acura': 'https://www.carlogos.org/logo/Acura-logo-2560x1440.png',
-        'hyundai': 'https://www.carlogos.org/logo/Hyundai-logo-2011-1440x900.png',
-        'kia': 'https://www.carlogos.org/logo/Kia-logo-2560x1440.png',
-        'haval': 'https://www.carlogos.org/logo/Haval-logo-2013-2560x1440.png',
-        'geely': 'https://www.carlogos.org/logo/Geely-logo-2560x1440.png',
-        'changan': 'https://www.carlogos.org/logo/Changan-logo-2010-2560x1440.png',
-        'belgee': 'https://www.carlogos.org/logo/Belgee-logo-2560x1440.png',
-        'lifan': 'https://www.carlogos.org/logo/Lifan-logo-2560x1440.png',
-        'jetour': 'https://www.carlogos.org/logo/Jetour-logo-2018-2560x1440.png',
-        'tank': 'https://www.carlogos.org/logo/Tank-logo-2560x1440.png',
-        'exeed': 'https://www.carlogos.org/logo/Exeed-logo-2017-2560x1440.png',
-        'omoda': 'https://www.carlogos.org/logo/Omoda-logo-2560x1440.png',
-        'gac': 'https://www.carlogos.org/logo/GAC-logo-2560x1440.png',
-        'li auto': 'https://www.carlogos.org/logo/Li-Auto-logo-2560x1440.png',
-        'jac': 'https://www.carlogos.org/logo/JAC-logo-2560x1440.png',
-        'voyah': 'https://www.carlogos.org/logo/Voyah-logo-2560x1440.png',
-        'zeekr': 'https://www.carlogos.org/logo/Zeekr-logo-2021-2560x1440.png',
-        'hongqi': 'https://www.carlogos.org/logo/Hongqi-logo-2018-2560x1440.png',
-        'faw': 'https://www.carlogos.org/logo/FAW-logo-2560x1440.png',
-        'dongfeng': 'https://www.carlogos.org/logo/Dongfeng-logo-2560x1440.png',
-        'jaecoo': 'https://www.carlogos.org/logo/Jaecoo-logo-2560x1440.png',
-        'bestune': 'https://www.carlogos.org/logo/Bestune-logo-2560x1440.png',
-        'chery': 'https://www.carlogos.org/logo/Chery-logo-2013-2560x1440.png'
+        'toyota': 'https://avtologo.ru/foto/Toyota.png',
+        'honda': 'https://avtologo.ru/foto/Honda.png',
+        'nissan': 'https://avtologo.ru/foto/Nissan.png',
+        'lexus': 'https://avtologo.ru/foto/Lexus.png',
+        'mazda': 'https://avtologo.ru/foto/Mazda.png',
+        'mitsubishi': 'https://avtologo.ru/foto/Mitsubishi.png',
+        'subaru': 'https://avtologo.ru/foto/Subaru.png',
+        'suzuki': 'https://avtologo.ru/foto/Suzuki.png',
+        'acura': 'https://avtologo.ru/foto/Acura.png',
+        'hyundai': 'https://avtologo.ru/foto/Hyundai.png',
+        'kia': 'https://avtologo.ru/foto/Kia.png',
+        'haval': 'https://avtologo.ru/foto/Haval.png',
+        'geely': 'https://avtologo.ru/foto/Geely.png',
+        'changan': 'https://avtologo.ru/foto/Changan.png',
+        'belgee': 'https://avtologo.ru/foto/Belgee.png',
+        'lifan': 'https://avtologo.ru/foto/Lifan.png',
+        'jetour': 'https://avtologo.ru/foto/Jetour.png',
+        'tank': 'https://avtologo.ru/foto/Tank.png',
+        'exeed': 'https://avtologo.ru/foto/Exeed.png',
+        'omoda': 'https://avtologo.ru/foto/Omoda.png',
+        'gac': 'https://avtologo.ru/foto/GAC.png',
+        'li auto': 'https://avtologo.ru/foto/Li-Auto.png',
+        'jac': 'https://avtologo.ru/foto/JAC.png',
+        'voyah': 'https://avtologo.ru/foto/Voyah.png',
+        'zeekr': 'https://avtologo.ru/foto/Zeekr.png',
+        'hongqi': 'https://avtologo.ru/foto/Hongqi.png',
+        'faw': 'https://avtologo.ru/foto/FAW.png',
+        'dongfeng': 'https://avtologo.ru/foto/Dongfeng.png',
+        'jaecoo': 'https://avtologo.ru/foto/Jaecoo.png',
+        'bestune': 'https://avtologo.ru/foto/Bestune.png',
+        'chery': 'https://avtologo.ru/foto/Chery.png'
     }
     
     updated_count = 0
