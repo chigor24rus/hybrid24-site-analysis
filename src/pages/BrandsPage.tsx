@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -16,6 +17,7 @@ interface Brand {
 const BrandsPage = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -32,6 +34,10 @@ const BrandsPage = () => {
 
     fetchBrands();
   }, []);
+
+  const filteredBrands = brands.filter(brand =>
+    brand.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   if (loading) {
     return (
@@ -52,8 +58,34 @@ const BrandsPage = () => {
               Мы обслуживаем {brands.length} популярных марок автомобилей
             </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
-            {brands.map((brand, index) => (
+          <div className="max-w-md mx-auto mb-8 animate-fade-in">
+            <div className="relative">
+              <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+              <Input
+                type="text"
+                placeholder="Поиск по маркам..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <Icon name="X" size={20} />
+                </button>
+              )}
+            </div>
+          </div>
+          {filteredBrands.length === 0 ? (
+            <div className="text-center py-12">
+              <Icon name="Search" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+              <p className="text-muted-foreground">Бренды не найдены</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+              {filteredBrands.map((brand, index) => (
               <Link
                 key={brand.id}
                 to={`/brand/${brand.slug}`}
@@ -65,8 +97,9 @@ const BrandsPage = () => {
                   <p className="text-sm font-medium">{brand.name}</p>
                 </Card>
               </Link>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
       <Footer />
