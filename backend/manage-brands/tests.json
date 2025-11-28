@@ -1,0 +1,32 @@
+{
+  "tests": [
+    {
+      "name": "Create new brand",
+      "method": "POST",
+      "body": {
+        "name": "Test Brand",
+        "slug": "test-brand",
+        "logo_url": "https://example.com/logo.png",
+        "description": "Test description"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "brand": "object"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject brand without required fields",
+      "method": "POST",
+      "body": {
+        "name": "Test"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "Get all prices",
+      "method": "GET",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "prices": "array",
+        "total": "number"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new price",
+      "method": "POST",
+      "body": {
+        "service_id": 1,
+        "brand_id": 1,
+        "base_price": 5000,
+        "currency": "RUB"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

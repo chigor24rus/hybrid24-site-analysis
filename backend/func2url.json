@@ -1,4 +1,6 @@
 {
+  "manage-prices": "https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04",
+  "manage-brands": "https://functions.poehali.dev/6e998d6c-035e-480a-b85e-9b690fa6733a",
   "verify-admin": "https://functions.poehali.dev/f154dcd8-cf73-4c58-b0c2-63e293d16b4a",
   "get-bookings": "https://functions.poehali.dev/07871607-696c-49db-b330-8d0d08b2896e",
   "update-booking-status": "https://functions.poehali.dev/04351be8-3746-49dd-9c00-c57ea8ad97f3",

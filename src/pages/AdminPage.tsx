@@ -159,17 +159,23 @@ const AdminPage = () => {
             <h1 className="text-4xl font-bold mb-2">Админ-панель</h1>
             <p className="text-muted-foreground">Управление заявками клиентов</p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              localStorage.removeItem('adminAuth');
-              localStorage.removeItem('adminAuthTime');
-              navigate('/admin/login');
-            }}
-          >
-            <Icon name="LogOut" className="mr-2" size={18} />
-            Выйти
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/admin/data')}>
+              <Icon name="Database" className="mr-2" size={18} />
+              Бренды и цены
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                localStorage.removeItem('adminAuth');
+                localStorage.removeItem('adminAuthTime');
+                navigate('/admin/login');
+              }}
+            >
+              <Icon name="LogOut" className="mr-2" size={18} />
+              Выйти
+            </Button>
+          </div>
         </div>
 
         {/* Statistics */}
