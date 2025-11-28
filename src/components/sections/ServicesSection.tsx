@@ -202,27 +202,27 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
         </div>
       </section>
 
-      <section id="brands" className="py-12 md:py-16">
+      <section id="brands" className="py-12 md:py-16 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Бренды, с которыми мы работаем</h2>
             <p className="text-muted-foreground text-base md:text-lg">Обслуживаем все популярные марки автомобилей</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3 md:gap-4">
-            {brands.map((brand, index) => (
-              <Link
-                key={brand.id}
-                to={`/brand/${brand.slug}`}
-              >
-                <Card
-                  className="hover-scale cursor-pointer text-center p-4 md:p-6 lg:p-8 animate-fade-in bg-white"
-                  style={{ animationDelay: `${index * 50}ms` }}
+          <div className="relative">
+            <div className="flex gap-4 animate-scroll">
+              {[...brands, ...brands].map((brand, index) => (
+                <Link
+                  key={`${brand.id}-${index}`}
+                  to={`/brand/${brand.slug}`}
+                  className="flex-shrink-0"
                 >
-                  <img src={brand.logo} alt={brand.name} className="w-full h-12 sm:h-16 md:h-20 lg:h-24 object-contain mb-2" />
-                  <p className="text-sm font-medium mt-2">{brand.name}</p>
-                </Card>
-              </Link>
-            ))}
+                  <Card className="hover-scale cursor-pointer text-center p-6 bg-white w-32 h-32 flex flex-col items-center justify-center">
+                    <img src={brand.logo} alt={brand.name} className="h-16 object-contain mb-2" />
+                    <p className="text-xs font-medium">{brand.name}</p>
+                  </Card>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
