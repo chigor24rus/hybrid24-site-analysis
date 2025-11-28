@@ -18,7 +18,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
       <div className="container mx-auto px-4 relative">
         <div className="max-w-3xl">
           <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
             Сертифицированная станция
             <br />
             <span className="gradient-primary bg-clip-text text-transparent">технического обслуживания</span>
