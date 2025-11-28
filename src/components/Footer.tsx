@@ -7,8 +7,11 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <Icon name="Zap" className="text-primary" size={20} />
-            <span className="text-base sm:text-lg font-bold gradient-primary bg-clip-text text-transparent">AutoService</span>
+            <img 
+              src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
+              alt="HEVSR" 
+              className="h-6 sm:h-8 w-auto"
+            />
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm text-center">© 2025 Все права защищены</p>
           <div className="flex gap-2 sm:gap-3">

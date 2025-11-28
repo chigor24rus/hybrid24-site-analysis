@@ -38,8 +38,11 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
       <div className="backdrop-blur-sm bg-white/95">
         <div className="container mx-auto px-3 sm:px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <Icon name="Zap" className="text-primary" size={28} />
-            <span className="text-lg sm:text-xl md:text-2xl font-bold gradient-primary bg-clip-text text-transparent">AutoService</span>
+            <img 
+              src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
+              alt="HEVSR" 
+              className="h-8 sm:h-10 md:h-12 w-auto"
+            />
           </div>
 
           <nav className="hidden lg:flex gap-8 items-center">
@@ -80,8 +83,11 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
               <SheetContent side="right" className="w-[300px]">
                 <SheetHeader>
                   <SheetTitle className="flex items-center gap-2">
-                    <Icon name="Zap" className="text-primary" size={24} />
-                    <span className="gradient-primary bg-clip-text text-transparent">AutoService</span>
+                    <img 
+                      src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
+                      alt="HEVSR" 
+                      className="h-8 w-auto"
+                    />
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-8">
