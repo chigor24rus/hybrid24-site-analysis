@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Reject request without image",
+      "method": "POST",
+      "body": {
+        "filename": "test.png"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
