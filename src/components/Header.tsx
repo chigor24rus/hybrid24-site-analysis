@@ -14,7 +14,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
 
   const navItems = [
     { href: '#services', label: 'Услуги' },
-    { href: '#promotions', label: 'Акции' },
+    { href: '/promotions', label: 'Акции' },
     { href: '#reviews', label: 'Отзывы' },
     { href: '#blog', label: 'Блог' }
   ];
