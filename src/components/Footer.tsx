@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <img 
-              src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/3c1ed468-ad13-4359-9ccb-84aee99159c0.jpg" 
+              src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
               alt="HEVSR" 
               className="h-6 sm:h-8 w-auto"
             />

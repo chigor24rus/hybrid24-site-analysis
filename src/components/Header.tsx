@@ -57,7 +57,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
         <div className="container mx-auto px-3 sm:px-4 py-3 md:py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2 logo-glow">
             <img 
-              src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/3c1ed468-ad13-4359-9ccb-84aee99159c0.jpg" 
+              src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
               alt="HEVSR" 
               className="h-8 sm:h-10 md:h-12 w-auto"
             />
