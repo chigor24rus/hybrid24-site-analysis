@@ -59,7 +59,7 @@ const ContactsSection = () => {
                 <Button 
                   size="lg" 
                   className="w-full md:w-auto"
-                  onClick={() => window.open('https://yandex.ru/maps/?rtext=~56.016200,92.873200', '_blank')}
+                  onClick={() => window.open('https://yandex.ru/maps/?rtext=~56.062692,92.900855', '_blank')}
                 >
                   <Icon name="Navigation" size={20} />
                   Построить маршрут
