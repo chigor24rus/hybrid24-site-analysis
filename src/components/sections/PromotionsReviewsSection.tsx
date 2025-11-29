@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { Link } from 'react-router-dom';
 
 const promotions = [
   {
@@ -111,7 +112,12 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       <section id="promotions" className="py-12 md:py-16 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Акции и спецпредложения</h2>
+            <Link to="/promotions" className="group inline-block">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
+                Акции и спецпредложения
+                <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
+              </h2>
+            </Link>
             <p className="text-muted-foreground text-base md:text-lg">Выгодные предложения для наших клиентов</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
