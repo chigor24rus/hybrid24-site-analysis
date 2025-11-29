@@ -9,6 +9,7 @@ import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
 import FloatingCallButton from '@/components/FloatingCallButton';
 import PromotionTimer from '@/components/PromotionTimer';
+import ShareButton from '@/components/ShareButton';
 
 const promotions = [
   {
@@ -127,9 +128,16 @@ const PromotionsPage = () => {
                       <span className="text-3xl font-bold text-primary">{promo.newPrice}</span>
                     </div>
                     <PromotionTimer validUntil={promo.validUntil} />
-                    <Button className="w-full gradient-primary btn-glow mt-4" onClick={() => setIsBookingOpen(true)}>
-                      Воспользоваться
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button className="flex-1 gradient-primary btn-glow" onClick={() => setIsBookingOpen(true)}>
+                        Воспользоваться
+                      </Button>
+                    </div>
+                    <ShareButton 
+                      title={promo.title}
+                      description={promo.description}
+                      discount={promo.discount}
+                    />
                   </div>
                 </CardContent>
               </Card>
