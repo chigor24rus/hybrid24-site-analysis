@@ -17,7 +17,9 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
     { href: '#services', label: 'Услуги' },
     { href: '/promotions', label: 'Акции' },
     { href: '#reviews', label: 'Отзывы' },
-    { href: '#blog', label: 'Блог' }
+    { href: '#blog', label: 'Блог' },
+    { href: '#brands', label: 'Бренды' },
+    { href: '#contacts', label: 'Контакты' }
   ];
 
   const handleNavClick = (href: string) => {
