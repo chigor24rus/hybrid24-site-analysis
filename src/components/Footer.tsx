@@ -10,7 +10,7 @@ const Footer = () => {
             <img 
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
               alt="HEVSR" 
-              className="h-6 sm:h-8 w-auto"
+              className="h-8 sm:h-10 w-auto"
             />
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm text-center">© 2025 Все права защищены</p>

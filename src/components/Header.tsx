@@ -59,7 +59,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
             <img 
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
               alt="HEVSR" 
-              className="h-8 sm:h-10 md:h-12 w-auto"
+              className="h-10 sm:h-12 md:h-16 w-auto"
             />
           </Link>
 
@@ -108,7 +108,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                       <img 
                         src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
                         alt="HEVSR" 
-                        className="h-8 w-auto"
+                        className="h-10 w-auto"
                       />
                     </Link>
                   </SheetTitle>
