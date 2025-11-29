@@ -55,7 +55,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
     >
       <div className="backdrop-blur-sm bg-white/95">
         <div className="container mx-auto px-3 sm:px-4 py-3 md:py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center gap-1.5 sm:gap-2 logo-glow">
             <img 
               src="https://cdn.poehali.dev/files/b809df5f-2020-472d-988b-5edd2cd86b69.png" 
               alt="HEVSR" 

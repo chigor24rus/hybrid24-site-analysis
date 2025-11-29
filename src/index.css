@@ -163,6 +163,18 @@
     transform: translateY(0);
   }
 
+  .logo-glow {
+    transition:
+      filter 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .logo-glow:hover {
+    filter: drop-shadow(0 0 20px rgba(188, 208, 42, 0.6))
+      drop-shadow(0 0 40px rgba(116, 183, 52, 0.3));
+    transform: scale(1.05);
+  }
+
   .hero-banner {
     background-size: 80%;
     background-position: right center;
