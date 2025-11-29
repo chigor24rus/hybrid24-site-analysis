@@ -1,4 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 const ContactsSection = () => {
@@ -45,7 +46,7 @@ const ContactsSection = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl mb-4">Как нас найти</CardTitle>
-                <div className="w-full h-[400px] rounded-lg overflow-hidden">
+                <div className="w-full h-[400px] rounded-lg overflow-hidden mb-4">
                   <iframe
                     src="https://yandex.ru/map-widget/v1/?ll=92.873200%2C56.016200&z=16&l=map&pt=92.873200,56.016200,pm2rdm"
                     width="100%"
@@ -55,6 +56,14 @@ const ContactsSection = () => {
                     style={{ position: 'relative' }}
                   ></iframe>
                 </div>
+                <Button 
+                  size="lg" 
+                  className="w-full md:w-auto"
+                  onClick={() => window.open('https://yandex.ru/maps/?rtext=~56.016200,92.873200', '_blank')}
+                >
+                  <Icon name="Navigation" size={20} />
+                  Построить маршрут
+                </Button>
               </CardHeader>
             </Card>
           </div>
