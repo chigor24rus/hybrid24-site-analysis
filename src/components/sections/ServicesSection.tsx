@@ -188,11 +188,8 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
                         <div className="text-xs md:text-sm text-muted-foreground mb-1">Выбрано услуг: {selectedServices.length}</div>
-                        <div className="relative inline-block">
-                          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg -z-10"></div>
-                          <div className="text-2xl md:text-3xl font-bold text-foreground px-3 py-1">
-                            {calculateTotal().toLocaleString()} ₽
-                          </div>
+                        <div className="text-2xl md:text-3xl font-bold px-3 py-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg inline-block">
+                          {calculateTotal().toLocaleString()} ₽
                         </div>
                         <div className="text-xs md:text-sm text-muted-foreground mt-1">Предварительная стоимость</div>
                       </div>
