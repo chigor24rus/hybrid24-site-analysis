@@ -87,126 +87,18 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const organizationId = localStorage.getItem('yandexMapsOrgId') || '';
-      
-      if (!organizationId) {
-        // Если ID не указан, показываем заглушку
-        setReviews([
-          {
-            id: 1,
-            name: 'Александр Петров',
-            rating: 5,
-            date: '15 ноября 2025',
-            text: 'Отличный сервис! Быстро продиагностировали и устранили проблему с двигателем. Мастера профессионалы своего дела.',
-            service: 'Диагностика двигателя'
-          },
-          {
-            id: 2,
-            name: 'Мария Сидорова',
-            rating: 5,
-            date: '10 ноября 2025',
-            text: 'Делала ТО здесь уже второй раз. Все четко, по времени, цены адекватные. Очень довольна!',
-            service: 'Техническое обслуживание'
-          },
-          {
-            id: 3,
-            name: 'Дмитрий Козлов',
-            rating: 4,
-            date: '5 ноября 2025',
-            text: 'Хороший автосервис, качественная работа. Единственное — пришлось немного подождать своей очереди.',
-            service: 'Замена масла'
-          },
-          {
-            id: 4,
-            name: 'Елена Морозова',
-            rating: 5,
-            date: '1 ноября 2025',
-            text: 'После ДТП восстанавливали кузов. Работу выполнили отлично, как будто машина новая! Спасибо команде!',
-            service: 'Кузовной ремонт'
-          }
-        ]);
-        setLoadingReviews(false);
-        return;
-      }
-
       try {
-        const response = await fetch(`https://functions.poehali.dev/1e8f96a4-4d1a-4e78-99b4-6d46b274546a?organization_id=${encodeURIComponent(organizationId)}`);
+        const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce');
         const data = await response.json();
         
         if (response.ok && data.reviews && data.reviews.length > 0) {
           setReviews(data.reviews.slice(0, 4));
         } else {
-          setReviews([
-            {
-              id: 1,
-              name: 'Александр Петров',
-              rating: 5,
-              date: '15 ноября 2025',
-              text: 'Отличный сервис! Быстро продиагностировали и устранили проблему с двигателем. Мастера профессионалы своего дела.',
-              service: 'Диагностика двигателя'
-            },
-            {
-              id: 2,
-              name: 'Мария Сидорова',
-              rating: 5,
-              date: '10 ноября 2025',
-              text: 'Делала ТО здесь уже второй раз. Все четко, по времени, цены адекватные. Очень довольна!',
-              service: 'Техническое обслуживание'
-            },
-            {
-              id: 3,
-              name: 'Дмитрий Козлов',
-              rating: 4,
-              date: '5 ноября 2025',
-              text: 'Хороший автосервис, качественная работа. Единственное — пришлось немного подождать своей очереди.',
-              service: 'Замена масла'
-            },
-            {
-              id: 4,
-              name: 'Елена Морозова',
-              rating: 5,
-              date: '1 ноября 2025',
-              text: 'После ДТП восстанавливали кузов. Работу выполнили отлично, как будто машина новая! Спасибо команде!',
-              service: 'Кузовной ремонт'
-            }
-          ]);
+          setReviews([]);
         }
       } catch (error) {
-        console.error('Error fetching Yandex reviews:', error);
-        setReviews([
-          {
-            id: 1,
-            name: 'Александр Петров',
-            rating: 5,
-            date: '15 ноября 2025',
-            text: 'Отличный сервис! Быстро продиагностировали и устранили проблему с двигателем. Мастера профессионалы своего дела.',
-            service: 'Диагностика двигателя'
-          },
-          {
-            id: 2,
-            name: 'Мария Сидорова',
-            rating: 5,
-            date: '10 ноября 2025',
-            text: 'Делала ТО здесь уже второй раз. Все четко, по времени, цены адекватные. Очень довольна!',
-            service: 'Техническое обслуживание'
-          },
-          {
-            id: 3,
-            name: 'Дмитрий Козлов',
-            rating: 4,
-            date: '5 ноября 2025',
-            text: 'Хороший автосервис, качественная работа. Единственное — пришлось немного подождать своей очереди.',
-            service: 'Замена масла'
-          },
-          {
-            id: 4,
-            name: 'Елена Морозова',
-            rating: 5,
-            date: '1 ноября 2025',
-            text: 'После ДТП восстанавливали кузов. Работу выполнили отлично, как будто машина новая! Спасибо команде!',
-            service: 'Кузовной ремонт'
-          }
-        ]);
+        console.error('Error fetching reviews:', error);
+        setReviews([]);
       } finally {
         setLoadingReviews(false);
       }
@@ -277,6 +169,11 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           {loadingReviews ? (
             <div className="text-center py-12">
               <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+            </div>
+          ) : reviews.length === 0 ? (
+            <div className="text-center py-12">
+              <Icon name="MessageSquare" className="mx-auto mb-4 text-muted-foreground" size={48} />
+              <p className="text-muted-foreground">Отзывов пока нет</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">

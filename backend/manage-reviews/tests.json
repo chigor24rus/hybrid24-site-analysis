@@ -1,0 +1,31 @@
+{
+  "tests": [
+    {
+      "name": "Get all reviews",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "reviews": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new review",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "customer_name": "Тестовый клиент",
+        "rating": 5,
+        "review_text": "Отличный сервис!",
+        "service_name": "Тестовая услуга"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "review_id": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
