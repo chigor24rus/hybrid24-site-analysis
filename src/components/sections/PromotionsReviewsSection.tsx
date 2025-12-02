@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,40 +38,14 @@ const promotions = [
   }
 ];
 
-const reviews = [
-  {
-    id: 1,
-    name: 'Александр Петров',
-    rating: 5,
-    date: '15 ноября 2025',
-    text: 'Отличный сервис! Быстро продиагностировали и устранили проблему с двигателем. Мастера профессионалы своего дела.',
-    service: 'Диагностика двигателя'
-  },
-  {
-    id: 2,
-    name: 'Мария Сидорова',
-    rating: 5,
-    date: '10 ноября 2025',
-    text: 'Делала ТО здесь уже второй раз. Все четко, по времени, цены адекватные. Очень довольна!',
-    service: 'Техническое обслуживание'
-  },
-  {
-    id: 3,
-    name: 'Дмитрий Козлов',
-    rating: 4,
-    date: '5 ноября 2025',
-    text: 'Хороший автосервис, качественная работа. Единственное — пришлось немного подождать своей очереди.',
-    service: 'Замена масла'
-  },
-  {
-    id: 4,
-    name: 'Елена Морозова',
-    rating: 5,
-    date: '1 ноября 2025',
-    text: 'После ДТП восстанавливали кузов. Работу выполнили отлично, как будто машина новая! Спасибо команде!',
-    service: 'Кузовной ремонт'
-  }
-];
+interface Review {
+  id: number | string;
+  name: string;
+  rating: number;
+  date: string;
+  text: string;
+  service: string;
+}
 
 const blogPosts = [
   {
@@ -107,6 +82,69 @@ interface PromotionsReviewsSectionProps {
 }
 
 const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+  const [organizationId] = useState(''); // Установите ID организации из Яндекс.Карт
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!organizationId) {
+        // Если ID не указан, показываем заглушку
+        setReviews([
+          {
+            id: 1,
+            name: 'Александр Петров',
+            rating: 5,
+            date: '15 ноября 2025',
+            text: 'Отличный сервис! Быстро продиагностировали и устранили проблему с двигателем. Мастера профессионалы своего дела.',
+            service: 'Диагностика двигателя'
+          },
+          {
+            id: 2,
+            name: 'Мария Сидорова',
+            rating: 5,
+            date: '10 ноября 2025',
+            text: 'Делала ТО здесь уже второй раз. Все четко, по времени, цены адекватные. Очень довольна!',
+            service: 'Техническое обслуживание'
+          },
+          {
+            id: 3,
+            name: 'Дмитрий Козлов',
+            rating: 4,
+            date: '5 ноября 2025',
+            text: 'Хороший автосервис, качественная работа. Единственное — пришлось немного подождать своей очереди.',
+            service: 'Замена масла'
+          },
+          {
+            id: 4,
+            name: 'Елена Морозова',
+            rating: 5,
+            date: '1 ноября 2025',
+            text: 'После ДТП восстанавливали кузов. Работу выполнили отлично, как будто машина новая! Спасибо команде!',
+            service: 'Кузовной ремонт'
+          }
+        ]);
+        setLoadingReviews(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://functions.poehali.dev/1e8f96a4-4d1a-4e78-99b4-6d46b274546a?organization_id=${organizationId}`);
+        const data = await response.json();
+        
+        if (data.reviews && data.reviews.length > 0) {
+          setReviews(data.reviews.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error fetching Yandex reviews:', error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, [organizationId]);
+
   return (
     <>
       <section id="promotions" className="py-12 md:py-16 bg-card/30">
@@ -166,8 +204,13 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Отзывы клиентов</h2>
             <p className="text-muted-foreground text-base md:text-lg">Что говорят о нас наши клиенты</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-            {reviews.map((review, index) => (
+          {loadingReviews ? (
+            <div className="text-center py-12">
+              <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+              {reviews.map((review, index) => (
               <Card
                 key={review.id}
                 className="hover-scale animate-fade-in"
@@ -194,8 +237,9 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
                   </Badge>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

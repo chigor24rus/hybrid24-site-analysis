@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Get reviews without organization_id",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "organization_id parameter is required"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get reviews with organization_id",
+      "method": "GET",
+      "path": "/?organization_id=test_org",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "reviews": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
