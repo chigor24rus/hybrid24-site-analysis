@@ -31,6 +31,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     api_key = os.environ.get('YANDEX_MAPS_API_KEY')
+    print(f"API Key present: {bool(api_key)}")
+    
     if not api_key:
         return {
             'statusCode': 500,
@@ -51,10 +53,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         # Запрос к API Яндекс.Карт для получения отзывов организации
         url = f'https://search-maps.yandex.ru/v1/?apikey={api_key}&text={organization_id}&type=biz&results=1&lang=ru_RU'
+        print(f"Requesting Yandex Maps API for org_id: {organization_id}")
         response = requests.get(url, timeout=10)
+        print(f"Response status: {response.status_code}")
         response.raise_for_status()
         
         data = response.json()
+        print(f"Found features: {len(data.get('features', []))}")
         
         if not data.get('features'):
             return {
@@ -117,6 +122,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
     
     except requests.exceptions.RequestException as e:
+        print(f"Request error: {str(e)}")
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
