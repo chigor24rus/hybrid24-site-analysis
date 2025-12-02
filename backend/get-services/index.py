@@ -42,7 +42,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     cur = conn.cursor()
     
     cur.execute("""
-        SELECT s.id, s.title, s.description, s.icon, s.duration, 
+        SELECT DISTINCT ON (s.id) s.id, s.title, s.description, s.icon, s.duration, 
                MIN(sp.base_price) as min_price, sp.currency
         FROM services s
         JOIN service_prices sp ON s.id = sp.service_id

@@ -53,7 +53,12 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
         const servicesData = await servicesRes.json();
         const brandsData = await brandsRes.json();
         
-        setServices(servicesData.services || []);
+        // Убираем дубли по id
+        const uniqueServices = Array.from(
+          new Map((servicesData.services || []).map((s: Service) => [s.id, s])).values()
+        );
+        
+        setServices(uniqueServices);
         setBrands(brandsData.brands || []);
       } catch (error) {
         console.error('Error fetching data:', error);
