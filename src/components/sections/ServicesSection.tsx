@@ -188,7 +188,7 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
                         <div className="text-xs md:text-sm text-muted-foreground mb-1">Выбрано услуг: {selectedServices.length}</div>
-                        <div className="text-2xl md:text-3xl font-bold px-3 py-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-lg inline-block transition-all duration-300 animate-pulse">
+                        <div className="text-2xl md:text-3xl font-bold px-3 py-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-lg inline-block transition-all duration-300">
                           {calculateTotal().toLocaleString()} ₽
                         </div>
                         <div className="text-xs md:text-sm text-muted-foreground mt-1">Предварительная стоимость</div>
