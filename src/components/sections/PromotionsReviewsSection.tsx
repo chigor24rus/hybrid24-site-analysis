@@ -84,10 +84,11 @@ interface PromotionsReviewsSectionProps {
 const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
-  const [organizationId] = useState(''); // Установите ID организации из Яндекс.Карт
 
   useEffect(() => {
     const fetchReviews = async () => {
+      const organizationId = localStorage.getItem('yandexMapsOrgId') || '';
+      
       if (!organizationId) {
         // Если ID не указан, показываем заглушку
         setReviews([
