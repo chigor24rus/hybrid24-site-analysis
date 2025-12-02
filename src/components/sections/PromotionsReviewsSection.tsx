@@ -144,7 +144,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     };
 
     fetchReviews();
-  }, [organizationId]);
+  }, []);
 
   return (
     <>
