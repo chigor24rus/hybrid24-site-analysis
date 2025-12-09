@@ -140,11 +140,18 @@ def sync_reviews_from_dgis() -> Dict[str, Any]:
         
         added_count = 0
         updated_count = 0
+        hidden_count = 0
+        visible_count = 0
         
         for review in reviews_data:
             source_id = review.get('id', '')
             rating = review.get('rating', 5)
             is_visible = rating >= 4
+            
+            if not is_visible:
+                hidden_count += 1
+            else:
+                visible_count += 1
             
             cur.execute('''
                 SELECT id FROM reviews WHERE source = '2gis' AND source_id = %s
@@ -195,7 +202,9 @@ def sync_reviews_from_dgis() -> Dict[str, Any]:
                 'success': True,
                 'added': added_count,
                 'updated': updated_count,
-                'total': len(reviews_data)
+                'total': len(reviews_data),
+                'visible': visible_count,
+                'hidden': hidden_count
             }, ensure_ascii=False),
             'isBase64Encoded': False
         }

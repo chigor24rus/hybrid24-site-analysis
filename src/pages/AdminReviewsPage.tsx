@@ -187,9 +187,16 @@ const AdminReviewsPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        const message = [
+          `Добавлено: ${data.added}`,
+          `Обновлено: ${data.updated}`,
+          `Опубликовано: ${data.visible}`,
+          data.hidden > 0 ? `Скрыто (рейтинг < 4): ${data.hidden}` : null
+        ].filter(Boolean).join(' • ');
+        
         toast({
-          title: "Успешно",
-          description: `Синхронизировано: ${data.added} новых, ${data.updated} обновлено`,
+          title: "Синхронизация завершена",
+          description: message,
         });
         fetchReviews();
       } else {
