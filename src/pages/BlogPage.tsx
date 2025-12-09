@@ -68,6 +68,14 @@ const BlogPage = () => {
 
   const categories = ['Все', ...Array.from(new Set(posts.map(post => post.category)))];
   
+  const maxViews = Math.max(...Object.values(viewCounts), 0);
+  const popularThreshold = maxViews > 0 ? maxViews * 0.6 : 3;
+  
+  const isPopular = (postId: number) => {
+    const views = viewCounts[postId] || 0;
+    return views >= popularThreshold && views >= 3;
+  };
+  
   const filteredPosts = posts
     .filter(post => selectedCategory === 'Все' || post.category === selectedCategory)
     .filter(post => 
@@ -212,12 +220,18 @@ const BlogPage = () => {
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
                       <div 
-                        className="h-48 bg-cover bg-center rounded-t-lg"
+                        className="h-48 bg-cover bg-center rounded-t-lg relative"
                         style={{ backgroundImage: `url(${post.image})` }}
                       >
                         <div className="h-full bg-gradient-to-b from-transparent to-black/60 rounded-t-lg flex items-end p-4">
                           <Badge className="gradient-accent">{post.category}</Badge>
                         </div>
+                        {isPopular(post.id) && (
+                          <Badge className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+                            <Icon name="Flame" size={14} className="mr-1" />
+                            Популярное
+                          </Badge>
+                        )}
                       </div>
                       <CardHeader>
                         <div className="flex items-center gap-2 mb-2">
