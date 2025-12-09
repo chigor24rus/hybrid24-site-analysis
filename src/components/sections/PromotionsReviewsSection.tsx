@@ -68,6 +68,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(true);
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
+  const [expandedReviews, setExpandedReviews] = useState<Set<number | string>>(new Set());
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -76,7 +77,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         const data = await response.json();
         
         if (response.ok && data.reviews && data.reviews.length > 0) {
-          setReviews(data.reviews.slice(0, 4));
+          setReviews(data.reviews.slice(0, 3));
         } else {
           setReviews([]);
         }
@@ -116,6 +117,23 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     fetchReviews();
     fetchBlogPosts();
   }, []);
+
+  const toggleReviewExpansion = (reviewId: number | string) => {
+    setExpandedReviews(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(reviewId)) {
+        newSet.delete(reviewId);
+      } else {
+        newSet.add(reviewId);
+      }
+      return newSet;
+    });
+  };
+
+  const truncateText = (text: string, maxLength: number = 150) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
+  };
 
   return (
     <>
@@ -202,46 +220,70 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-              {reviews.map((review, index) => (
-              <Card
-                key={review.id}
-                className="hover-scale animate-fade-in border-2 hover:border-primary/50 transition-all duration-300 bg-card/80 backdrop-blur"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl mb-1 flex items-center gap-2">
-                        {review.name}
-                        <Icon name="BadgeCheck" size={18} className="text-primary" />
-                      </CardTitle>
-                      <CardDescription className="flex items-center gap-2">
-                        <Icon name="Calendar" size={14} />
-                        {review.date}
-                      </CardDescription>
-                    </div>
-                    <div className="flex gap-0.5 bg-yellow-500/10 p-2 rounded-lg">
-                      {Array.from({ length: review.rating }).map((_, i) => (
-                        <Icon key={i} name="Star" size={16} className="text-yellow-500 fill-yellow-500" />
-                      ))}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <Icon name="Quote" size={32} className="absolute -top-2 -left-2 text-primary/20" />
-                    <p className="text-muted-foreground leading-relaxed pl-6">{review.text}</p>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-border/50">
-                    <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10 transition-colors">
-                      <Icon name="Wrench" size={14} className="mr-1.5" />
-                      {review.service}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {reviews.map((review, index) => {
+                const isExpanded = expandedReviews.has(review.id);
+                const shouldTruncate = review.text.length > 150;
+                
+                return (
+                  <Card
+                    key={review.id}
+                    className="hover-scale animate-fade-in border-2 hover:border-primary/50 transition-all duration-300 bg-card/80 backdrop-blur"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg mb-1 flex items-center gap-2">
+                            {review.name}
+                            <Icon name="BadgeCheck" size={16} className="text-primary" />
+                          </CardTitle>
+                        </div>
+                      </div>
+                      <div className="flex gap-0.5 bg-yellow-500/10 p-1.5 rounded-lg">
+                        {[...Array(5)].map((_, i) => (
+                          <Icon
+                            key={i}
+                            name="Star"
+                            size={14}
+                            className={i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-muted-foreground'}
+                          />
+                        ))}
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="relative">
+                        <Icon name="Quote" size={24} className="absolute -top-1 -left-1 text-primary/20" />
+                        <p className="text-muted-foreground text-sm leading-relaxed pl-5">
+                          {isExpanded || !shouldTruncate ? review.text : truncateText(review.text)}
+                        </p>
+                        {shouldTruncate && (
+                          <button
+                            onClick={() => toggleReviewExpansion(review.id)}
+                            className="text-primary text-sm font-medium mt-2 hover:underline inline-flex items-center gap-1"
+                          >
+                            {isExpanded ? (
+                              <>
+                                Свернуть
+                                <Icon name="ChevronUp" size={14} />
+                              </>
+                            ) : (
+                              <>
+                                Ещё
+                                <Icon name="ChevronDown" size={14} />
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
+                        <Icon name="Calendar" size={12} />
+                        <span>{review.date}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
               </div>
               <div className="text-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
                 <Link to="/reviews">
