@@ -291,7 +291,7 @@ const BlogPostPage = () => {
         <div className="absolute inset-0 bg-black/60"></div>
         <div className="container mx-auto px-4 h-full flex items-center relative">
           <div className="max-w-4xl">
-            <Link to="/" className="inline-flex items-center text-white/80 hover:text-white transition-colors my-[5px]">
+            <Link to="/" className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors">
               <Icon name="ArrowLeft" className="mr-2" size={18} />
               Вернуться на главную
             </Link>
