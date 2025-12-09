@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +20,7 @@ interface Review {
 }
 
 const ReviewsPage = () => {
+  const navigate = useNavigate();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +61,15 @@ const ReviewsPage = () => {
 
       <section className="py-12 md:py-20 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
+          <div className="mb-8 animate-fade-in">
+            <button 
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Icon name="ArrowLeft" className="mr-2" size={18} />
+              Назад
+            </button>
+          </div>
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Отзывы клиентов</Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Что говорят о нас</h1>
