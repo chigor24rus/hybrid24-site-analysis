@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,7 +24,7 @@ interface BlogPost {
   };
 }
 
-const blogPosts: BlogPost[] = [
+const fallbackPosts: BlogPost[] = [
   {
     id: 1,
     title: 'Как подготовить автомобиль к зиме',
@@ -229,7 +230,40 @@ const blogPosts: BlogPost[] = [
 
 const BlogPostPage = () => {
   const { id } = useParams<{ id: string }>();
-  const post = blogPosts.find(p => p.id === Number(id));
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const response = await fetch(`https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a?id=${id}`);
+        const data = await response.json();
+        
+        if (response.ok && data.post) {
+          setPost(data.post);
+        } else {
+          const fallback = fallbackPosts.find(p => p.id === Number(id));
+          setPost(fallback || null);
+        }
+      } catch (error) {
+        console.error('Error fetching post:', error);
+        const fallback = fallbackPosts.find(p => p.id === Number(id));
+        setPost(fallback || null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Icon name="Loader" className="animate-spin" size={48} />
+      </div>
+    );
+  }
 
   if (!post) {
     return (

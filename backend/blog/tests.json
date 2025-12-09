@@ -1,0 +1,44 @@
+{
+  "tests": [
+    {
+      "name": "Get all blog posts",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "posts": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create blog post",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "title": "Тестовая статья",
+        "excerpt": "Краткое описание",
+        "category": "Тест",
+        "icon": "FileText",
+        "image": "https://example.com/image.jpg",
+        "date": "1 декабря 2025",
+        "readTime": "3 мин",
+        "content": {
+          "intro": "Введение",
+          "sections": [
+            {
+              "title": "Раздел 1",
+              "text": "Текст раздела"
+            }
+          ],
+          "conclusion": "Заключение"
+        }
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

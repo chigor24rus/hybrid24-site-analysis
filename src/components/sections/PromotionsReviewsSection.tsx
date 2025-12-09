@@ -47,35 +47,15 @@ interface Review {
   service: string;
 }
 
-const blogPosts = [
-  {
-    id: 1,
-    title: 'Как подготовить автомобиль к зиме',
-    excerpt: 'Полный чек-лист подготовки авто к холодному сезону: от проверки аккумулятора до выбора незамерзайки',
-    date: '20 ноября 2025',
-    readTime: '5 мин',
-    category: 'Советы',
-    icon: 'Snowflake'
-  },
-  {
-    id: 2,
-    title: '5 признаков проблем с подвеской',
-    excerpt: 'Узнайте, какие симптомы указывают на необходимость срочного ремонта ходовой части',
-    date: '15 ноября 2025',
-    readTime: '4 мин',
-    category: 'Диагностика',
-    icon: 'AlertTriangle'
-  },
-  {
-    id: 3,
-    title: 'Когда менять моторное масло',
-    excerpt: 'Развенчиваем мифы о замене масла и рассказываем о реальных сроках',
-    date: '10 ноября 2025',
-    readTime: '6 мин',
-    category: 'Обслуживание',
-    icon: 'Droplet'
-  }
-];
+interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  icon: string;
+  date: string;
+  readTime: string;
+}
 
 interface PromotionsReviewsSectionProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -84,6 +64,8 @@ interface PromotionsReviewsSectionProps {
 const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [loadingBlog, setLoadingBlog] = useState(true);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -104,7 +86,26 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       }
     };
 
+    const fetchBlogPosts = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a');
+        const data = await response.json();
+        
+        if (response.ok && data.posts && data.posts.length > 0) {
+          setBlogPosts(data.posts.slice(0, 3));
+        } else {
+          setBlogPosts([]);
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+        setBlogPosts([]);
+      } finally {
+        setLoadingBlog(false);
+      }
+    };
+
     fetchReviews();
+    fetchBlogPosts();
   }, []);
 
   return (
@@ -216,6 +217,16 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Полезный блог</h2>
             <p className="text-muted-foreground text-base md:text-lg">Статьи и советы по обслуживанию автомобиля</p>
           </div>
+          {loadingBlog ? (
+            <div className="text-center py-12">
+              <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+            </div>
+          ) : blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <Icon name="FileText" className="mx-auto mb-4 text-muted-foreground" size={48} />
+              <p className="text-muted-foreground">Статей пока нет</p>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {blogPosts.map((post, index) => (
               <Link key={post.id} to={`/blog/${post.id}`}>
@@ -251,6 +262,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
               </Link>
             ))}
           </div>
+          )}
         </div>
       </section>
     </>

@@ -168,6 +168,10 @@ const AdminPage = () => {
               <Icon name="MessageSquare" className="mr-2" size={18} />
               Отзывы
             </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/blog')}>
+              <Icon name="FileText" className="mr-2" size={18} />
+              Блог
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/settings')}>
               <Icon name="Settings" className="mr-2" size={18} />
               Настройки
