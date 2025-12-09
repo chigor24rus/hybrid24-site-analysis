@@ -53,6 +53,7 @@ interface BlogPost {
   excerpt: string;
   category: string;
   icon: string;
+  image: string;
   date: string;
   readTime: string;
 }
@@ -66,6 +67,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(true);
+  const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -88,11 +90,18 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
 
     const fetchBlogPosts = async () => {
       try {
+        const loadedCounts = localStorage.getItem('blogViewCounts');
+        const counts: Record<number, number> = loadedCounts ? JSON.parse(loadedCounts) : {};
+        setViewCounts(counts);
+
         const response = await fetch('https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a');
         const data = await response.json();
         
         if (response.ok && data.posts && data.posts.length > 0) {
-          setBlogPosts(data.posts.slice(0, 3));
+          const sortedPosts = [...data.posts].sort((a, b) => {
+            return (counts[b.id] || 0) - (counts[a.id] || 0);
+          });
+          setBlogPosts(sortedPosts.slice(0, 3));
         } else {
           setBlogPosts([]);
         }
@@ -221,11 +230,12 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
             <Link to="/blog" className="group inline-block">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
-                Полезный блог
+                <Icon name="Flame" size={40} className="text-orange-500" />
+                Популярное
                 <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
               </h2>
             </Link>
-            <p className="text-muted-foreground text-base md:text-lg">Статьи и советы по обслуживанию автомобиля</p>
+            <p className="text-muted-foreground text-base md:text-lg">Самые читаемые статьи нашего блога</p>
           </div>
           {loadingBlog ? (
             <div className="text-center py-12">
@@ -244,29 +254,47 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
                   className="hover-scale cursor-pointer animate-fade-in h-full"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <CardHeader>
-                    <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                      <Icon name={post.icon as any} size={24} className="text-white" />
+                  <div 
+                    className="h-48 bg-cover bg-center rounded-t-lg relative"
+                    style={{ backgroundImage: `url(${post.image})` }}
+                  >
+                    <div className="h-full bg-gradient-to-b from-transparent to-black/60 rounded-t-lg flex items-end p-4">
+                      <Badge className="gradient-accent">{post.category}</Badge>
                     </div>
-                    <Badge variant="outline" className="w-fit mb-2">{post.category}</Badge>
-                    <CardTitle className="text-xl leading-tight">{post.title}</CardTitle>
+                    <Badge className="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white border-0">
+                      <Icon name="Flame" size={14} className="mr-1" />
+                      #{index + 1}
+                    </Badge>
+                  </div>
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Icon name={post.icon as any} size={20} className="text-primary" />
+                      <span className="text-sm text-muted-foreground">{post.date}</span>
+                    </div>
+                    <CardTitle className="text-xl line-clamp-2">{post.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground mb-4">{post.excerpt}</p>
+                    <CardDescription className="line-clamp-3 mb-4">
+                      {post.excerpt}
+                    </CardDescription>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Icon name="Calendar" size={14} />
-                        <span>{post.date}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <Icon name="Clock" size={14} />
+                          <span>{post.readTime}</span>
+                        </div>
+                        {viewCounts[post.id] > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Icon name="Eye" size={14} />
+                            <span>{viewCounts[post.id]}</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Icon name="Clock" size={14} />
-                        <span>{post.readTime}</span>
+                      <div className="flex items-center gap-1 text-primary">
+                        <span>Читать</span>
+                        <Icon name="ArrowRight" size={14} />
                       </div>
                     </div>
-                    <Button variant="outline" className="w-full mt-4">
-                      Читать далее
-                      <Icon name="ArrowRight" className="ml-2" size={16} />
-                    </Button>
                   </CardContent>
                 </Card>
               </Link>
