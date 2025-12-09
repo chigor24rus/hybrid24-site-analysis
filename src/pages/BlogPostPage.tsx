@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import ScrollToTopButton from '@/components/ScrollToTopButton';
 
 interface BlogPost {
   id: number;
@@ -360,7 +361,20 @@ const BlogPostPage = () => {
             </Link>
           </Button>
         </div>
+
+        <div className="text-center mt-12 animate-fade-in">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => navigate(-1)}
+            className="group"
+          >
+            <Icon name="ArrowLeft" size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+            Назад
+          </Button>
+        </div>
       </article>
+      <ScrollToTopButton />
     </div>
   );
 };
