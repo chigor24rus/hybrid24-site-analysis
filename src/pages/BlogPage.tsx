@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +23,7 @@ interface BlogPost {
 }
 
 const BlogPage = () => {
+  const navigate = useNavigate();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -283,6 +284,18 @@ const BlogPage = () => {
                     </Button>
                   </CardContent>
                 </Card>
+              </div>
+
+              <div className="text-center mt-16 animate-fade-in">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => navigate(-1)}
+                  className="group"
+                >
+                  <Icon name="ArrowLeft" size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+                  Назад
+                </Button>
               </div>
             </>
           )}

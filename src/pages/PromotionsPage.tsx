@@ -187,6 +187,18 @@ const PromotionsPage = () => {
               </CardContent>
             </Card>
           </div>
+
+          <div className="text-center mt-12 animate-fade-in">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => navigate(-1)}
+              className="group"
+            >
+              <Icon name="ArrowLeft" size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              Назад
+            </Button>
+          </div>
         </div>
       </section>
 
