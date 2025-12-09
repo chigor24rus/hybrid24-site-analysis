@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import PromotionsPage from "./pages/PromotionsPage";
 import BrandPage from "./pages/BrandPage";
 import BrandsPage from "./pages/BrandsPage";
+import BlogPostPage from "./pages/BlogPostPage";
 import AdminPage from "./pages/AdminPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDataPage from "./pages/AdminDataPage";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/promotions" element={<PromotionsPage />} />
           <Route path="/brands" element={<BrandsPage />} />
           <Route path="/brand/:brandId" element={<BrandPage />} />
+          <Route path="/blog/:id" element={<BlogPostPage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/data" element={<AdminDataPage />} />

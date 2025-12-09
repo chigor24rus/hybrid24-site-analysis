@@ -218,36 +218,37 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {blogPosts.map((post, index) => (
-              <Card
-                key={post.id}
-                className="hover-scale cursor-pointer animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={post.icon as any} size={24} className="text-white" />
-                  </div>
-                  <Badge variant="outline" className="w-fit mb-2">{post.category}</Badge>
-                  <CardTitle className="text-xl leading-tight">{post.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4">{post.excerpt}</p>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Icon name="Calendar" size={14} />
-                      <span>{post.date}</span>
+              <Link key={post.id} to={`/blog/${post.id}`}>
+                <Card
+                  className="hover-scale cursor-pointer animate-fade-in h-full"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                      <Icon name={post.icon as any} size={24} className="text-white" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Icon name="Clock" size={14} />
-                      <span>{post.readTime}</span>
+                    <Badge variant="outline" className="w-fit mb-2">{post.category}</Badge>
+                    <CardTitle className="text-xl leading-tight">{post.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4">{post.excerpt}</p>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Icon name="Calendar" size={14} />
+                        <span>{post.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Icon name="Clock" size={14} />
+                        <span>{post.readTime}</span>
+                      </div>
                     </div>
-                  </div>
-                  <Button variant="outline" className="w-full mt-4">
-                    Читать далее
-                    <Icon name="ArrowRight" className="ml-2" size={16} />
-                  </Button>
-                </CardContent>
-              </Card>
+                    <Button variant="outline" className="w-full mt-4">
+                      Читать далее
+                      <Icon name="ArrowRight" className="ml-2" size={16} />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </div>
