@@ -140,21 +140,38 @@ const AdminBlogPage = () => {
     }
   };
 
-  const handleEdit = (post: BlogPost) => {
-    setEditingPost(post);
-    setFormData({
-      title: post.title,
-      excerpt: post.excerpt,
-      category: post.category,
-      icon: post.icon,
-      image: post.image,
-      date: post.date,
-      readTime: post.readTime,
-      intro: post.content.intro,
-      sections: post.content.sections,
-      conclusion: post.content.conclusion
-    });
-    setDialogOpen(true);
+  const handleEdit = async (post: BlogPost) => {
+    // Загружаем полные данные статьи
+    try {
+      const response = await fetch(`https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a?id=${post.id}`);
+      const data = await response.json();
+      
+      if (!response.ok || !data.post) {
+        throw new Error('Не удалось загрузить статью');
+      }
+      
+      const fullPost = data.post;
+      setEditingPost(fullPost);
+      setFormData({
+        title: fullPost.title,
+        excerpt: fullPost.excerpt,
+        category: fullPost.category,
+        icon: fullPost.icon,
+        image: fullPost.image,
+        date: fullPost.date,
+        readTime: fullPost.readTime,
+        intro: fullPost.content.intro,
+        sections: fullPost.content.sections,
+        conclusion: fullPost.content.conclusion
+      });
+      setDialogOpen(true);
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось загрузить данные статьи',
+        variant: 'destructive'
+      });
+    }
   };
 
   const resetForm = () => {
