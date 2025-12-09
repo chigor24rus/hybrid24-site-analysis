@@ -23,6 +23,7 @@ const AdminReviewsPage = () => {
   const { toast } = useToast();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [formData, setFormData] = useState({
@@ -173,6 +174,39 @@ const AdminReviewsPage = () => {
     });
   };
 
+  const handleSyncDgis = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/25254b30-6bfe-4a37-aa27-58095863d1df', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast({
+          title: "Успешно",
+          description: `Синхронизировано: ${data.added} новых, ${data.updated} обновлено`,
+        });
+        fetchReviews();
+      } else {
+        toast({
+          title: "Ошибка",
+          description: data.error || data.message || 'Не удалось синхронизировать отзывы',
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось синхронизировать отзывы с 2ГИС",
+        variant: "destructive",
+      });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -190,6 +224,18 @@ const AdminReviewsPage = () => {
             <p className="text-muted-foreground">Добавляйте и редактируйте отзывы клиентов</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleSyncDgis}
+              disabled={syncing}
+            >
+              {syncing ? (
+                <Icon name="Loader" className="mr-2 animate-spin" size={18} />
+              ) : (
+                <Icon name="RefreshCw" className="mr-2" size={18} />
+              )}
+              Синхронизация с 2ГИС
+            </Button>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={() => handleDialogClose()}>
