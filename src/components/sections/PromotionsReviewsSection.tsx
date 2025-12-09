@@ -164,7 +164,12 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       <section id="reviews" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Отзывы клиентов</h2>
+            <Link to="/reviews" className="group inline-block">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
+                Отзывы клиентов
+                <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
+              </h2>
+            </Link>
             <p className="text-muted-foreground text-base md:text-lg">Что говорят о нас наши клиенты</p>
           </div>
           {loadingReviews ? (
@@ -214,7 +219,12 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       <section id="blog" className="py-12 md:py-16 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Полезный блог</h2>
+            <Link to="/blog" className="group inline-block">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
+                Полезный блог
+                <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
+              </h2>
+            </Link>
             <p className="text-muted-foreground text-base md:text-lg">Статьи и советы по обслуживанию автомобиля</p>
           </div>
           {loadingBlog ? (
