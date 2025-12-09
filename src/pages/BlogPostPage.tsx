@@ -317,13 +317,13 @@ const BlogPostPage = () => {
         <img 
           src={post.image} 
           alt={post.title}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover z-0"
           onError={(e) => {
             e.currentTarget.style.display = 'none';
           }}
         />
-        <div className="absolute inset-0 bg-black/60"></div>
-        <div className="container mx-auto px-4 h-full flex items-center relative">
+        <div className="absolute inset-0 bg-black/60 z-10"></div>
+        <div className="container mx-auto px-4 h-full flex items-center relative z-20">
           <div className="max-w-4xl">
             <div className="mb-6">
               <button 
