@@ -1,4 +1,5 @@
 {
+  "get-promotions": "https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d",
   "get-promotions-admin": "https://functions.poehali.dev/0a5a5f24-24e2-4ab9-9cd1-b55adbc62b49",
   "update-promotion-admin": "https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45",
   "delete-promotion-admin": "https://functions.poehali.dev/4a0720cb-4906-457f-8860-4f6196d93031",

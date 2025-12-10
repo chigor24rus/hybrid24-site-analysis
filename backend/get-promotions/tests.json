@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get active promotions",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "promotions": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

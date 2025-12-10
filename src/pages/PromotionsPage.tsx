@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,77 +13,38 @@ import ShareButton from '@/components/ShareButton';
 import PromotionSubscribe from '@/components/PromotionSubscribe';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 
-const promotions = [
-  {
-    id: 1,
-    title: 'Сезонное ТО',
-    description: 'Комплексная диагностика + замена масла со скидкой 25%',
-    discount: '-25%',
-    oldPrice: '6 000 ₽',
-    newPrice: '4 500 ₽',
-    validUntil: 'December 31, 2025 23:59:59',
-    icon: 'Percent',
-    details: 'Включает проверку всех систем автомобиля, замену масла и масляного фильтра, диагностику ходовой части'
-  },
-  {
-    id: 2,
-    title: 'Шиномонтаж 4+1',
-    description: 'При покупке 4 шин — шиномонтаж в подарок',
-    discount: 'Подарок',
-    oldPrice: '8 000 ₽',
-    newPrice: '6 000 ₽',
-    validUntil: 'January 15, 2026 23:59:59',
-    icon: 'Gift',
-    details: 'Покупайте 4 шины и получите бесплатный шиномонтаж, балансировку и утилизацию старых шин'
-  },
-  {
-    id: 3,
-    title: 'Первое посещение',
-    description: 'Скидка 15% на любые услуги для новых клиентов',
-    discount: '-15%',
-    oldPrice: '',
-    newPrice: 'На все',
-    validUntil: 'Постоянно',
-    icon: 'Sparkles',
-    details: 'Скидка действует на все виды услуг при первом визите в наш автосервис'
-  },
-  {
-    id: 4,
-    title: 'Диагностика в подарок',
-    description: 'Бесплатная комплексная диагностика при ремонте',
-    discount: 'Бесплатно',
-    oldPrice: '2 000 ₽',
-    newPrice: '0 ₽',
-    validUntil: 'March 31, 2026 23:59:59',
-    icon: 'Search',
-    details: 'При выполнении любого ремонта стоимостью от 5000 рублей — компьютерная диагностика бесплатно'
-  },
-  {
-    id: 5,
-    title: 'Замена тормозных колодок',
-    description: 'Комплект колодок + работа со скидкой 20%',
-    discount: '-20%',
-    oldPrice: '12 000 ₽',
-    newPrice: '9 600 ₽',
-    validUntil: 'February 28, 2026 23:59:59',
-    icon: 'Disc',
-    details: 'Замена передних или задних тормозных колодок с проверкой тормозной системы'
-  },
-  {
-    id: 6,
-    title: 'Кондиционер — чистка + заправка',
-    description: 'Полное обслуживание системы кондиционирования',
-    discount: '-30%',
-    oldPrice: '7 000 ₽',
-    newPrice: '4 900 ₽',
-    validUntil: 'April 30, 2026 23:59:59',
-    icon: 'Wind',
-    details: 'Антибактериальная обработка, заправка хладагентом, проверка герметичности системы'
-  }
-];
+interface Promotion {
+  id: number;
+  title: string;
+  description: string;
+  discount: string;
+  oldPrice: string;
+  newPrice: string;
+  validUntil: string;
+  icon: string;
+  details: string;
+}
 
 const PromotionsPage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d');
+        const data = await response.json();
+        setPromotions(data.promotions || []);
+      } catch (error) {
+        console.error('Error fetching promotions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPromotions();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -103,8 +64,18 @@ const PromotionsPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {promotions.map((promo, index) => (
+          {loading ? (
+            <div className="text-center py-12">
+              <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+            </div>
+          ) : promotions.length === 0 ? (
+            <div className="text-center py-12">
+              <Icon name="Tag" className="mx-auto mb-4 text-muted-foreground" size={48} />
+              <p className="text-muted-foreground">Акций пока нет</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              {promotions.map((promo, index) => (
               <Card
                 key={promo.id}
                 className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
@@ -143,40 +114,45 @@ const PromotionsPage = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
-          <div className="mt-16 animate-fade-in">
-            <PromotionSubscribe />
-          </div>
+          {!loading && promotions.length > 0 && (
+            <>
+              <div className="mt-16 animate-fade-in">
+                <PromotionSubscribe />
+              </div>
 
-          <div className="mt-12 text-center animate-fade-in">
-            <Card className="max-w-3xl mx-auto">
-              <CardHeader>
-                <CardTitle className="text-2xl">Условия акций</CardTitle>
-              </CardHeader>
-              <CardContent className="text-left">
-                <ul className="space-y-2 text-muted-foreground">
-                  <li className="flex gap-2">
-                    <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                    <span>Акции не суммируются с другими скидками и спецпредложениями</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                    <span>Для получения скидки необходимо записаться заранее</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                    <span>Подробности акций уточняйте у администратора</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
-                    <span>Компания оставляет за собой право изменять условия акций</span>
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
+              <div className="mt-12 text-center animate-fade-in">
+                <Card className="max-w-3xl mx-auto">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">Условия акций</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-left">
+                    <ul className="space-y-2 text-muted-foreground">
+                      <li className="flex gap-2">
+                        <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                        <span>Акции не суммируются с другими скидками и спецпредложениями</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                        <span>Для получения скидки необходимо записаться заранее</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                        <span>Подробности акций уточняйте у администратора</span>
+                      </li>
+                      <li className="flex gap-2">
+                        <Icon name="Check" size={20} className="text-primary flex-shrink-0 mt-0.5" />
+                        <span>Компания оставляет за собой право изменять условия акций</span>
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
