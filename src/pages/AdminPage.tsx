@@ -172,6 +172,10 @@ const AdminPage = () => {
               <Icon name="FileText" className="mr-2" size={18} />
               Блог
             </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/promotions')}>
+              <Icon name="Percent" className="mr-2" size={18} />
+              Акции
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/settings')}>
               <Icon name="Settings" className="mr-2" size={18} />
               Настройки

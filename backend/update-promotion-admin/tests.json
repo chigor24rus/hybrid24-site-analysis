@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "Update promotion",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "id": 1,
+        "title": "Updated Promotion",
+        "description": "Updated description",
+        "discount": "-30%",
+        "old_price": "6000",
+        "new_price": "4200",
+        "valid_until": "January 31, 2026",
+        "icon": "Gift",
+        "details": "Updated details",
+        "is_active": true
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

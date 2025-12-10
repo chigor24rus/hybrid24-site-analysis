@@ -1,0 +1,26 @@
+{
+  "tests": [
+    {
+      "name": "Create promotion",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "title": "Test Promotion",
+        "description": "Test description",
+        "discount": "-20%",
+        "old_price": "5000",
+        "new_price": "4000",
+        "valid_until": "December 31, 2025",
+        "icon": "Percent",
+        "details": "Test details",
+        "is_active": true
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "id": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

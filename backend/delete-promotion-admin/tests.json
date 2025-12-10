@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Delete promotion",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "id": 999
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
