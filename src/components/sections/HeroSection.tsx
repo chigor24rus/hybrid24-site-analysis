@@ -11,7 +11,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
     <section 
       className="py-12 md:py-20 lg:py-32 relative hero-banner overflow-hidden"
       style={{
-        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/80958631-e1ce-4f4d-8a0a-6f197113c65c.jpg)',
+        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/8f88128c-89e3-4390-a470-b7b88d61c6e2.jpg)',
         backgroundSize: '80%, 50%, 45%',
         backgroundPosition: 'right bottom, right center, right center',
         backgroundRepeat: 'no-repeat',
