@@ -9,10 +9,10 @@ interface HeroSectionProps {
 const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
   return (
     <section 
-      className="py-12 md:py-20 lg:py-32 bg-no-repeat bg-right relative hero-banner"
+      className="py-12 md:py-20 lg:py-32 bg-no-repeat relative hero-banner overflow-hidden"
       style={{
-        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/b9365926-3170-4181-9cb3-293a2413a590.jpg)',
-        backgroundSize: 'contain',
+        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/91b30cbc-eb0b-486e-a471-25f7dd05e6bf.jpg)',
+        backgroundSize: '45%',
         backgroundPosition: 'right center',
       }}
     >
