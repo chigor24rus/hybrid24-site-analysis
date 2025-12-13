@@ -18,7 +18,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
           backgroundRepeat: 'no-repeat',
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
