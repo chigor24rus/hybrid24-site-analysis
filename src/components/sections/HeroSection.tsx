@@ -11,12 +11,11 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
     <section 
       className="py-12 md:py-20 lg:py-32 bg-no-repeat bg-right relative hero-banner"
       style={{
-        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/f791987f-7ecd-4e39-be0a-8b4f93024462.jpg)',
+        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/6d386a45-6fff-459a-b247-1d692df5e4cc.jpg)',
         backgroundSize: 'contain',
         backgroundPosition: 'right center',
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-r from-white via-white/98 to-white/70 hero-gradient -z-10"></div>
       <div className="container mx-auto px-4 relative">
         <div className="max-w-3xl">
           <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
