@@ -8,31 +8,45 @@ interface HeroSectionProps {
 
 const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
   return (
-    <section className="py-12 md:py-20 lg:py-32 relative overflow-hidden bg-gradient-to-br from-background via-primary/5 to-accent/10">
+    <section className="py-12 md:py-20 lg:py-32 relative overflow-hidden">
+      <div 
+        className="absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/files/2025-12-13_14-12-35.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/70" />
+      
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl">
-          <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
-            Сертифицированная станция
-            <br />
-            технического обслуживания
-          </h1>
-          <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl">
-            Техническое обслуживание и ремонт автомобилей любой сложности. 
-            Опытные мастера, современное оборудование, гарантия качества.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
-            <Button size="lg" className="gradient-primary btn-glow text-base md:text-lg w-full sm:w-auto" onClick={() => setIsBookingOpen(true)}>
-              Записаться онлайн
-              <Icon name="ArrowRight" className="ml-2" size={20} />
-            </Button>
-            <Button size="lg" variant="outline" className="text-base md:text-lg w-full sm:w-auto" asChild>
-              <a href="tel:+79230166750">
-                <Icon name="Phone" className="mr-2" size={20} />
-                +7 (923) 016-67-50
-              </a>
-            </Button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div className="max-w-3xl">
+            <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
+              Сертифицированная станция
+              <br />
+              технического обслуживания
+            </h1>
+            <p className="text-base md:text-lg lg:text-xl text-muted-foreground mb-6 md:mb-8 max-w-2xl">
+              Техническое обслуживание и ремонт автомобилей любой сложности. 
+              Опытные мастера, современное оборудование, гарантия качества.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+              <Button size="lg" className="gradient-primary btn-glow text-base md:text-lg w-full sm:w-auto" onClick={() => setIsBookingOpen(true)}>
+                Записаться онлайн
+                <Icon name="ArrowRight" className="ml-2" size={20} />
+              </Button>
+              <Button size="lg" variant="outline" className="text-base md:text-lg w-full sm:w-auto" asChild>
+                <a href="tel:+79230166750">
+                  <Icon name="Phone" className="mr-2" size={20} />
+                  +7 (923) 016-67-50
+                </a>
+              </Button>
+            </div>
           </div>
+          <div className="hidden lg:block" />
         </div>
       </div>
     </section>
