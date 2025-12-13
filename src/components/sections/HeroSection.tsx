@@ -8,36 +8,17 @@ interface HeroSectionProps {
 
 const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
   return (
-    <section 
-      className="py-12 md:py-20 lg:py-32 relative hero-banner overflow-hidden"
-      style={{
-        backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/a581a314-a72e-4485-a9ef-505e0a8ce052.jpg)',
-        backgroundSize: '80%, 50%, 45%',
-        backgroundPosition: 'right bottom, right center, right center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      <style>{`
-        @media (max-width: 640px) {
-          .hero-banner {
-            background-size: 100% !important;
-            background-position: center bottom !important;
-          }
-        }
-        @media (min-width: 641px) and (max-width: 1024px) {
-          .hero-banner {
-            background-size: 55% !important;
-            background-position: right center !important;
-          }
-        }
-        @media (min-width: 1025px) {
-          .hero-banner {
-            background-size: 45% !important;
-            background-position: right center !important;
-          }
-        }
-      `}</style>
-      <div className="container mx-auto px-4 relative">
+    <section className="py-12 md:py-20 lg:py-32 relative hero-banner overflow-hidden">
+      <div 
+        className="absolute inset-0 w-full h-full"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/a581a314-a72e-4485-a9ef-505e0a8ce052.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      />
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl">
           <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight">
