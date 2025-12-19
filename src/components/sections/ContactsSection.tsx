@@ -8,7 +8,7 @@ const ContactsSection = () => {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">Свяжитесь с нами</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             <Card className="hover-scale">
               <CardHeader>
                 <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mx-auto mb-4">
@@ -18,6 +18,19 @@ const ContactsSection = () => {
                 <CardDescription className="text-lg">
                   <a href="tel:+79230166750" className="hover:text-primary transition-colors">
                     +7 (923) 016-67-50
+                  </a>
+                </CardDescription>
+              </CardHeader>
+            </Card>
+            <Card className="hover-scale">
+              <CardHeader>
+                <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mx-auto mb-4">
+                  <Icon name="Mail" size={24} className="text-white" />
+                </div>
+                <CardTitle>Email</CardTitle>
+                <CardDescription className="text-lg">
+                  <a href="mailto:info@hybrids24.ru" className="hover:text-primary transition-colors">
+                    info@hybrids24.ru
                   </a>
                 </CardDescription>
               </CardHeader>
