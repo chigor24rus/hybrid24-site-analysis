@@ -52,18 +52,19 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}
+      role="banner"
     >
       <div className="backdrop-blur-sm bg-white/95">
         <div className="container mx-auto px-3 sm:px-4 py-3 md:py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2 logo-glow">
             <img 
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
-              alt="HEVSR" 
+              alt="HEVSeRvice - Сертифицированная СТО в Красноярске" 
               className="h-10 sm:h-12 md:h-16 w-auto"
             />
           </Link>
 
-          <nav className="hidden lg:flex gap-8 items-center">
+          <nav className="hidden lg:flex gap-8 items-center" role="navigation" aria-label="Основная навигация">
             {navItems.map(item => (
               <a 
                 key={item.href}
@@ -107,7 +108,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                     <Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
                       <img 
                         src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
-                        alt="HEVSR" 
+                        alt="HEVSeRvice" 
                         className="h-10 w-auto"
                       />
                     </Link>

@@ -41,7 +41,11 @@ const ContactsSection = () => {
                   <Icon name="MapPin" size={24} className="text-white" />
                 </div>
                 <CardTitle>Адрес</CardTitle>
-                <CardDescription className="text-lg">Красноярск, ул. Водопьянова, д. 1К</CardDescription>
+                <CardDescription className="text-lg">
+                  <address className="not-italic">
+                    Красноярск, ул. Водопьянова, д. 1К
+                  </address>
+                </CardDescription>
               </CardHeader>
             </Card>
             <Card className="hover-scale">

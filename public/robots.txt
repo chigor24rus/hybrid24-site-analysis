@@ -1,14 +1,15 @@
+User-agent: *
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
 User-agent: Googlebot
 Allow: /
 
 User-agent: Bingbot
 Allow: /
 
-User-agent: Twitterbot
-Allow: /
+Sitemap: https://hybrids24.ru/sitemap.xml
 
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: *
-Allow: /
+Host: hybrids24.ru
