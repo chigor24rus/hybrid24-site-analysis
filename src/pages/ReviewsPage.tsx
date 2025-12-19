@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
 import FloatingCallButton from '@/components/FloatingCallButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
+import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
 
 interface Review {
   id: number | string;
@@ -52,6 +54,12 @@ const ReviewsPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify(generateSchemaMarkup(reviews))}
+        </script>
+      </Helmet>
+      
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>

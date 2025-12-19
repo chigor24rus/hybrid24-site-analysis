@@ -66,6 +66,57 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [reviews, setReviews] = useState<Review[]>([]);
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  
+  useEffect(() => {
+    if (allReviews.length > 0 && typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.id = 'schema-reviews';
+      
+      const reviewsSchema = allReviews.slice(0, 10).map(review => ({
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": review.name
+        },
+        "datePublished": review.date,
+        "reviewBody": review.text,
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": review.rating,
+          "bestRating": "5",
+          "worstRating": "1"
+        }
+      }));
+      
+      script.text = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "AutoRepair",
+        "name": "HEVSeRvice",
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": (allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length).toFixed(1),
+          "reviewCount": allReviews.length,
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "review": reviewsSchema
+      });
+      
+      const existingScript = document.getElementById('schema-reviews');
+      if (existingScript) {
+        existingScript.remove();
+      }
+      document.head.appendChild(script);
+      
+      return () => {
+        const scriptToRemove = document.getElementById('schema-reviews');
+        if (scriptToRemove) {
+          scriptToRemove.remove();
+        }
+      };
+    }
+  }, [allReviews]);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(true);
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
