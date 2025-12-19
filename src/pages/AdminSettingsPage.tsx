@@ -13,6 +13,7 @@ const AdminSettingsPage = () => {
   const { toast } = useToast();
   const [yandexOrgId, setYandexOrgId] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceEndTime, setMaintenanceEndTime] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -41,6 +42,11 @@ const AdminSettingsPage = () => {
     if (savedMaintenanceMode === 'true') {
       setMaintenanceMode(true);
     }
+
+    const savedEndTime = localStorage.getItem('maintenanceEndTime');
+    if (savedEndTime) {
+      setMaintenanceEndTime(savedEndTime);
+    }
   }, [navigate]);
 
   const handleSave = async () => {
@@ -48,6 +54,7 @@ const AdminSettingsPage = () => {
     try {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
       localStorage.setItem('maintenanceMode', maintenanceMode.toString());
+      localStorage.setItem('maintenanceEndTime', maintenanceEndTime);
       
       toast({
         title: "Настройки сохранены",
@@ -120,18 +127,33 @@ const AdminSettingsPage = () => {
             </div>
 
             {maintenanceMode && (
-              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <Icon name="AlertTriangle" className="text-yellow-600 mt-0.5" size={20} />
-                  <div className="text-sm">
-                    <p className="font-semibold text-yellow-800 mb-1">Внимание!</p>
-                    <p className="text-yellow-700">
-                      После сохранения все посетители будут видеть страницу технических работ. 
-                      Доступ к админ-панели сохранится.
-                    </p>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="endTime">Планируемое время окончания (необязательно)</Label>
+                  <Input
+                    id="endTime"
+                    type="datetime-local"
+                    value={maintenanceEndTime}
+                    onChange={(e) => setMaintenanceEndTime(e.target.value)}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Если указать время, посетители увидят, когда планируется завершить работы
+                  </p>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Icon name="AlertTriangle" className="text-yellow-600 mt-0.5" size={20} />
+                    <div className="text-sm">
+                      <p className="font-semibold text-yellow-800 mb-1">Внимание!</p>
+                      <p className="text-yellow-700">
+                        После сохранения все посетители будут видеть страницу технических работ. 
+                        Доступ к админ-панели сохранится.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </CardContent>
         </Card>

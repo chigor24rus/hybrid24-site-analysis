@@ -1,7 +1,28 @@
+import { useEffect, useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 const MaintenancePage = () => {
+  const [endTime, setEndTime] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedEndTime = localStorage.getItem('maintenanceEndTime');
+    if (savedEndTime) {
+      setEndTime(savedEndTime);
+    }
+  }, []);
+
+  const formatEndTime = (datetime: string) => {
+    try {
+      const date = new Date(datetime);
+      return format(date, 'd MMMM в HH:mm', { locale: ru });
+    } catch {
+      return datetime;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
       <div className="max-w-2xl w-full text-center">
@@ -12,7 +33,11 @@ const MaintenancePage = () => {
           </h1>
           <p className="text-lg md:text-xl text-gray-300 mb-6">
             Мы проводим технические работы для улучшения качества обслуживания.<br />
-            Пожалуйста, зайдите позже.
+            {endTime ? (
+              <>Планируемое время окончания: <span className="font-semibold text-yellow-400">{formatEndTime(endTime)}</span></>
+            ) : (
+              <>Пожалуйста, зайдите позже.</>
+            )}
           </p>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-8">
             <p className="text-white mb-4 font-semibold">
