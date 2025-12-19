@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
 
@@ -11,6 +12,7 @@ const AdminSettingsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [yandexOrgId, setYandexOrgId] = useState('');
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -34,21 +36,33 @@ const AdminSettingsPage = () => {
     if (savedOrgId) {
       setYandexOrgId(savedOrgId);
     }
+
+    const savedMaintenanceMode = localStorage.getItem('maintenanceMode');
+    if (savedMaintenanceMode === 'true') {
+      setMaintenanceMode(true);
+    }
   }, [navigate]);
 
   const handleSave = async () => {
     setLoading(true);
     try {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
+      localStorage.setItem('maintenanceMode', maintenanceMode.toString());
       
       toast({
         title: "Настройки сохранены",
-        description: "ID организации успешно обновлён",
+        description: maintenanceMode 
+          ? "Режим обслуживания включен. Посетители увидят страницу технических работ."
+          : "Настройки успешно обновлены",
       });
       
       setTimeout(() => {
-        navigate('/admin');
-      }, 1000);
+        if (maintenanceMode) {
+          window.location.reload();
+        } else {
+          navigate('/admin');
+        }
+      }, 1500);
     } catch (error) {
       console.error('Error saving settings:', error);
       toast({
@@ -77,6 +91,50 @@ const AdminSettingsPage = () => {
             Назад
           </Button>
         </div>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Icon name="Wrench" size={24} />
+              Режим обслуживания
+            </CardTitle>
+            <CardDescription>
+              Временно закройте сайт для технических работ
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+              <div className="space-y-1">
+                <Label htmlFor="maintenance" className="text-base font-semibold cursor-pointer">
+                  Сайт на обслуживании
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  Посетители увидят страницу "Сайт находится на обслуживании"
+                </p>
+              </div>
+              <Switch
+                id="maintenance"
+                checked={maintenanceMode}
+                onCheckedChange={setMaintenanceMode}
+              />
+            </div>
+
+            {maintenanceMode && (
+              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Icon name="AlertTriangle" className="text-yellow-600 mt-0.5" size={20} />
+                  <div className="text-sm">
+                    <p className="font-semibold text-yellow-800 mb-1">Внимание!</p>
+                    <p className="text-yellow-700">
+                      После сохранения все посетители будут видеть страницу технических работ. 
+                      Доступ к админ-панели сохранится.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -118,7 +176,7 @@ const AdminSettingsPage = () => {
 
             <Button
               onClick={handleSave}
-              disabled={loading || !yandexOrgId.trim()}
+              disabled={loading}
               className="w-full"
             >
               {loading ? (
