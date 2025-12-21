@@ -152,7 +152,7 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
     <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Онлайн-запись</DialogTitle>
-        <DialogDescription>Выберите услуги, дату и время визита</DialogDescription>
+        <DialogDescription>Выберите услуги, желаемую дату и время визита</DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
@@ -206,7 +206,7 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Дата визита</Label>
+            <Label>Желаемая дата визита</Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal">
@@ -227,7 +227,7 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label>Время визита</Label>
+            <Label>Желаемое время визита</Label>
             <Select value={time} onValueChange={setTime}>
               <SelectTrigger>
                 <SelectValue placeholder="Выберите время" />
@@ -248,6 +248,13 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="bg-muted/50 p-3 rounded-lg border border-primary/20">
+          <p className="text-sm text-muted-foreground flex items-start gap-2">
+            <Icon name="Info" size={16} className="mt-0.5 flex-shrink-0" />
+            <span>Дата и время записи резервируется только после подтверждения записи обратным звонком мастера-консультанта</span>
+          </p>
         </div>
 
         <div className="space-y-2">
