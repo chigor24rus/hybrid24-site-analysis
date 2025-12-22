@@ -65,10 +65,11 @@ const services = [
 
 interface BookingDialogProps {
   setIsBookingOpen: (open: boolean) => void;
+  initialSelectedServices?: number[];
 }
 
-const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: BookingDialogProps) => {
+  const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
   const [name, setName] = useState('');

@@ -19,6 +19,7 @@ interface Review {
 
 const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
@@ -47,10 +48,10 @@ const Index = () => {
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <BookingDialog setIsBookingOpen={setIsBookingOpen} />
+        <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} />
       </Dialog>
 
-      <Sections setIsBookingOpen={setIsBookingOpen} />
+      <Sections setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
       
       <Footer />
       

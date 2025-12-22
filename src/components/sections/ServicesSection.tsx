@@ -23,9 +23,10 @@ interface Brand {
 
 interface ServicesSectionProps {
   setIsBookingOpen: (open: boolean) => void;
+  setSelectedServices: (services: number[]) => void;
 }
 
-const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
+const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelectedServices }: ServicesSectionProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -71,9 +72,11 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
   }, []);
 
   const toggleService = (id: number) => {
-    setSelectedServices(prev =>
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    );
+    setSelectedServices(prev => {
+      const newServices = prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id];
+      setParentSelectedServices(newServices);
+      return newServices;
+    });
   };
 
   const calculateTotal = () => {
@@ -198,7 +201,10 @@ const ServicesSection = ({ setIsBookingOpen }: ServicesSectionProps) => {
                         </div>
                         <div className="text-xs md:text-sm text-muted-foreground mt-1">Предварительная стоимость</div>
                       </div>
-                      <Button size="lg" className="gradient-primary btn-glow w-full md:w-auto" onClick={() => setIsBookingOpen(true)}>
+                      <Button size="lg" className="gradient-primary btn-glow w-full md:w-auto" onClick={() => {
+                        setParentSelectedServices(selectedServices);
+                        setIsBookingOpen(true);
+                      }}>
                         Записаться на услуги
                         <Icon name="ArrowRight" className="ml-2" size={20} />
                       </Button>
