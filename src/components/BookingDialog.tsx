@@ -79,6 +79,7 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const toggleService = (id: number) => {
     setSelectedServices(prev =>
@@ -101,6 +102,11 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
   const handleBooking = async () => {
     if (!name || !phone) {
       alert('Пожалуйста, укажите ваше имя и телефон');
+      return;
+    }
+
+    if (!agreedToTerms) {
+      alert('Пожалуйста, подтвердите согласие с условиями записи');
       return;
     }
 
@@ -319,6 +325,19 @@ const BookingDialog = ({ setIsBookingOpen }: BookingDialogProps) => {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
           />
+        </div>
+
+        <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-lg border border-border">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={agreedToTerms}
+            onChange={(e) => setAgreedToTerms(e.target.checked)}
+            className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+          />
+          <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer">
+            Я согласен с условиями записи и даю согласие на обработку персональных данных. Понимаю, что запись будет подтверждена обратным звонком мастера-консультанта.
+          </label>
         </div>
 
         {submitSuccess ? (
