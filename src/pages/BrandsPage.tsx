@@ -67,9 +67,13 @@ const BrandsPage = () => {
         <meta property="og:description" content={`Ремонт и обслуживание ${brands.length} популярных марок автомобилей в Красноярске. Профессиональный сервис для вашего авто.`} />
         <meta property="og:site_name" content="HEVSR" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Все бренды автомобилей - HEVSR" />
         <meta name="twitter:description" content={`Обслуживание ${brands.length} популярных марок автомобилей`} />
+        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
       </Helmet>
       <Header />
       <main className="flex-1 py-12 md:py-16">

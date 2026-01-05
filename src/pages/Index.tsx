@@ -50,9 +50,14 @@ const Index = () => {
         <meta property="og:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование. Звоните +7(923)0166750" />
         <meta property="og:site_name" content="HEVSR" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="HEVSR - Профессиональный автосервис в Красноярске" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="HEVSR - Сертифицированная СТО в Красноярске" />
         <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
+        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>

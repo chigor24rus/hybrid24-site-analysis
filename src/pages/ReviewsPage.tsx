@@ -66,9 +66,13 @@ const ReviewsPage = () => {
         <meta property="og:description" content={`${reviews.length} отзывов о нашем автосервисе в Красноярске. Средняя оценка: ${averageRating} из 5.0`} />
         <meta property="og:site_name" content="HEVSR" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Отзывы клиентов - HEVSR" />
         <meta name="twitter:description" content={`${reviews.length} отзывов клиентов. Средняя оценка: ${averageRating}`} />
+        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>

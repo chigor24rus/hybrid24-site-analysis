@@ -105,9 +105,13 @@ const BlogPage = () => {
         <meta property="og:description" content="Полезные статьи о ремонте, обслуживании и эксплуатации автомобилей. Советы экспертов автосервиса в Красноярске." />
         <meta property="og:site_name" content="HEVSR" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Блог автосервиса - HEVSR" />
         <meta name="twitter:description" content="Полезные статьи о ремонте и обслуживании автомобилей." />
+        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
       </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       

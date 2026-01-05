@@ -61,9 +61,13 @@ const PromotionsPage = () => {
         <meta property="og:description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске. Скидки до 50% на диагностику, ТО и другие услуги." />
         <meta property="og:site_name" content="HEVSR" />
         <meta property="og:locale" content="ru_RU" />
+        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Акции и специальные предложения - HEVSR" />
         <meta name="twitter:description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске." />
+        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
       </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
