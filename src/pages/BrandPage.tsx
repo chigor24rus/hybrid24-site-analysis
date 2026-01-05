@@ -110,6 +110,7 @@ export default function BrandPage() {
         <meta property="og:description" content={brand.description} />
         <meta property="og:image" content={brand.logo} />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`Ремонт и обслуживание ${brand.name}`} />
         <meta name="twitter:description" content={brand.description} />

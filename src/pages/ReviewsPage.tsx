@@ -65,6 +65,7 @@ const ReviewsPage = () => {
         <meta property="og:title" content="Отзывы клиентов - HEVSR" />
         <meta property="og:description" content={`${reviews.length} отзывов о нашем автосервисе в Красноярске. Средняя оценка: ${averageRating} из 5.0`} />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Отзывы клиентов - HEVSR" />
         <meta name="twitter:description" content={`${reviews.length} отзывов клиентов. Средняя оценка: ${averageRating}`} />

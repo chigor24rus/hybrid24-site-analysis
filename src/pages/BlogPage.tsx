@@ -104,6 +104,7 @@ const BlogPage = () => {
         <meta property="og:title" content="Блог автосервиса - HEVSR" />
         <meta property="og:description" content="Полезные статьи о ремонте, обслуживании и эксплуатации автомобилей. Советы экспертов автосервиса в Красноярске." />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Блог автосервиса - HEVSR" />
         <meta name="twitter:description" content="Полезные статьи о ремонте и обслуживании автомобилей." />

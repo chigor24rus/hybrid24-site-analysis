@@ -66,6 +66,7 @@ const BrandsPage = () => {
         <meta property="og:title" content="Все бренды автомобилей - HEVSR" />
         <meta property="og:description" content={`Ремонт и обслуживание ${brands.length} популярных марок автомобилей в Красноярске. Профессиональный сервис для вашего авто.`} />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Все бренды автомобилей - HEVSR" />
         <meta name="twitter:description" content={`Обслуживание ${brands.length} популярных марок автомобилей`} />

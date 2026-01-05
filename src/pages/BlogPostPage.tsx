@@ -321,6 +321,7 @@ const BlogPostPage = () => {
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:image" content={post.image} />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta property="article:published_time" content={post.date} />
         <meta property="article:section" content={post.category} />
         <meta name="twitter:card" content="summary_large_image" />

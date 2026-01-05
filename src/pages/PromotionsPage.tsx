@@ -60,6 +60,7 @@ const PromotionsPage = () => {
         <meta property="og:title" content="Акции и специальные предложения - HEVSR" />
         <meta property="og:description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске. Скидки до 50% на диагностику, ТО и другие услуги." />
         <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:locale" content="ru_RU" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Акции и специальные предложения - HEVSR" />
         <meta name="twitter:description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске." />
