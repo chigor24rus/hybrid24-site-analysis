@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +25,7 @@ interface BlogPost {
 }
 
 const BlogPage = () => {
+  const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +33,7 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'date' | 'popular'>('date');
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
+  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -93,6 +96,9 @@ const BlogPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>

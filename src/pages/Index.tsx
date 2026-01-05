@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Helmet } from 'react-helmet';
+import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Sections from '@/components/Sections';
@@ -18,9 +19,11 @@ interface Review {
 }
 
 const Index = () => {
+  const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -40,6 +43,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
+        <link rel="canonical" href={canonicalUrl} />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { Helmet } from 'react-helmet';
+import { useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +28,11 @@ interface Promotion {
 }
 
 const PromotionsPage = () => {
+  const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
+  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchPromotions = async () => {
@@ -48,6 +52,9 @@ const PromotionsPage = () => {
 
   return (
     <div className="min-h-screen">
+      <Helmet>
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>

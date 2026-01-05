@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
@@ -15,9 +16,11 @@ interface Brand {
 }
 
 const BrandsPage = () => {
+  const location = useLocation();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -55,6 +58,9 @@ const BrandsPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <Header />
       <main className="flex-1 py-12 md:py-16">
         <div className="container mx-auto px-4">

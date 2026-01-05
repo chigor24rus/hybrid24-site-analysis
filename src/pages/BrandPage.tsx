@@ -1,5 +1,6 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,11 +36,13 @@ const defaultFeatures = [
 
 export default function BrandPage() {
   const { brandId } = useParams<{ brandId: string }>();
+  const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [brand, setBrand] = useState<Brand | null>(null);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchBrandData = async () => {
@@ -98,6 +101,9 @@ export default function BrandPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <Helmet>
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
       <Header setIsBookingOpen={setIsBookingOpen} />
       
       <section className="py-12 md:py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
