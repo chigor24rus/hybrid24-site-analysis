@@ -168,7 +168,7 @@ const ReviewsPage = () => {
               <div className="mt-16 text-center animate-fade-in">
                 <Card className="max-w-3xl mx-auto bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Хотите оставить отзыв?</CardTitle>
+                    <h2 className="text-2xl font-bold">Хотите оставить отзыв?</h2>
                     <CardDescription className="text-base">
                       Мы ценим мнение каждого клиента и постоянно работаем над улучшением качества обслуживания
                     </CardDescription>

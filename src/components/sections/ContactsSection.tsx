@@ -62,7 +62,7 @@ const ContactsSection = () => {
           <div className="mt-12">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl mb-4">Как нас найти</CardTitle>
+                <h3 className="text-2xl font-bold mb-4">Как нас найти</h3>
                 <div className="w-full h-[400px] rounded-lg overflow-hidden mb-4">
                   <iframe
                     src="https://yandex.ru/map-widget/v1/?um=constructor%3AjsXu7wrLoyMO2NDQwrUe7coyNJgd4u6z&amp;source=constructor"

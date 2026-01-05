@@ -142,7 +142,7 @@ const PromotionsPage = () => {
               <div className="mt-12 text-center animate-fade-in">
                 <Card className="max-w-3xl mx-auto">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Условия акций</CardTitle>
+                    <h2 className="text-2xl font-bold">Условия акций</h2>
                   </CardHeader>
                   <CardContent className="text-left">
                     <ul className="space-y-2 text-muted-foreground">
