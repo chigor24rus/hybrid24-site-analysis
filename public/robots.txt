@@ -11,5 +11,3 @@ User-agent: Bingbot
 Allow: /
 
 Sitemap: https://hevsr.ru/sitemap.xml
-
-Host: hevsr.ru
