@@ -24,6 +24,12 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
     { href: '#contacts', label: 'Контакты', isSection: true }
   ];
 
+  const mobileExtraItems = [
+    { href: '/bonus-program', label: 'Бонусная программа', isSection: false },
+    { href: '/warranty', label: 'Гарантия', isSection: false },
+    { href: '/legal', label: 'Правовая информация', isSection: false }
+  ];
+
   const handleNavClick = (e: React.MouseEvent, href: string, isSection: boolean) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
@@ -125,6 +131,21 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                       {item.label}
                     </a>
                   ))}
+                  
+                  <div className="border-t border-border my-2 pt-4">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Информация</p>
+                    {mobileExtraItems.map(item => (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href, item.isSection)}
+                        className="text-sm hover:text-primary transition-colors py-2 block"
+                      >
+                        {item.label}
+                      </a>
+                    ))}
+                  </div>
+                  
                   <Button 
                     className="gradient-primary btn-glow w-full mt-4" 
                     onClick={() => {
