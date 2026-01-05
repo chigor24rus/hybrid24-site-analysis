@@ -10,6 +10,7 @@ import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
 import FloatingCallButton from '@/components/FloatingCallButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
+import BlogShareButton from '@/components/BlogShareButton';
 
 interface BlogPost {
   id: number;
@@ -354,15 +355,18 @@ const BlogPostPage = () => {
             </div>
             <Badge className="mb-4">{post.category}</Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{post.title}</h1>
-            <div className="flex items-center gap-4 text-white/80">
-              <span className="flex items-center gap-2">
-                <Icon name="Calendar" size={16} />
-                {post.date}
-              </span>
-              <span className="flex items-center gap-2">
-                <Icon name="Clock" size={16} />
-                {post.readTime}
-              </span>
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-4 text-white/80">
+                <span className="flex items-center gap-2">
+                  <Icon name="Calendar" size={16} />
+                  {post.date}
+                </span>
+                <span className="flex items-center gap-2">
+                  <Icon name="Clock" size={16} />
+                  {post.readTime}
+                </span>
+              </div>
+              <BlogShareButton title={post.title} excerpt={post.excerpt} />
             </div>
           </div>
         </div>
