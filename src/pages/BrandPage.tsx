@@ -103,6 +103,16 @@ export default function BrandPage() {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`Ремонт и обслуживание ${brand.name} - HEVSR`} />
+        <meta property="og:description" content={brand.description} />
+        <meta property="og:image" content={brand.logo} />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Ремонт и обслуживание ${brand.name}`} />
+        <meta name="twitter:description" content={brand.description} />
+        <meta name="twitter:image" content={brand.logo} />
       </Helmet>
       <Header setIsBookingOpen={setIsBookingOpen} />
       

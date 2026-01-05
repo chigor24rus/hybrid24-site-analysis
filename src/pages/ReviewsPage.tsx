@@ -59,6 +59,14 @@ const ReviewsPage = () => {
     <div className="min-h-screen">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Отзывы клиентов - HEVSR" />
+        <meta property="og:description" content={`${reviews.length} отзывов о нашем автосервисе в Красноярске. Средняя оценка: ${averageRating} из 5.0`} />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Отзывы клиентов - HEVSR" />
+        <meta name="twitter:description" content={`${reviews.length} отзывов клиентов. Средняя оценка: ${averageRating}`} />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>

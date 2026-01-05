@@ -44,6 +44,14 @@ const Index = () => {
     <div className="min-h-screen">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="HEVSR - Сертифицированная СТО в Красноярске" />
+        <meta property="og:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование. Звоните +7(923)0166750" />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="HEVSR - Сертифицированная СТО в Красноярске" />
+        <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>

@@ -60,6 +60,14 @@ const BrandsPage = () => {
     <div className="min-h-screen flex flex-col">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Все бренды автомобилей - HEVSR" />
+        <meta property="og:description" content={`Ремонт и обслуживание ${brands.length} популярных марок автомобилей в Красноярске. Профессиональный сервис для вашего авто.`} />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Все бренды автомобилей - HEVSR" />
+        <meta name="twitter:description" content={`Обслуживание ${brands.length} популярных марок автомобилей`} />
       </Helmet>
       <Header />
       <main className="flex-1 py-12 md:py-16">

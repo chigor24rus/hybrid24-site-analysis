@@ -98,6 +98,14 @@ const BlogPage = () => {
     <div className="min-h-screen">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Блог автосервиса - HEVSR" />
+        <meta property="og:description" content="Полезные статьи о ремонте, обслуживании и эксплуатации автомобилей. Советы экспертов автосервиса в Красноярске." />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Блог автосервиса - HEVSR" />
+        <meta name="twitter:description" content="Полезные статьи о ремонте и обслуживании автомобилей." />
       </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       

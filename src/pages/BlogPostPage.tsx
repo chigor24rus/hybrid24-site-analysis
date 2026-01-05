@@ -313,6 +313,18 @@ const BlogPostPage = () => {
     <div className="min-h-screen">
       <Helmet>
         <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={`${post.title} - HEVSR`} />
+        <meta property="og:description" content={post.excerpt} />
+        <meta property="og:image" content={post.image} />
+        <meta property="og:site_name" content="HEVSR" />
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:section" content={post.category} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.excerpt} />
+        <meta name="twitter:image" content={post.image} />
       </Helmet>
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
