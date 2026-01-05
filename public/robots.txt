@@ -10,6 +10,6 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Sitemap: https://hybrids24.ru/sitemap.xml
+Sitemap: https://hevsr.ru/sitemap.xml
 
-Host: hybrids24.ru
+Host: hevsr.ru
