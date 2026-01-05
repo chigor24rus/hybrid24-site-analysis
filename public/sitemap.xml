@@ -67,4 +67,28 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Правовая информация -->
+  <url>
+    <loc>https://hevsr.ru/legal</loc>
+    <lastmod>2026-01-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Бонусная программа -->
+  <url>
+    <loc>https://hevsr.ru/bonus-program</loc>
+    <lastmod>2026-01-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Гарантийная политика -->
+  <url>
+    <loc>https://hevsr.ru/warranty</loc>
+    <lastmod>2026-01-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
 </urlset>
