@@ -14,6 +14,7 @@ import PromotionTimer from '@/components/PromotionTimer';
 import ShareButton from '@/components/ShareButton';
 import PromotionSubscribe from '@/components/PromotionSubscribe';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface Promotion {
   id: number;
@@ -71,6 +72,7 @@ const PromotionsPage = () => {
 
       <section className="py-12 md:py-20 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
+          <Breadcrumbs items={[{ label: 'Акции' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Специальные предложения</Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Акции АвтоТехЦентра</h1>

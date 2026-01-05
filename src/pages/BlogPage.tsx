@@ -12,6 +12,7 @@ import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
 import FloatingCallButton from '@/components/FloatingCallButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface BlogPost {
   id: number;
@@ -115,6 +116,7 @@ const BlogPage = () => {
 
       <section className="py-12 md:py-20 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
+          <Breadcrumbs items={[{ label: 'Блог' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Полезные материалы</Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Блог АвтоТехЦентра</h1>

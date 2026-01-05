@@ -9,6 +9,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface Service {
   id: number;
@@ -118,10 +119,12 @@ export default function BrandPage() {
       
       <section className="py-12 md:py-20 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container mx-auto px-4">
-          <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6">
-            <Icon name="ArrowLeft" size={20} className="mr-2" />
-            На главную
-          </Link>
+          <Breadcrumbs 
+            items={[
+              { label: 'Все бренды', path: '/brands' },
+              { label: brand.name }
+            ]} 
+          />
           
           <div className="flex flex-col md:flex-row items-center gap-8 mb-12">
             <div className="w-32 h-32 bg-white rounded-2xl p-4 shadow-lg">

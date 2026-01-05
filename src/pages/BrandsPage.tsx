@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface Brand {
   id: number;
@@ -72,6 +73,7 @@ const BrandsPage = () => {
       <Header />
       <main className="flex-1 py-12 md:py-16">
         <div className="container mx-auto px-4">
+          <Breadcrumbs items={[{ label: 'Все бренды' }]} />
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Все бренды</h1>
             <p className="text-muted-foreground text-base md:text-lg">

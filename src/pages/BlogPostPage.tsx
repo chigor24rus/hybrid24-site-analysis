@@ -11,6 +11,7 @@ import Footer from '@/components/Footer';
 import FloatingCallButton from '@/components/FloatingCallButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import BlogShareButton from '@/components/BlogShareButton';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface BlogPost {
   id: number;
@@ -345,13 +346,12 @@ const BlogPostPage = () => {
         <div className="container mx-auto px-4 h-full flex items-center relative z-20">
           <div className="max-w-4xl">
             <div className="mb-6">
-              <button 
-                onClick={() => navigate(-1)}
-                className="inline-flex items-center text-white/80 hover:text-white transition-colors"
-              >
-                <Icon name="ArrowLeft" className="mr-2" size={18} />
-                Назад
-              </button>
+              <Breadcrumbs 
+                items={[
+                  { label: 'Блог', path: '/blog' },
+                  { label: post.title }
+                ]} 
+              />
             </div>
             <Badge className="mb-4">{post.category}</Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{post.title}</h1>
