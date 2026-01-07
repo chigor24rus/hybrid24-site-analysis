@@ -29,8 +29,8 @@ const AdminLoginPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Save auth token to localStorage
-        localStorage.setItem('adminAuth', 'true');
+        // Save password to localStorage for API requests
+        localStorage.setItem('adminAuth', password);
         localStorage.setItem('adminAuthTime', Date.now().toString());
         navigate('/admin');
       } else {

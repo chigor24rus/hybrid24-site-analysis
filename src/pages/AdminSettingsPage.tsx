@@ -58,6 +58,20 @@ const AdminSettingsPage = () => {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
       
       const adminPassword = localStorage.getItem('adminAuth');
+      
+      // If old session (adminAuth='true'), redirect to login
+      if (adminPassword === 'true' || !adminPassword) {
+        toast({
+          title: "Требуется повторная авторизация",
+          description: "Пожалуйста, войдите в систему снова",
+          variant: "destructive",
+        });
+        localStorage.removeItem('adminAuth');
+        localStorage.removeItem('adminAuthTime');
+        navigate('/admin/login');
+        return;
+      }
+      
       const response = await fetch('https://functions.poehali.dev/731360dc-a17d-4bc3-b22a-974f46b9bac2', {
         method: 'POST',
         headers: {
