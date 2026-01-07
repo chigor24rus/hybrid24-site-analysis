@@ -164,6 +164,10 @@ const AdminPage = () => {
               <Icon name="Database" className="mr-2" size={18} />
               Бренды и цены
             </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/models')}>
+              <Icon name="Car" className="mr-2" size={18} />
+              Модели
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/reviews')}>
               <Icon name="MessageSquare" className="mr-2" size={18} />
               Отзывы

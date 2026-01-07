@@ -1,4 +1,6 @@
 {
+  "models-api": "https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b",
+  "models-upload": "https://functions.poehali.dev/5b2da9ae-6907-49bc-8c1b-ca3ffd20d9e7",
   "update-settings": "https://functions.poehali.dev/731360dc-a17d-4bc3-b22a-974f46b9bac2",
   "get-settings": "https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf",
   "get-promotions": "https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d",

@@ -1,0 +1,19 @@
+{
+  "tests": [
+    {
+      "name": "Upload models file",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "brand_id": 1,
+        "type": "json",
+        "file": "W3sibmFtZSI6ICJUZXN0IE1vZGVsIn1d"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

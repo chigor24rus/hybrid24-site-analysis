@@ -20,3 +20,12 @@ export interface Price {
   service_title: string;
   brand_name: string;
 }
+
+export interface Model {
+  id: number;
+  brand_id: number;
+  name: string;
+  year_from?: number;
+  year_to?: number;
+  brand_name?: string;
+}
