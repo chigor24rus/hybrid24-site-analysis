@@ -30,13 +30,28 @@ const queryClient = new QueryClient();
 const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null);
 
-  const checkMaintenanceMode = () => {
-    const mode = localStorage.getItem('maintenanceMode') === 'true';
-    return mode;
-  };
+  useEffect(() => {
+    const checkMaintenance = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
+        const data = await response.json();
+        setMaintenanceMode(data.maintenanceMode);
+      } catch (error) {
+        console.error('Failed to check maintenance mode:', error);
+        setMaintenanceMode(false);
+      }
+    };
 
-  if (checkMaintenanceMode() && !isAdminRoute) {
+    checkMaintenance();
+  }, [location.pathname]);
+
+  if (maintenanceMode === null) {
+    return null;
+  }
+
+  if (maintenanceMode && !isAdminRoute) {
     return <MaintenancePage />;
   }
 

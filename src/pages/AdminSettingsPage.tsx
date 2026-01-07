@@ -38,23 +38,41 @@ const AdminSettingsPage = () => {
       setYandexOrgId(savedOrgId);
     }
 
-    const savedMaintenanceMode = localStorage.getItem('maintenanceMode');
-    if (savedMaintenanceMode === 'true') {
-      setMaintenanceMode(true);
-    }
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
+        const data = await response.json();
+        setMaintenanceMode(data.maintenanceMode);
+        setMaintenanceEndTime(data.maintenanceEndTime);
+      } catch (error) {
+        console.error('Failed to fetch settings:', error);
+      }
+    };
 
-    const savedEndTime = localStorage.getItem('maintenanceEndTime');
-    if (savedEndTime) {
-      setMaintenanceEndTime(savedEndTime);
-    }
+    fetchSettings();
   }, [navigate]);
 
   const handleSave = async () => {
     setLoading(true);
     try {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
-      localStorage.setItem('maintenanceMode', maintenanceMode.toString());
-      localStorage.setItem('maintenanceEndTime', maintenanceEndTime);
+      
+      const adminPassword = localStorage.getItem('adminAuth');
+      const response = await fetch('https://functions.poehali.dev/731360dc-a17d-4bc3-b22a-974f46b9bac2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${adminPassword}`
+        },
+        body: JSON.stringify({
+          maintenanceMode,
+          maintenanceEndTime
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save settings');
+      }
       
       toast({
         title: "Настройки сохранены",
@@ -64,11 +82,7 @@ const AdminSettingsPage = () => {
       });
       
       setTimeout(() => {
-        if (maintenanceMode) {
-          window.location.reload();
-        } else {
-          navigate('/admin');
-        }
+        navigate('/admin');
       }, 1500);
     } catch (error) {
       console.error('Error saving settings:', error);
