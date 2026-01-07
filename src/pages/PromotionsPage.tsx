@@ -75,7 +75,7 @@ const PromotionsPage = () => {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} />
       </Dialog>
 
-      <section className="py-12 md:py-20 bg-gradient-to-b from-card/30 to-background">
+      <section className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
           <Breadcrumbs items={[{ label: 'Акции' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
