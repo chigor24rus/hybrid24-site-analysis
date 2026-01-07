@@ -30,9 +30,16 @@ const queryClient = new QueryClient();
 const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isPreviewMode = window.location.hostname.includes('poehali.dev');
   const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // Skip maintenance check for preview mode (poehali.dev) and admin routes
+    if (isPreviewMode || isAdminRoute) {
+      setMaintenanceMode(false);
+      return;
+    }
+
     const checkMaintenance = async () => {
       try {
         const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
@@ -45,13 +52,13 @@ const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
     };
 
     checkMaintenance();
-  }, [location.pathname]);
+  }, [location.pathname, isPreviewMode, isAdminRoute]);
 
   if (maintenanceMode === null) {
     return null;
   }
 
-  if (maintenanceMode && !isAdminRoute) {
+  if (maintenanceMode && !isAdminRoute && !isPreviewMode) {
     return <MaintenancePage />;
   }
 
