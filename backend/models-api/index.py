@@ -33,7 +33,7 @@ def handler(event: dict, context) -> dict:
             if brand_id:
                 cur.execute("""
                     SELECT m.*, b.name as brand_name 
-                    FROM models m
+                    FROM car_models m
                     JOIN brands b ON m.brand_id = b.id
                     WHERE m.brand_id = %s
                     ORDER BY m.name
@@ -41,7 +41,7 @@ def handler(event: dict, context) -> dict:
             else:
                 cur.execute("""
                     SELECT m.*, b.name as brand_name 
-                    FROM models m
+                    FROM car_models m
                     JOIN brands b ON m.brand_id = b.id
                     ORDER BY b.name, m.name
                 """)
@@ -72,7 +72,7 @@ def handler(event: dict, context) -> dict:
                 }
             
             cur.execute("""
-                INSERT INTO models (brand_id, name, year_from, year_to)
+                INSERT INTO car_models (brand_id, name, year_from, year_to)
                 VALUES (%s, %s, %s, %s)
                 RETURNING *
             """, (brand_id, name, year_from, year_to))
@@ -104,7 +104,7 @@ def handler(event: dict, context) -> dict:
                 }
             
             cur.execute("""
-                UPDATE models 
+                UPDATE car_models 
                 SET name = %s, year_from = %s, year_to = %s
                 WHERE id = %s
                 RETURNING *
@@ -133,7 +133,7 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'error': 'id обязателен'})
                 }
             
-            cur.execute("DELETE FROM models WHERE id = %s", (model_id,))
+            cur.execute("DELETE FROM car_models WHERE id = %s", (model_id,))
             conn.commit()
             
             return {
