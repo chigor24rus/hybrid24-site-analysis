@@ -28,6 +28,12 @@ interface Brand {
   description: string;
 }
 
+interface Model {
+  id: number;
+  name: string;
+  year_range: string;
+}
+
 const defaultFeatures = [
   'Оригинальные запчасти',
   'Гарантия на все работы',
@@ -41,6 +47,7 @@ export default function BrandPage() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [brand, setBrand] = useState<Brand | null>(null);
   const [services, setServices] = useState<Service[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const canonicalUrl = `https://hevsr.ru${location.pathname}`;
@@ -57,6 +64,7 @@ export default function BrandPage() {
         if (response.ok && data.brand) {
           setBrand(data.brand);
           setServices(data.services || []);
+          setModels(data.models || []);
         } else {
           setError(true);
         }
@@ -148,6 +156,30 @@ export default function BrandPage() {
           </div>
         </div>
       </section>
+
+      {models.length > 0 && (
+        <section className="py-12 md:py-16 bg-card/30">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8">Модели {brand.name}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+              {models.map((model) => (
+                <div 
+                  key={model.id}
+                  className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow border border-border"
+                >
+                  <div className="flex items-center justify-center mb-2">
+                    <Icon name="Car" className="text-primary" size={20} />
+                  </div>
+                  <p className="font-semibold text-sm mb-1">{model.name}</p>
+                  {model.year_range && (
+                    <p className="text-xs text-muted-foreground">{model.year_range}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="py-12 md:py-16">
         <div className="container mx-auto px-4">

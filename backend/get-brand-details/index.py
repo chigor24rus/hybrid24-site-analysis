@@ -96,6 +96,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'price': f"от {int(row[5]):,} {row[6]}".replace(',', ' ')
         })
     
+    cur.execute("""
+        SELECT id, name, year_from, year_to
+        FROM car_models
+        WHERE brand_id = %s
+        ORDER BY name
+    """, (brand['id'],))
+    
+    models_rows = cur.fetchall()
+    models = []
+    for row in models_rows:
+        year_range = ''
+        if row[2] and row[3]:
+            year_range = f"{row[2]}-{row[3]}"
+        elif row[2]:
+            year_range = f"с {row[2]}"
+        elif row[3]:
+            year_range = f"до {row[3]}"
+        
+        models.append({
+            'id': row[0],
+            'name': row[1],
+            'year_range': year_range
+        })
+    
     cur.close()
     conn.close()
     
@@ -104,6 +128,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
         'body': json.dumps({
             'brand': brand,
-            'services': services
+            'services': services,
+            'models': models
         })
     }
