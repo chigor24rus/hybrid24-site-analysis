@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Index from "./pages/Index";
+import ServicesPage from "./pages/ServicesPage";
 import PromotionsPage from "./pages/PromotionsPage";
 import ReviewsPage from "./pages/ReviewsPage";
 import BlogPage from "./pages/BlogPage";
@@ -75,6 +76,7 @@ const App = () => (
         <MaintenanceWrapper>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/services" element={<ServicesPage />} />
             <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/blog" element={<BlogPage />} />
