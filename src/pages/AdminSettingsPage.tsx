@@ -71,7 +71,8 @@ const AdminSettingsPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save settings');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP error ${response.status}`);
       }
       
       toast({
@@ -86,9 +87,10 @@ const AdminSettingsPage = () => {
       }, 1500);
     } catch (error) {
       console.error('Error saving settings:', error);
+      const errorMessage = error instanceof Error ? error.message : "Не удалось сохранить настройки";
       toast({
         title: "Ошибка",
-        description: "Не удалось сохранить настройки",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

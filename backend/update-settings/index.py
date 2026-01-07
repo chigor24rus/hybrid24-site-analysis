@@ -28,7 +28,8 @@ def handler(event: dict, context) -> dict:
         }
     
     try:
-        auth_header = event.get('headers', {}).get('X-Authorization', '')
+        headers = event.get('headers', {})
+        auth_header = headers.get('X-Authorization') or headers.get('x-authorization') or headers.get('Authorization') or headers.get('authorization') or ''
         admin_password = os.environ.get('ADMIN_PASSWORD', 'hybrid24')
         
         if not auth_header or auth_header.replace('Bearer ', '') != admin_password:
