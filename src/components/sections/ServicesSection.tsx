@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,14 +13,6 @@ interface Service {
   icon: string;
 }
 
-interface Brand {
-  id: number;
-  name: string;
-  slug: string;
-  logo: string;
-  description: string;
-}
-
 interface ServicesSectionProps {
   setIsBookingOpen: (open: boolean) => void;
   setSelectedServices: (services: number[]) => void;
@@ -29,47 +21,29 @@ interface ServicesSectionProps {
 const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelectedServices }: ServicesSectionProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchServices = async () => {
       try {
-        const [servicesRes, brandsRes] = await Promise.all([
-          fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
-          fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f')
-        ]);
-        
-        const servicesData = await servicesRes.json();
-        const brandsData = await brandsRes.json();
+        const response = await fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc');
+        const data = await response.json();
         
         const uniqueServices = Array.from(
-          new Map((servicesData.services || []).map((s: Service) => [s.id, s])).values()
+          new Map((data.services || []).map((s: Service) => [s.id, s])).values()
         );
         
         setServices(uniqueServices);
-        setBrands(brandsData.brands || []);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching services:', error);
       } finally {
         setLoading(false);
       }
     };
     
-    fetchData();
+    fetchServices();
     
-    const interval = setInterval(fetchData, 60000);
+    const interval = setInterval(fetchServices, 60000);
     
     return () => clearInterval(interval);
   }, []);
@@ -238,51 +212,6 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
         </div>
       </section>
 
-      <section id="brands" className="py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <Link to="/brands" className="group inline-block">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
-                Бренды, с которыми мы работаем
-                <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
-              </h2>
-            </Link>
-            <p className="text-muted-foreground text-base md:text-lg">Обслуживаем все популярные марки автомобилей</p>
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => scroll('left')}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
-              aria-label="Прокрутить влево"
-            >
-              <Icon name="ChevronLeft" size={24} className="text-primary" />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
-              aria-label="Прокрутить вправо"
-            >
-              <Icon name="ChevronRight" size={24} className="text-primary" />
-            </button>
-            <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-            <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth">
-              {brands.map((brand, index) => (
-                <Link
-                  key={`brand-${brand.id}`}
-                  to={`/brand/${brand.slug}`}
-                  className="flex-shrink-0"
-                >
-                  <Card className="hover-scale cursor-pointer text-center p-6 bg-white w-32 h-32 flex flex-col items-center justify-center">
-                    <img src={brand.logo} alt={brand.name} className="h-16 object-contain mb-2" />
-                    <p className="text-xs font-medium">{brand.name}</p>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 };
