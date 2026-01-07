@@ -12,9 +12,10 @@ def handler(event: dict, context) -> dict:
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'POST, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-Authorization'
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Authorization'
             },
-            'body': ''
+            'body': '',
+            'isBase64Encoded': False
         }
     
     if method != 'POST':
@@ -24,7 +25,8 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': 'Method not allowed'})
+            'body': json.dumps({'error': 'Method not allowed'}),
+            'isBase64Encoded': False
         }
     
     try:
@@ -39,7 +41,8 @@ def handler(event: dict, context) -> dict:
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'Unauthorized'})
+                'body': json.dumps({'error': 'Unauthorized'}),
+                'isBase64Encoded': False
             }
         
         body = json.loads(event.get('body', '{}'))
@@ -79,7 +82,8 @@ def handler(event: dict, context) -> dict:
                     'success': True,
                     'maintenanceMode': maintenance_mode,
                     'maintenanceEndTime': maintenance_end_time
-                })
+                }),
+                'isBase64Encoded': False
             }
             
         except Exception as e:
@@ -97,5 +101,6 @@ def handler(event: dict, context) -> dict:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': str(e)})
+            'body': json.dumps({'error': str(e)}),
+            'isBase64Encoded': False
         }
