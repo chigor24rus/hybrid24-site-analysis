@@ -241,10 +241,10 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
       <section id="brands" className="py-12 md:py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <Link to="/brands" className="inline-block group">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors">
+            <Link to="/brands" className="group inline-block">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
                 Бренды, с которыми мы работаем
-                <Icon name="ExternalLink" className="inline-block ml-3 opacity-0 group-hover:opacity-100 transition-opacity" size={32} />
+                <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
               </h2>
             </Link>
             <p className="text-muted-foreground text-base md:text-lg">Обслуживаем все популярные марки автомобилей</p>
