@@ -8,10 +8,19 @@ const MaintenancePage = () => {
   const [endTime, setEndTime] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedEndTime = localStorage.getItem('maintenanceEndTime');
-    if (savedEndTime) {
-      setEndTime(savedEndTime);
-    }
+    const fetchMaintenanceInfo = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
+        const data = await response.json();
+        if (data.maintenanceEndTime) {
+          setEndTime(data.maintenanceEndTime);
+        }
+      } catch (error) {
+        console.error('Failed to fetch maintenance info:', error);
+      }
+    };
+
+    fetchMaintenanceInfo();
   }, []);
 
   const formatEndTime = (datetime: string) => {
