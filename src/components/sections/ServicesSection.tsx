@@ -54,7 +54,6 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
         const servicesData = await servicesRes.json();
         const brandsData = await brandsRes.json();
         
-        // Убираем дубли по id
         const uniqueServices = Array.from(
           new Map((servicesData.services || []).map((s: Service) => [s.id, s])).values()
         );
@@ -69,6 +68,10 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
     };
     
     fetchData();
+    
+    const interval = setInterval(fetchData, 60000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const toggleService = (id: number) => {
@@ -79,16 +82,22 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
     });
   };
 
+  const extractPrice = (priceString: string): number => {
+    const match = priceString.match(/(\d+[\s\d]*)/);
+    if (match) {
+      return parseInt(match[1].replace(/\s/g, ''));
+    }
+    return 0;
+  };
+
   const calculateTotal = () => {
-    const basePrices: { [key: number]: number } = {
-      1: 3500,
-      2: 1500,
-      3: 1200,
-      4: 2000,
-      5: 5000,
-      6: 10000
-    };
-    return selectedServices.reduce((sum, id) => sum + basePrices[id], 0);
+    return selectedServices.reduce((sum, id) => {
+      const service = services.find(s => s.id === id);
+      if (service) {
+        return sum + extractPrice(service.price);
+      }
+      return sum;
+    }, 0);
   };
 
   if (loading) {
