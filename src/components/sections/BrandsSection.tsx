@@ -15,16 +15,7 @@ const BrandsSection = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -41,6 +32,32 @@ const BrandsSection = () => {
     
     fetchBrands();
   }, []);
+
+  useEffect(() => {
+    if (!scrollContainerRef.current || brands.length === 0 || isPaused) return;
+
+    const container = scrollContainerRef.current;
+    let scrollPosition = 0;
+    const scrollSpeed = 0.5;
+
+    const animate = () => {
+      if (!isPaused && container) {
+        scrollPosition += scrollSpeed;
+        
+        if (scrollPosition >= container.scrollWidth / 2) {
+          scrollPosition = 0;
+        }
+        
+        container.scrollLeft = scrollPosition;
+      }
+      
+      requestAnimationFrame(animate);
+    };
+
+    const animationId = requestAnimationFrame(animate);
+
+    return () => cancelAnimationFrame(animationId);
+  }, [brands, isPaused]);
 
   if (loading) {
     return (
@@ -62,27 +79,17 @@ const BrandsSection = () => {
           </Link>
           <p className="text-muted-foreground text-base md:text-lg">Обслуживаем все популярные марки автомобилей</p>
         </div>
-        <div className="relative">
-          <button
-            onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
-            aria-label="Прокрутить влево"
-          >
-            <Icon name="ChevronLeft" size={24} className="text-primary" />
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all hover:scale-110"
-            aria-label="Прокрутить вправо"
-          >
-            <Icon name="ChevronRight" size={24} className="text-primary" />
-          </button>
+        <div 
+          className="relative overflow-hidden"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
-          <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth">
-            {brands.map((brand, index) => (
+          <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-hide" style={{ scrollBehavior: 'auto' }}>
+            {brands.concat(brands).map((brand, index) => (
               <Link
-                key={`brand-${brand.id}`}
+                key={`brand-${brand.id}-${index}`}
                 to={`/brand/${brand.slug}`}
                 className="flex-shrink-0"
               >
