@@ -15,7 +15,7 @@ interface ModelsManagementTabProps {
 }
 
 const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabProps) => {
-  const [selectedBrand, setSelectedBrand] = useState<string>('');
+  const [selectedBrand, setSelectedBrand] = useState<string>('all');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
@@ -26,9 +26,9 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
 
   console.log('ModelsManagementTab received:', { brands: brands.length, models: models.length });
 
-  const filteredModels = selectedBrand 
-    ? models.filter(m => m.brand_id.toString() === selectedBrand)
-    : models;
+  const filteredModels = selectedBrand === 'all'
+    ? models
+    : models.filter(m => m.brand_id.toString() === selectedBrand);
 
   console.log('Filtered models:', filteredModels.length);
 
@@ -161,7 +161,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
                   <SelectValue placeholder="Все бренды" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Все бренды</SelectItem>
+                  <SelectItem value="all">Все бренды</SelectItem>
                   {brands.map((brand) => (
                     <SelectItem key={brand.id} value={brand.id.toString()}>
                       {brand.name}
