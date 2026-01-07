@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
 import FloatingCallButton from '@/components/FloatingCallButton';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface Service {
   id: number;
@@ -104,6 +105,7 @@ const ServicesPage = () => {
 
       <section className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
+          <Breadcrumbs items={[{ label: 'Услуги' }]} />
           <div className="text-center mb-12 animate-fade-in">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Наши услуги</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
