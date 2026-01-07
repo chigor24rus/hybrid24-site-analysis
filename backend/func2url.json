@@ -6,7 +6,6 @@
   "update-promotion-admin": "https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45",
   "delete-promotion-admin": "https://functions.poehali.dev/4a0720cb-4906-457f-8860-4f6196d93031",
   "create-promotion-admin": "https://functions.poehali.dev/5a0a3612-f9b3-4eba-8ac1-3230f81d8bc4",
-  "sync-reviews-cron": "https://functions.poehali.dev/ab56cf28-bf0b-4c91-9ba7-0ca3b5d65e88",
   "dgis-reviews": "https://functions.poehali.dev/25254b30-6bfe-4a37-aa27-58095863d1df",
   "blog": "https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a",
   "manage-reviews": "https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce",
