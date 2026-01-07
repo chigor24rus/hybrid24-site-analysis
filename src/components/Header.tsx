@@ -19,8 +19,8 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
     { href: '/services', label: 'Услуги', isSection: false },
     { href: '/promotions', label: 'Акции', isSection: false },
     { href: '/reviews', label: 'Отзывы', isSection: false },
-    { href: '#blog', label: 'Блог', isSection: true },
-    { href: '#brands', label: 'Бренды', isSection: true },
+    { href: '/blog', label: 'Блог', isSection: false },
+    { href: '/brands', label: 'Бренды', isSection: false },
     { href: '#contacts', label: 'Контакты', isSection: true }
   ];
 
