@@ -87,7 +87,7 @@ def handler(event: dict, context) -> dict:
             
             try:
                 cur.execute("""
-                    INSERT INTO models (brand_id, name, year_from, year_to)
+                    INSERT INTO car_models (brand_id, name, year_from, year_to)
                     VALUES (%s, %s, %s, %s)
                     ON CONFLICT (brand_id, name) DO NOTHING
                 """, (brand_id, name, year_from, year_to))
