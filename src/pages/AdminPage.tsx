@@ -247,13 +247,19 @@ const AdminPage = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <CardTitle className="text-xl">
                           {booking.customer_name}
                         </CardTitle>
                         <Badge className={statusColors[booking.status]}>
                           {statusLabels[booking.status]}
                         </Badge>
+                        {(booking.car_brand || booking.car_model) && (
+                          <Badge variant="outline" className="gap-1">
+                            <Icon name="Car" size={14} />
+                            {booking.car_brand} {booking.car_model}
+                          </Badge>
+                        )}
                       </div>
                       <CardDescription>
                         Заявка #{booking.id} • Создана {formatDateTime(booking.created_at)}
@@ -316,10 +322,10 @@ const AdminPage = () => {
                     <div className="space-y-3">
                       {(booking.car_brand || booking.car_model) && (
                         <div className="flex items-start gap-2">
-                          <Icon name="Car" size={16} className="mt-1 text-muted-foreground" />
+                          <Icon name="Car" size={16} className="mt-1 text-primary" />
                           <div>
                             <div className="text-sm text-muted-foreground">Автомобиль</div>
-                            <div className="font-medium">
+                            <div className="font-semibold text-primary">
                               {booking.car_brand} {booking.car_model}
                             </div>
                           </div>
