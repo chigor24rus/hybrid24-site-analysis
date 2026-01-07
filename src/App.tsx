@@ -29,28 +29,14 @@ const queryClient = new QueryClient();
 
 const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const [maintenanceMode, setMaintenanceMode] = useState(() => {
-    return localStorage.getItem('maintenanceMode') === 'true';
-  });
-
-  useEffect(() => {
-    const checkMaintenanceMode = () => {
-      const mode = localStorage.getItem('maintenanceMode') === 'true';
-      setMaintenanceMode(mode);
-    };
-
-    checkMaintenanceMode();
-
-    window.addEventListener('storage', checkMaintenanceMode);
-    
-    return () => {
-      window.removeEventListener('storage', checkMaintenanceMode);
-    };
-  }, []);
-
   const isAdminRoute = location.pathname.startsWith('/admin');
 
-  if (maintenanceMode && !isAdminRoute) {
+  const checkMaintenanceMode = () => {
+    const mode = localStorage.getItem('maintenanceMode') === 'true';
+    return mode;
+  };
+
+  if (checkMaintenanceMode() && !isAdminRoute) {
     return <MaintenancePage />;
   }
 
