@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,19 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/c
 import Icon from '@/components/ui/icon';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+
+interface Brand {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface Model {
+  id: number;
+  brand_id: number;
+  name: string;
+  year_range?: string;
+}
 
 const services = [
   {
@@ -66,9 +79,10 @@ const services = [
 interface BookingDialogProps {
   setIsBookingOpen: (open: boolean) => void;
   initialSelectedServices?: number[];
+  initialBrandId?: number;
 }
 
-const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: BookingDialogProps) => {
+const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initialBrandId }: BookingDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
@@ -81,6 +95,46 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: Booki
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loadingBrands, setLoadingBrands] = useState(true);
+
+  useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f');
+        const data = await response.json();
+        setBrands(data.brands || []);
+        
+        if (initialBrandId) {
+          setBrand(initialBrandId.toString());
+        }
+      } catch (error) {
+        console.error('Error fetching brands:', error);
+      } finally {
+        setLoadingBrands(false);
+      }
+    };
+    fetchBrands();
+  }, [initialBrandId]);
+
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!brand) {
+        setModels([]);
+        setModel('');
+        return;
+      }
+      try {
+        const response = await fetch(`https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b?brand_id=${brand}`);
+        const data = await response.json();
+        setModels(data.models || []);
+      } catch (error) {
+        console.error('Error fetching models:', error);
+      }
+    };
+    fetchModels();
+  }, [brand]);
 
   const toggleService = (id: number) => {
     setSelectedServices(prev =>
@@ -119,6 +173,9 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: Booki
         .filter(Boolean)
         .join(', ');
 
+      const selectedBrand = brands.find(b => b.id.toString() === brand);
+      const selectedModel = models.find(m => m.id.toString() === model);
+
       const response = await fetch('https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05', {
         method: 'POST',
         headers: {
@@ -129,8 +186,8 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: Booki
           phone,
           email,
           service: selectedServiceTitles || 'Не указано',
-          brand,
-          model,
+          brand: selectedBrand?.name || '',
+          model: selectedModel?.name || '',
           date: date ? format(date, 'yyyy-MM-dd') : '',
           time,
           comment,
@@ -300,21 +357,33 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [] }: Booki
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="brand">Марка авто</Label>
-            <Input
-              id="brand"
-              placeholder="Toyota"
-              value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-            />
+            <Select value={brand} onValueChange={setBrand} disabled={loadingBrands}>
+              <SelectTrigger>
+                <SelectValue placeholder={loadingBrands ? "Загрузка..." : "Выберите бренд"} />
+              </SelectTrigger>
+              <SelectContent>
+                {brands.map((b) => (
+                  <SelectItem key={b.id} value={b.id.toString()}>
+                    {b.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="model">Модель</Label>
-            <Input
-              id="model"
-              placeholder="Camry"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-            />
+            <Select value={model} onValueChange={setModel} disabled={!brand || models.length === 0}>
+              <SelectTrigger>
+                <SelectValue placeholder={!brand ? "Сначала выберите бренд" : models.length === 0 ? "Нет моделей" : "Выберите модель"} />
+              </SelectTrigger>
+              <SelectContent>
+                {models.map((m) => (
+                  <SelectItem key={m.id} value={m.id.toString()}>
+                    {m.name} {m.year_range && `(${m.year_range})`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

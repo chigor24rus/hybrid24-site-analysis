@@ -242,7 +242,7 @@ export default function BrandPage() {
       <Footer />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <BookingDialog setIsBookingOpen={setIsBookingOpen} />
+        <BookingDialog setIsBookingOpen={setIsBookingOpen} initialBrandId={brand.id} />
       </Dialog>
     </div>
   );
