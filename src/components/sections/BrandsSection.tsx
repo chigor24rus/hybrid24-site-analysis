@@ -16,6 +16,8 @@ const BrandsSection = () => {
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const scrollPositionRef = useRef(0);
+  const animationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -34,29 +36,32 @@ const BrandsSection = () => {
   }, []);
 
   useEffect(() => {
-    if (!scrollContainerRef.current || brands.length === 0 || isPaused) return;
+    if (!scrollContainerRef.current || brands.length === 0) return;
 
     const container = scrollContainerRef.current;
-    let scrollPosition = 0;
     const scrollSpeed = 0.5;
 
     const animate = () => {
       if (!isPaused && container) {
-        scrollPosition += scrollSpeed;
+        scrollPositionRef.current += scrollSpeed;
         
-        if (scrollPosition >= container.scrollWidth / 2) {
-          scrollPosition = 0;
+        if (scrollPositionRef.current >= container.scrollWidth / 2) {
+          scrollPositionRef.current = 0;
         }
         
-        container.scrollLeft = scrollPosition;
+        container.scrollLeft = scrollPositionRef.current;
       }
       
-      requestAnimationFrame(animate);
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    const animationId = requestAnimationFrame(animate);
+    animationFrameRef.current = requestAnimationFrame(animate);
 
-    return () => cancelAnimationFrame(animationId);
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
   }, [brands, isPaused]);
 
   if (loading) {
