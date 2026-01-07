@@ -43,6 +43,11 @@ const AdminModelsPage = () => {
       const brandsData = await brandsRes.json();
       const modelsData = await modelsRes.json();
       
+      console.log('Brands data:', brandsData);
+      console.log('Models data:', modelsData);
+      console.log('Brands count:', brandsData.brands?.length);
+      console.log('Models count:', modelsData.models?.length);
+      
       setBrands(brandsData.brands || []);
       setModels(modelsData.models || []);
     } catch (error) {

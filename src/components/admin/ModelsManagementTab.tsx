@@ -24,9 +24,13 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
   const [uploadType, setUploadType] = useState<'csv' | 'json'>('csv');
   const [uploadBrand, setUploadBrand] = useState<string>('');
 
+  console.log('ModelsManagementTab received:', { brands: brands.length, models: models.length });
+
   const filteredModels = selectedBrand 
     ? models.filter(m => m.brand_id.toString() === selectedBrand)
     : models;
+
+  console.log('Filtered models:', filteredModels.length);
 
   const handleAddModel = async () => {
     if (!formData.name || !formData.brand_id) return;
