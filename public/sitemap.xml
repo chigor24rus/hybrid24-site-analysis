@@ -7,7 +7,7 @@
 
   <!-- Главная страница -->
   <url>
-    <loc>https://hevsr.ru/</loc>
+    <loc>https://hybrid24.ru/</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -15,7 +15,7 @@
 
   <!-- Акции -->
   <url>
-    <loc>https://hevsr.ru/promotions</loc>
+    <loc>https://hybrid24.ru/promotions</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -23,7 +23,7 @@
 
   <!-- Отзывы -->
   <url>
-    <loc>https://hevsr.ru/reviews</loc>
+    <loc>https://hybrid24.ru/reviews</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -31,7 +31,7 @@
 
   <!-- Блог -->
   <url>
-    <loc>https://hevsr.ru/blog</loc>
+    <loc>https://hybrid24.ru/blog</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -39,21 +39,21 @@
 
   <!-- Статьи блога -->
   <url>
-    <loc>https://hevsr.ru/blog/1</loc>
+    <loc>https://hybrid24.ru/blog/1</loc>
     <lastmod>2025-11-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://hevsr.ru/blog/2</loc>
+    <loc>https://hybrid24.ru/blog/2</loc>
     <lastmod>2025-11-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://hevsr.ru/blog/3</loc>
+    <loc>https://hybrid24.ru/blog/3</loc>
     <lastmod>2025-11-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -61,7 +61,7 @@
 
   <!-- Все бренды -->
   <url>
-    <loc>https://hevsr.ru/brands</loc>
+    <loc>https://hybrid24.ru/brands</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -69,7 +69,7 @@
 
   <!-- Правовая информация -->
   <url>
-    <loc>https://hevsr.ru/legal</loc>
+    <loc>https://hybrid24.ru/legal</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
@@ -77,7 +77,7 @@
 
   <!-- Бонусная программа -->
   <url>
-    <loc>https://hevsr.ru/bonus-program</loc>
+    <loc>https://hybrid24.ru/bonus-program</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -85,7 +85,7 @@
 
   <!-- Гарантийная политика -->
   <url>
-    <loc>https://hevsr.ru/warranty</loc>
+    <loc>https://hybrid24.ru/warranty</loc>
     <lastmod>2026-01-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>

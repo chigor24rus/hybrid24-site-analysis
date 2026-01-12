@@ -16,7 +16,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 const BonusProgramPage = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   const bonusLevels = [
     {

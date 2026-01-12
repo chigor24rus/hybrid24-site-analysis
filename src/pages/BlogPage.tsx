@@ -34,7 +34,7 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'date' | 'popular'>('date');
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchPosts = async () => {

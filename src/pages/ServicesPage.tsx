@@ -26,7 +26,7 @@ const ServicesPage = () => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchServices = async () => {

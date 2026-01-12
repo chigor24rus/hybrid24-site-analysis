@@ -23,7 +23,7 @@ const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchReviews = async () => {

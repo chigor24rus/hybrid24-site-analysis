@@ -14,7 +14,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 const LegalPage = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   return (
     <div className="min-h-screen">

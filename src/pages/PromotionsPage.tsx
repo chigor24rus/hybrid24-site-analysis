@@ -33,7 +33,7 @@ const PromotionsPage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchPromotions = async () => {

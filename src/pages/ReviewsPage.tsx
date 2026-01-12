@@ -28,7 +28,7 @@ const ReviewsPage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
-  const canonicalUrl = `https://hevsr.ru${location.pathname}`;
+  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   useEffect(() => {
     const fetchReviews = async () => {

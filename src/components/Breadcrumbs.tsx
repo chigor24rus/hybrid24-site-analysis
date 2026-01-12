@@ -20,13 +20,13 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Главная",
-        "item": "https://hevsr.ru/"
+        "item": "https://hybrid24.ru/"
       },
       ...items.map((item, index) => ({
         "@type": "ListItem",
         "position": index + 2,
         "name": item.label,
-        ...(item.path && { "item": `https://hevsr.ru${item.path}` })
+        ...(item.path && { "item": `https://hybrid24.ru${item.path}` })
       }))
     ]
   };
