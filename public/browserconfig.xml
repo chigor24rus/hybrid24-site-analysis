@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square150x150logo src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/favicon-1765593758172.png"/>
+            <TileColor>#bcd02a</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>
