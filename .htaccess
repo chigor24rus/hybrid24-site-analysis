@@ -1,0 +1,50 @@
+# Включить модуль перезаписи URL
+RewriteEngine On
+
+# Перенаправление с HTTP на HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Перенаправление с www на без www (или наоборот, если нужно)
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Кеширование статических файлов
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 year"
+</IfModule>
+
+# Сжатие файлов (gzip)
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# React Router: все запросы направлять на index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [L]
+
+# Исправление canonical для индексации в Google
+# Добавление заголовка Link для canonical URL
+<IfModule mod_headers.c>
+  # Убираем заголовок X-Powered-By для безопасности
+  Header unset X-Powered-By
+  
+  # Добавляем заголовок для canonical (будет указывать на текущий URL без дублей)
+  Header set Link '<https://hybrid24.ru%{REQUEST_URI}e>; rel="canonical"' env=!REDIRECT_STATUS
+</IfModule>
+
+# Защита от индексации дублирующихся параметров
+# Если есть UTM-метки или другие параметры - канонический URL без них
+RewriteCond %{QUERY_STRING} .+
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)$ /$1? [R=301,L]
