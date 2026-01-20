@@ -40,44 +40,6 @@ const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   }, [location.pathname]);
 
   useEffect(() => {
-    const loadZeonWidget = () => {
-      const protocol = window.location.protocol === 'https:' ? 'https://' : 'http://';
-      const baseUrl = 'z31.fpg.ru/zeon/';
-      
-      const createWidget = () => {
-        if (typeof (window as any).$ !== 'undefined') {
-          (window as any).$.post(
-            protocol + baseUrl + 'api/callback/start.php',
-            {
-              host: document.location.host,
-              code: 'cfcd208495d565ef66e7dff9f98764da',
-              method: 'init'
-            },
-            (response: string) => {
-              const container = document.createElement('div');
-              container.innerHTML = response;
-              document.body.appendChild(container);
-            }
-          );
-        }
-      };
-
-      if (typeof (window as any).$ === 'undefined') {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = protocol + baseUrl + 'js/jquery-1.8.2.js';
-        script.onload = createWidget;
-        document.head.appendChild(script);
-      } else {
-        createWidget();
-      }
-    };
-
-    const timer = setTimeout(loadZeonWidget, 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     // Skip maintenance check for preview mode (poehali.dev) and admin routes
     if (isPreviewMode || isAdminRoute) {
       setMaintenanceMode(false);
