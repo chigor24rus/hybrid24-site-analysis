@@ -36,6 +36,10 @@ const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  useEffect(() => {
     // Skip maintenance check for preview mode (poehali.dev) and admin routes
     if (isPreviewMode || isAdminRoute) {
       setMaintenanceMode(false);
