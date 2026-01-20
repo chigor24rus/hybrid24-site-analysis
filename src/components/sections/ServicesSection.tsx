@@ -13,6 +13,15 @@ interface Service {
   icon: string;
 }
 
+const SERVICE_ARTICLE_MAP: Record<string, number> = {
+  'Техническое обслуживание': 11,
+  'Диагностика двигателя': 15,
+  'Замена масла': 16,
+  'Шиномонтаж': 19,
+  'Ремонт ходовой': 17,
+  'Кузовной ремонт': 18,
+};
+
 interface ServicesSectionProps {
   setIsBookingOpen: (open: boolean) => void;
   setSelectedServices: (services: number[]) => void;
@@ -96,35 +105,53 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
             <p className="text-muted-foreground text-base md:text-lg">Полный спектр услуг для вашего автомобиля</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {services.map((service, index) => (
-              <Card
-                key={`service-${service.id}`}
-                className="hover-scale cursor-pointer hover:border-primary/50 transition-all animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={service.icon as any} size={24} className="text-white" />
-                  </div>
-                  <CardTitle>{service.title}</CardTitle>
-                  <CardDescription>{service.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-2xl font-bold text-primary">{service.price}</div>
-                      <div className="text-sm text-muted-foreground flex items-center mt-1">
-                        <Icon name="Clock" size={14} className="mr-1" />
-                        {service.duration}
+            {services.map((service, index) => {
+              const articleId = SERVICE_ARTICLE_MAP[service.title];
+              const CardWrapper = articleId ? Link : 'div';
+              const wrapperProps = articleId ? { to: `/blog/${articleId}` } : {};
+              
+              return (
+                <CardWrapper key={`service-${service.id}`} {...wrapperProps}>
+                  <Card
+                    className="hover-scale cursor-pointer hover:border-primary/50 transition-all animate-fade-in h-full"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <CardHeader>
+                      <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                        <Icon name={service.icon as any} size={24} className="text-white" />
                       </div>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => setIsBookingOpen(true)}>
-                      Записаться
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      <CardTitle className="flex items-center justify-between">
+                        {service.title}
+                        {articleId && <Icon name="ExternalLink" size={16} className="text-muted-foreground" />}
+                      </CardTitle>
+                      <CardDescription>{service.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-2xl font-bold text-primary">{service.price}</div>
+                          <div className="text-sm text-muted-foreground flex items-center mt-1">
+                            <Icon name="Clock" size={14} className="mr-1" />
+                            {service.duration}
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsBookingOpen(true);
+                          }}
+                        >
+                          Записаться
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CardWrapper>
+              );
+            })}
           </div>
         </div>
       </section>
