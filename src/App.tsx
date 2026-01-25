@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import CallbackWidget from "./components/CallbackWidget";
 import Index from "./pages/Index";
 import ServicesPage from "./pages/ServicesPage";
 import PromotionsPage from "./pages/PromotionsPage";
@@ -101,6 +102,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CallbackWidget />
         </MaintenanceWrapper>
       </BrowserRouter>
     </TooltipProvider>
