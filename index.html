@@ -172,5 +172,52 @@
     <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
+
+<!-- Zeon Callback Widget -->
+<script type="text/javascript">
+(function() {
+  var initZeon = function() {
+    var baseUrl = "z31.fpg.ru/zeon/";
+    var protocol = window.location.protocol === "https:" ? "https://" : "http://";
+    
+    var loadWidget = function() {
+      if (typeof window.$ !== 'undefined' && window.$.post) {
+        window.$.post(
+          protocol + baseUrl + "api/callback/start.php",
+          {
+            host: document.location.host,
+            code: "cfcd208495d565ef66e7dff9f98764da",
+            method: "init"
+          },
+          function(response) {
+            var container = document.createElement("div");
+            container.innerHTML = response;
+            document.body.appendChild(container);
+          }
+        );
+      }
+    };
+    
+    if (typeof window.$ === 'undefined') {
+      var jqScript = document.createElement("script");
+      jqScript.type = "text/javascript";
+      jqScript.src = protocol + baseUrl + "js/jquery-1.8.2.js";
+      jqScript.onload = loadWidget;
+      document.head.appendChild(jqScript);
+    } else {
+      loadWidget();
+    }
+  };
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(initZeon, 2000);
+    });
+  } else {
+    setTimeout(initZeon, 2000);
+  }
+})();
+</script>
+<!-- /Zeon Callback Widget -->
 </body>
 </html>
