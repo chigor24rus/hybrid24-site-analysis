@@ -1,14 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Phone, X } from 'lucide-react';
 
 export default function CallbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'ratelimit'>('idle');
+  const [honeypot, setHoneypot] = useState('');
+  const openTimeRef = useRef<number>(0);
+  const lastSubmitRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (isOpen) {
+      openTimeRef.current = Date.now();
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Защита 1: Honeypot - скрытое поле для ботов
+    if (honeypot) {
+      console.warn('Bot detected: honeypot filled');
+      return;
+    }
+
+    // Защита 2: Минимальное время заполнения формы (2 секунды)
+    const fillTime = Date.now() - openTimeRef.current;
+    if (fillTime < 2000) {
+      console.warn('Bot detected: form filled too quickly');
+      setSubmitStatus('error');
+      return;
+    }
+
+    // Защита 3: Rate limiting - не более 1 запроса в 30 секунд
+    const now = Date.now();
+    if (lastSubmitRef.current && now - lastSubmitRef.current < 30000) {
+      setSubmitStatus('ratelimit');
+      return;
+    }
+
+    // Защита 4: Валидация телефона (минимум 10 цифр)
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      setSubmitStatus('error');
+      return;
+    }
+
+    // Защита 5: Валидация имени (минимум 2 символа, без спецсимволов)
+    if (formData.name.length < 2 || /[<>{}[\]\\\/]/.test(formData.name)) {
+      setSubmitStatus('error');
+      return;
+    }
+
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
@@ -20,14 +64,15 @@ export default function CallbackWidget() {
           host: window.location.host,
           code: 'cfcd208495d565ef66e7dff9f98764da',
           method: 'send',
-          name: formData.name,
-          phone: formData.phone,
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
         }),
       });
 
       if (response.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', phone: '' });
+        lastSubmitRef.current = Date.now();
         setTimeout(() => {
           setIsOpen(false);
           setSubmitStatus('idle');
@@ -89,6 +134,18 @@ export default function CallbackWidget() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot - скрытое поле для ботов */}
+                <input
+                  type="text"
+                  name="website"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
+
                 <div>
                   <label htmlFor="callback-name" className="block text-sm font-medium text-gray-700 mb-2">
                     Ваше имя
@@ -97,10 +154,13 @@ export default function CallbackWidget() {
                     id="callback-name"
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={50}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent outline-none transition-all"
                     placeholder="Иван"
+                    autoComplete="name"
                   />
                 </div>
 
@@ -112,16 +172,25 @@ export default function CallbackWidget() {
                     id="callback-phone"
                     type="tel"
                     required
+                    minLength={10}
+                    maxLength={18}
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent outline-none transition-all"
                     placeholder="+7 (999) 123-45-67"
+                    autoComplete="tel"
                   />
                 </div>
 
                 {submitStatus === 'error' && (
                   <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
-                    Произошла ошибка. Попробуйте позвонить по номеру +7(923)0166750
+                    Проверьте правильность заполнения полей или позвоните по номеру +7(923)0166750
+                  </div>
+                )}
+
+                {submitStatus === 'ratelimit' && (
+                  <div className="text-orange-600 text-sm bg-orange-50 p-3 rounded-lg">
+                    Заявка уже отправлена. Подождите 30 секунд перед повторной отправкой.
                   </div>
                 )}
 
