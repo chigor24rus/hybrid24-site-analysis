@@ -8,7 +8,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
-import FloatingCallButton from '@/components/FloatingCallButton';
+
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import BlogShareButton from '@/components/BlogShareButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -281,7 +281,7 @@ const BlogPostPage = () => {
           <Icon name="Loader" className="animate-spin" size={48} />
         </div>
         <Footer />
-        <FloatingCallButton />
+  
       </div>
     );
   }
@@ -306,7 +306,7 @@ const BlogPostPage = () => {
           </div>
         </div>
         <Footer />
-        <FloatingCallButton />
+  
       </div>
     );
   }
@@ -431,7 +431,7 @@ const BlogPostPage = () => {
       </article>
 
       <Footer />
-      <FloatingCallButton />
+
       <ScrollToTopButton />
     </div>
   );

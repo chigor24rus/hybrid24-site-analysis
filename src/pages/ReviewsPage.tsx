@@ -9,7 +9,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
-import FloatingCallButton from '@/components/FloatingCallButton';
+
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -194,7 +194,7 @@ const ReviewsPage = () => {
       </section>
 
       <Footer />
-      <FloatingCallButton />
+
       <ScrollToTopButton />
     </div>
   );

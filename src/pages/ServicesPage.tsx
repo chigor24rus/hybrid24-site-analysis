@@ -8,7 +8,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
-import FloatingCallButton from '@/components/FloatingCallButton';
+
 import Breadcrumbs from '@/components/Breadcrumbs';
 
 interface Service {
@@ -225,7 +225,7 @@ const ServicesPage = () => {
       </section>
 
       <Footer />
-      <FloatingCallButton />
+
     </div>
   );
 };
