@@ -3,7 +3,7 @@ import { Phone, X } from 'lucide-react';
 
 export default function CallbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', phone: '+7' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error' | 'ratelimit'>('idle');
   const [honeypot, setHoneypot] = useState('');
@@ -15,6 +15,50 @@ export default function CallbackWidget() {
       openTimeRef.current = Date.now();
     }
   }, [isOpen]);
+
+  const formatPhoneNumber = (value: string) => {
+    // Удаляем все, кроме цифр
+    const digits = value.replace(/\D/g, '');
+    
+    // Если пользователь начал вводить с 8, заменяем на 7
+    const normalizedDigits = digits.startsWith('8') ? '7' + digits.slice(1) : digits;
+    
+    // Форматируем номер: +7 (XXX) XXX-XX-XX
+    if (normalizedDigits.length === 0) {
+      return '+7';
+    }
+    
+    let formatted = '+7';
+    
+    if (normalizedDigits.length > 1) {
+      formatted += ' (' + normalizedDigits.slice(1, 4);
+    }
+    if (normalizedDigits.length >= 4) {
+      formatted += ') ' + normalizedDigits.slice(4, 7);
+    }
+    if (normalizedDigits.length >= 7) {
+      formatted += '-' + normalizedDigits.slice(7, 9);
+    }
+    if (normalizedDigits.length >= 9) {
+      formatted += '-' + normalizedDigits.slice(9, 11);
+    }
+    
+    return formatted;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    
+    // Если пользователь удаляет всё, оставляем +7
+    if (input.length < 2) {
+      setFormData({ ...formData, phone: '+7' });
+      return;
+    }
+    
+    // Форматируем номер
+    const formatted = formatPhoneNumber(input);
+    setFormData({ ...formData, phone: formatted });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +84,9 @@ export default function CallbackWidget() {
       return;
     }
 
-    // Защита 4: Валидация телефона (минимум 10 цифр)
+    // Защита 4: Валидация телефона (должен быть полный номер +7XXXXXXXXXX - 11 цифр)
     const phoneDigits = formData.phone.replace(/\D/g, '');
-    if (phoneDigits.length < 10) {
+    if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
       setSubmitStatus('error');
       return;
     }
@@ -71,7 +115,7 @@ export default function CallbackWidget() {
 
       if (response.ok) {
         setSubmitStatus('success');
-        setFormData({ name: '', phone: '' });
+        setFormData({ name: '', phone: '+7' });
         lastSubmitRef.current = Date.now();
         setTimeout(() => {
           setIsOpen(false);
@@ -172,13 +216,12 @@ export default function CallbackWidget() {
                     id="callback-phone"
                     type="tel"
                     required
-                    minLength={10}
-                    maxLength={18}
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={handlePhoneChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[hsl(var(--primary))] focus:border-transparent outline-none transition-all"
                     placeholder="+7 (999) 123-45-67"
                     autoComplete="tel"
+                    maxLength={18}
                   />
                 </div>
 
