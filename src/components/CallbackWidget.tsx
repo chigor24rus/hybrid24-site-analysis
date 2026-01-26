@@ -202,9 +202,13 @@ export default function CallbackWidget() {
     <>
       {/* Кнопка виджета */}
       <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110 flex items-center gap-2 group"
+        onClick={() => {
+          console.log('Callback button clicked');
+          setIsOpen(true);
+        }}
+        className="fixed bottom-6 right-6 z-[9999] bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110 flex items-center gap-2 group"
         aria-label="Заказать обратный звонок"
+        style={{ pointerEvents: 'auto' }}
       >
         <Phone className="w-6 h-6" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
@@ -214,7 +218,7 @@ export default function CallbackWidget() {
 
       {/* Модальное окно */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in zoom-in duration-200">
             <button
               onClick={() => setIsOpen(false)}
