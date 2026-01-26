@@ -135,7 +135,7 @@ def handler(event: dict, context) -> dict:
         html_part = MIMEText(html_content, 'html', 'utf-8')
         msg.attach(html_part)
         
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
+        with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
             server.starttls()
             server.login(smtp_email, smtp_password)
             server.send_message(msg)

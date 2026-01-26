@@ -200,6 +200,23 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
 
       if (response.ok && data.success) {
         setSubmitSuccess(true);
+        
+        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_name: name,
+            customer_phone: phone,
+            customer_email: email,
+            service_type: selectedServiceTitles || 'Не указано',
+            car_brand: selectedBrand?.name || '',
+            car_model: selectedModel?.name || '',
+            preferred_date: date ? format(date, 'dd.MM.yyyy') : '',
+            preferred_time: time,
+            comment,
+          }),
+        }).catch(err => console.warn('Email notification failed:', err));
+        
         setTimeout(() => {
           setIsBookingOpen(false);
         }, 2000);
