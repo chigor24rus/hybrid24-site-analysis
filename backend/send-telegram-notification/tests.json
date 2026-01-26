@@ -1,0 +1,24 @@
+{
+  "tests": [
+    {
+      "name": "Send Telegram notification",
+      "method": "POST",
+      "body": {
+        "customer_name": "Тестовый клиент",
+        "customer_phone": "+7 (999) 123-45-67",
+        "customer_email": "test@example.com",
+        "service_type": "Диагностика гибридной системы",
+        "car_brand": "Toyota",
+        "car_model": "Prius",
+        "preferred_date": "2024-03-15",
+        "preferred_time": "14:00",
+        "comment": "Тестовая заявка"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

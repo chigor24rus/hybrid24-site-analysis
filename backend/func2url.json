@@ -1,4 +1,5 @@
 {
+  "send-telegram-notification": "https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b",
   "send-booking-email": "https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6",
   "models-api": "https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b",
   "models-upload": "https://functions.poehali.dev/5b2da9ae-6907-49bc-8c1b-ca3ffd20d9e7",
