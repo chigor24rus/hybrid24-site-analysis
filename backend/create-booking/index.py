@@ -4,6 +4,9 @@ from typing import Dict, Any
 from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
@@ -92,6 +95,89 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn.commit()
         cur.close()
         conn.close()
+        
+        smtp_host = os.environ.get('SMTP_HOST')
+        smtp_port_str = os.environ.get('SMTP_PORT', '587')
+        smtp_email = os.environ.get('SMTP_EMAIL')
+        smtp_password = os.environ.get('SMTP_PASSWORD')
+        
+        if smtp_host and smtp_email and smtp_password:
+            smtp_port = int(smtp_port_str)
+            
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = 'Заявка с сайта Hybrid24.ru'
+            msg['From'] = smtp_email
+            msg['To'] = 'service@hybrids24.ru'
+            
+            html_content = f"""
+            <html>
+              <head>
+                <style>
+                  body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                  .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                  .header {{ background-color: #2563eb; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
+                  .content {{ background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px; }}
+                  .field {{ margin-bottom: 15px; }}
+                  .field-label {{ font-weight: bold; color: #1f2937; }}
+                  .field-value {{ color: #4b5563; margin-top: 5px; }}
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="header">
+                    <h2>Новая заявка с сайта Hybrid24.ru</h2>
+                  </div>
+                  <div class="content">
+                    <div class="field">
+                      <div class="field-label">📅 Дата заявки:</div>
+                      <div class="field-value">{datetime.now().strftime('%d.%m.%Y %H:%M:%S')}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">👤 Имя клиента:</div>
+                      <div class="field-value">{customer_name}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">📱 Телефон:</div>
+                      <div class="field-value"><a href="tel:{customer_phone}">{customer_phone}</a></div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">📧 Email:</div>
+                      <div class="field-value">{customer_email or 'Не указан'}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">🔧 Тип услуги:</div>
+                      <div class="field-value">{service_type or 'Не указано'}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">🚗 Автомобиль:</div>
+                      <div class="field-value">{car_brand} {car_model}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">📆 Предпочитаемая дата:</div>
+                      <div class="field-value">{preferred_date or 'Не указано'}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">⏰ Время:</div>
+                      <div class="field-value">{preferred_time or 'Не указано'}</div>
+                    </div>
+                    <div class="field">
+                      <div class="field-label">💬 Комментарий:</div>
+                      <div class="field-value">{comment or 'Нет'}</div>
+                    </div>
+                  </div>
+                </div>
+              </body>
+            </html>
+            """
+            
+            html_part = MIMEText(html_content, 'html', 'utf-8')
+            msg.attach(html_part)
+            
+            server = smtplib.SMTP(smtp_host, smtp_port)
+            server.starttls()
+            server.login(smtp_email, smtp_password)
+            server.send_message(msg)
+            server.quit()
         
         return {
             'statusCode': 200,
