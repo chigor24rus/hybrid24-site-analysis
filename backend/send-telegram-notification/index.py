@@ -37,9 +37,6 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
         chat_id = os.environ.get('TELEGRAM_CHAT_ID')
         
-        print(f"Bot token exists: {bool(bot_token)}")
-        print(f"Chat ID exists: {bool(chat_id)}")
-        
         if not bot_token or not chat_id:
             return {
                 'statusCode': 500,
@@ -86,7 +83,6 @@ def handler(event: dict, context) -> dict:
         
         with urllib.request.urlopen(req, timeout=10) as response:
             result = json.loads(response.read().decode('utf-8'))
-            print(f"Telegram API response: {result}")
             
             if result.get('ok'):
                 return {
