@@ -21,6 +21,7 @@ import AdminSettingsPage from "./pages/AdminSettingsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminPromotionsPage from "./pages/AdminPromotionsPage";
+import AdminErrorsPage from "./pages/AdminErrorsPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
@@ -95,6 +96,7 @@ const App = () => (
             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+            <Route path="/admin/errors" element={<AdminErrorsPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage />} />
             <Route path="/warranty" element={<WarrantyPage />} />
