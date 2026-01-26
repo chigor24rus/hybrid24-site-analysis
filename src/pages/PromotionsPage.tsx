@@ -9,7 +9,6 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
-import FloatingCallButton from '@/components/FloatingCallButton';
 import PromotionTimer from '@/components/PromotionTimer';
 import ShareButton from '@/components/ShareButton';
 import PromotionSubscribe from '@/components/PromotionSubscribe';
@@ -179,7 +178,7 @@ const PromotionsPage = () => {
       </section>
 
       <Footer />
-      <FloatingCallButton />
+
       <ScrollToTopButton />
     </div>
   );

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import CallbackWidget from "./components/CallbackWidget";
 import Index from "./pages/Index";
 import ServicesPage from "./pages/ServicesPage";
 import PromotionsPage from "./pages/PromotionsPage";
@@ -21,13 +22,11 @@ import AdminSettingsPage from "./pages/AdminSettingsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminPromotionsPage from "./pages/AdminPromotionsPage";
-import AdminErrorsPage from "./pages/AdminErrorsPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
 import WarrantyPage from "./pages/WarrantyPage";
 import NotFound from "./pages/NotFound";
-import CallbackWidget from "./components/CallbackWidget";
 
 const queryClient = new QueryClient();
 
@@ -80,7 +79,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <MaintenanceWrapper>
-          <CallbackWidget />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<ServicesPage />} />
@@ -98,13 +96,13 @@ const App = () => (
             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
-            <Route path="/admin/errors" element={<AdminErrorsPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage />} />
             <Route path="/warranty" element={<WarrantyPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CallbackWidget />
         </MaintenanceWrapper>
       </BrowserRouter>
     </TooltipProvider>

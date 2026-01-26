@@ -60,111 +60,60 @@ export default function CallbackWidget() {
     setFormData({ ...formData, phone: formatted });
   };
 
-  const logError = (context: string, error: any, details?: any) => {
-    const errorData = {
-      timestamp: new Date().toISOString(),
-      context,
-      error: error instanceof Error ? {
-        message: error.message,
-        name: error.name,
-        stack: error.stack
-      } : String(error),
-      details,
-      userAgent: navigator.userAgent,
-      url: window.location.href,
-      host: window.location.host
-    };
-    
-    console.error('[CallbackWidget Error]', errorData);
-    
-    try {
-      const errors = JSON.parse(localStorage.getItem('callback_errors') || '[]');
-      errors.push(errorData);
-      if (errors.length > 50) errors.shift();
-      localStorage.setItem('callback_errors', JSON.stringify(errors));
-    } catch (e) {
-      console.error('Failed to save error to localStorage', e);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Защита 1: Honeypot - скрытое поле для ботов
+    if (honeypot) {
+      console.warn('Bot detected: honeypot filled');
+      return;
+    }
+
+    // Защита 2: Минимальное время заполнения формы (2 секунды)
+    const fillTime = Date.now() - openTimeRef.current;
+    if (fillTime < 2000) {
+      console.warn('Bot detected: form filled too quickly');
+      setSubmitStatus('error');
+      return;
+    }
+
+    // Защита 3: Rate limiting - не более 1 запроса в 30 секунд
+    const now = Date.now();
+    if (lastSubmitRef.current && now - lastSubmitRef.current < 30000) {
+      setSubmitStatus('ratelimit');
+      return;
+    }
+
+    // Защита 4: Валидация телефона (должен быть полный номер +7XXXXXXXXXX - 11 цифр)
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
+      setSubmitStatus('error');
+      return;
+    }
+
+    // Защита 5: Валидация имени (минимум 2 символа, без спецсимволов)
+    if (formData.name.length < 2 || /[<>{}[\]\\\/]/.test(formData.name)) {
+      setSubmitStatus('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
     try {
-      // Защита 1: Honeypot - скрытое поле для ботов
-      if (honeypot) {
-        logError('bot_detection', 'Honeypot filled', { honeypot });
-        return;
-      }
-
-      // Защита 2: Минимальное время заполнения формы (2 секунды)
-      const fillTime = Date.now() - openTimeRef.current;
-      if (fillTime < 2000) {
-        logError('bot_detection', 'Form filled too quickly', { fillTime });
-        setSubmitStatus('error');
-        return;
-      }
-
-      // Защита 3: Rate limiting - не более 1 запроса в 30 секунд
-      const now = Date.now();
-      if (lastSubmitRef.current && now - lastSubmitRef.current < 30000) {
-        const timeSinceLastSubmit = now - lastSubmitRef.current;
-        logError('rate_limit', 'Too many requests', { timeSinceLastSubmit });
-        setSubmitStatus('ratelimit');
-        return;
-      }
-
-      // Защита 4: Валидация телефона (должен быть полный номер +7XXXXXXXXXX - 11 цифр)
-      const phoneDigits = formData.phone.replace(/\D/g, '');
-      if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
-        logError('validation', 'Invalid phone number', { phone: formData.phone, phoneDigits });
-        setSubmitStatus('error');
-        return;
-      }
-
-      // Защита 5: Валидация имени (минимум 2 символа, без спецсимволов)
-      if (formData.name.length < 2 || /[<>{}[\]\\\/]/.test(formData.name)) {
-        logError('validation', 'Invalid name', { name: formData.name });
-        setSubmitStatus('error');
-        return;
-      }
-
-      setIsSubmitting(true);
-      setSubmitStatus('idle');
-
-      const requestBody = new URLSearchParams({
-        host: window.location.host,
-        code: 'cfcd208495d565ef66e7dff9f98764da',
-        method: 'send',
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
-      });
-
-      console.log('[CallbackWidget] Sending request', {
-        url: 'https://z31.fpg.ru/zeon/api/callback/start.php',
-        host: window.location.host,
-        name: formData.name.trim(),
-        phone: formData.phone.trim()
-      });
-
       const response = await fetch('https://z31.fpg.ru/zeon/api/callback/start.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: requestBody,
-      });
-
-      const responseText = await response.text();
-      
-      console.log('[CallbackWidget] Response received', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries()),
-        body: responseText
+        body: new URLSearchParams({
+          host: window.location.host,
+          code: 'cfcd208495d565ef66e7dff9f98764da',
+          method: 'send',
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+        }),
       });
 
       if (response.ok) {
-        console.log('[CallbackWidget] Request successful');
         setSubmitStatus('success');
         setFormData({ name: '', phone: '+7' });
         lastSubmitRef.current = Date.now();
@@ -173,25 +122,10 @@ export default function CallbackWidget() {
           setSubmitStatus('idle');
         }, 2000);
       } else {
-        logError('api_error', 'Request failed', {
-          status: response.status,
-          statusText: response.statusText,
-          responseBody: responseText,
-          requestData: {
-            host: window.location.host,
-            name: formData.name.trim(),
-            phone: formData.phone.trim()
-          }
-        });
         setSubmitStatus('error');
       }
     } catch (error) {
-      logError('network_error', error, {
-        formData: {
-          name: formData.name,
-          phone: formData.phone
-        }
-      });
+      console.error('Callback error:', error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -202,13 +136,9 @@ export default function CallbackWidget() {
     <>
       {/* Кнопка виджета */}
       <button
-        onClick={() => {
-          console.log('Callback button clicked');
-          setIsOpen(true);
-        }}
-        className="fixed bottom-6 right-6 z-[9999] bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110 flex items-center gap-2 group"
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 z-50 bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90 text-white rounded-full p-4 shadow-lg transition-all hover:scale-110 flex items-center gap-2 group"
         aria-label="Заказать обратный звонок"
-        style={{ pointerEvents: 'auto' }}
       >
         <Phone className="w-6 h-6" />
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
@@ -218,7 +148,7 @@ export default function CallbackWidget() {
 
       {/* Модальное окно */}
       {isOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in zoom-in duration-200">
             <button
               onClick={() => setIsOpen(false)}
