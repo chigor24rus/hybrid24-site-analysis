@@ -117,6 +117,23 @@ export default function CallbackWidget() {
         setSubmitStatus('success');
         setFormData({ name: '', phone: '+7' });
         lastSubmitRef.current = Date.now();
+        
+        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer_name: formData.name.trim(),
+            customer_phone: formData.phone.trim(),
+            customer_email: 'Не указано',
+            service_type: 'Обратный звонок',
+            car_brand: 'Не указано',
+            car_model: 'Не указано',
+            preferred_date: 'Как можно скорее',
+            preferred_time: 'Как можно скорее',
+            comment: 'Заявка через виджет обратного звонка'
+          })
+        }).catch(err => console.warn('Email notification failed:', err));
+        
         setTimeout(() => {
           setIsOpen(false);
           setSubmitStatus('idle');
