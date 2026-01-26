@@ -27,6 +27,7 @@ import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
 import WarrantyPage from "./pages/WarrantyPage";
 import NotFound from "./pages/NotFound";
+import CallbackWidget from "./components/CallbackWidget";
 
 const queryClient = new QueryClient();
 
@@ -79,6 +80,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <MaintenanceWrapper>
+          <CallbackWidget />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<ServicesPage />} />
