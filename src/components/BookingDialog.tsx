@@ -176,27 +176,47 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
       const selectedBrand = brands.find(b => b.id.toString() === brand);
       const selectedModel = models.find(m => m.id.toString() === model);
 
+      const bookingData = {
+        name,
+        phone,
+        email,
+        service: selectedServiceTitles || 'Не указано',
+        brand: selectedBrand?.name || '',
+        model: selectedModel?.name || '',
+        date: date ? format(date, 'yyyy-MM-dd') : '',
+        time,
+        comment,
+      };
+
       const response = await fetch('https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name,
-          phone,
-          email,
-          service: selectedServiceTitles || 'Не указано',
-          brand: selectedBrand?.name || '',
-          model: selectedModel?.name || '',
-          date: date ? format(date, 'yyyy-MM-dd') : '',
-          time,
-          comment,
-        }),
+        body: JSON.stringify(bookingData),
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
+        await fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            customer_name: name,
+            customer_phone: phone,
+            customer_email: email,
+            service_type: selectedServiceTitles || 'Не указано',
+            car_brand: selectedBrand?.name || '',
+            car_model: selectedModel?.name || '',
+            preferred_date: date ? format(date, 'dd.MM.yyyy') : '',
+            preferred_time: time,
+            comment,
+          }),
+        }).catch(err => console.error('Email notification failed:', err));
+
         setSubmitSuccess(true);
         setTimeout(() => {
           setIsBookingOpen(false);

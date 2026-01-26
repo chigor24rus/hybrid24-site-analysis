@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Send booking notification email",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "customer_name": "Иван Иванов",
+        "customer_phone": "+7 (999) 123-45-67",
+        "customer_email": "test@example.com",
+        "service_type": "Диагностика",
+        "car_brand": "Toyota",
+        "car_model": "Prius",
+        "preferred_date": "2024-12-25",
+        "preferred_time": "10:00",
+        "comment": "Тестовая заявка"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
