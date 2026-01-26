@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
-
+import FloatingCallButton from '@/components/FloatingCallButton';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 
@@ -199,7 +199,7 @@ const LegalPage = () => {
       </section>
 
       <Footer />
-
+      <FloatingCallButton />
       <ScrollToTopButton />
     </div>
   );

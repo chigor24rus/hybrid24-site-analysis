@@ -172,5 +172,44 @@
     <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
+
+<!-- Zeon Callback Widget -->
+<script type="text/javascript" src="https://z31.fpg.ru/zeon/js/jquery-1.8.2.js"></script>
+<script type="text/javascript">
+(function() {
+  function loadZeonWidget() {
+    try {
+      if (window.$ && window.$.post) {
+        window.$.post(
+          'https://z31.fpg.ru/zeon/api/callback/start.php',
+          {
+            host: window.location.host,
+            code: 'cfcd208495d565ef66e7dff9f98764da',
+            method: 'init'
+          },
+          function(html) {
+            if (html) {
+              var div = document.createElement('div');
+              div.innerHTML = html;
+              document.body.appendChild(div);
+            }
+          }
+        );
+      }
+    } catch (e) {
+      console.error('Zeon widget error:', e);
+    }
+  }
+  
+  if (document.readyState === 'complete') {
+    setTimeout(loadZeonWidget, 1500);
+  } else {
+    window.addEventListener('load', function() {
+      setTimeout(loadZeonWidget, 1500);
+    });
+  }
+})();
+</script>
+<!-- /Zeon Callback Widget -->
 </body>
 </html>

@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Sections from '@/components/Sections';
 import Footer from '@/components/Footer';
+import FloatingCallButton from '@/components/FloatingCallButton';
 import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
 
 interface Review {
@@ -71,6 +72,8 @@ const Index = () => {
       <Sections setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
       
       <Footer />
+      
+      <FloatingCallButton />
     </div>
   );
 };
