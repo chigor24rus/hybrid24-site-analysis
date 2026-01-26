@@ -180,6 +180,10 @@ const AdminPage = () => {
               <Icon name="Percent" className="mr-2" size={18} />
               Акции
             </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/logs')}>
+              <Icon name="Bug" className="mr-2" size={18} />
+              Логи ошибок
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/settings')}>
               <Icon name="Settings" className="mr-2" size={18} />
               Настройки

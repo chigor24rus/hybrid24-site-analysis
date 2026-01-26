@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import CallbackWidget from "./components/CallbackWidget";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorLogger from "./utils/errorLogger";
 import Index from "./pages/Index";
 import ServicesPage from "./pages/ServicesPage";
 import PromotionsPage from "./pages/PromotionsPage";
@@ -22,6 +24,7 @@ import AdminSettingsPage from "./pages/AdminSettingsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminPromotionsPage from "./pages/AdminPromotionsPage";
+import AdminLogsPage from "./pages/AdminLogsPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
@@ -29,6 +32,8 @@ import WarrantyPage from "./pages/WarrantyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+ErrorLogger.getInstance();
 
 const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
@@ -78,7 +83,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <MaintenanceWrapper>
+        <ErrorBoundary>
+          <MaintenanceWrapper>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/services" element={<ServicesPage />} />
@@ -96,6 +102,7 @@ const App = () => (
             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+            <Route path="/admin/logs" element={<AdminLogsPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage />} />
             <Route path="/warranty" element={<WarrantyPage />} />
@@ -103,7 +110,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CallbackWidget />
-        </MaintenanceWrapper>
+          </MaintenanceWrapper>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
