@@ -29,8 +29,8 @@ const ContactsSection = () => {
                 </div>
                 <CardTitle>Email</CardTitle>
                 <CardDescription className="text-lg">
-                  <a href="mailto:info@hybrids24.ru" className="hover:text-primary transition-colors">
-                    info@hybrids24.ru
+                  <a href="mailto:info@hybrid24.ru" className="hover:text-primary transition-colors">
+                    info@hybrid24.ru
                   </a>
                 </CardDescription>
               </CardHeader>

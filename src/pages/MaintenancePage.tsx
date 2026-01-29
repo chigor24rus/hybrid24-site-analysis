@@ -60,9 +60,9 @@ const MaintenancePage = () => {
                 </a>
               </Button>
               <Button variant="outline" size="lg" className="bg-white/20 border-white/30 text-white hover:bg-white/30" asChild>
-                <a href="mailto:info@hybrids24.ru">
+                <a href="mailto:info@hybrid24.ru">
                   <Icon name="Mail" className="mr-2" size={20} />
-                  info@hybrids24.ru
+                  info@hybrid24.ru
                 </a>
               </Button>
             </div>

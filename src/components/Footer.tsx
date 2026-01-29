@@ -61,9 +61,9 @@ const Footer = () => {
                 <Icon name="Phone" size={16} />
                 +7 (923) 016-67-50
               </a>
-              <a href="mailto:info@hybrids24.ru" className="hover:text-foreground transition-colors flex items-center gap-2">
+              <a href="mailto:info@hybrid24.ru" className="hover:text-foreground transition-colors flex items-center gap-2">
                 <Icon name="Mail" size={16} />
-                info@hybrids24.ru
+                info@hybrid24.ru
               </a>
               <p className="flex items-start gap-2">
                 <Icon name="MapPin" size={16} className="mt-0.5 flex-shrink-0" />
