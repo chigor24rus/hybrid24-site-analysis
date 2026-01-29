@@ -101,40 +101,28 @@ export default function CallbackWidget() {
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('https://z31.fpg.ru/zeon/api/callback/start.php', {
+      const bookingData = {
+        customer_name: formData.name.trim(),
+        customer_phone: formData.phone.trim(),
+        customer_email: 'Не указано',
+        service_type: 'Обратный звонок',
+        car_brand: 'Не указано',
+        car_model: 'Не указано',
+        preferred_date: 'Как можно скорее',
+        preferred_time: 'Как можно скорее',
+        comment: 'Заявка через виджет обратного звонка'
+      };
+
+      const emailResponse = await fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({
-          host: window.location.host,
-          code: 'cfcd208495d565ef66e7dff9f98764da',
-          method: 'send',
-          name: formData.name.trim(),
-          phone: formData.phone.trim(),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
       });
 
-      if (response.ok) {
+      if (emailResponse.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', phone: '+7' });
         lastSubmitRef.current = Date.now();
-        
-        const bookingData = {
-          customer_name: formData.name.trim(),
-          customer_phone: formData.phone.trim(),
-          customer_email: 'Не указано',
-          service_type: 'Обратный звонок',
-          car_brand: 'Не указано',
-          car_model: 'Не указано',
-          preferred_date: 'Как можно скорее',
-          preferred_time: 'Как можно скорее',
-          comment: 'Заявка через виджет обратного звонка'
-        };
-        
-        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingData)
-        }).catch(err => console.warn('Email notification failed:', err));
         
         fetch('https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b', {
           method: 'POST',
