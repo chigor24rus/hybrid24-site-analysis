@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "Test missing dates",
+      "method": "POST",
+      "body": {},
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test invalid date format",
+      "method": "POST",
+      "body": {
+        "start_date": "invalid",
+        "end_date": "2024-12-31"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test start date after end date",
+      "method": "POST",
+      "body": {
+        "start_date": "2024-12-31",
+        "end_date": "2024-01-01"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Icon from '@/components/ui/icon';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import DeleteBookingsDialog from '@/components/DeleteBookingsDialog';
 
 interface Booking {
   id: number;
@@ -44,6 +45,7 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -160,6 +162,10 @@ const AdminPage = () => {
             <p className="text-muted-foreground">Управление заявками клиентов</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)}>
+              <Icon name="Trash2" className="mr-2" size={18} />
+              Удалить заявки
+            </Button>
             <Button variant="outline" onClick={() => navigate('/admin/data')}>
               <Icon name="Database" className="mr-2" size={18} />
               Бренды и цены
@@ -364,6 +370,12 @@ const AdminPage = () => {
           )}
         </div>
       </div>
+
+      <DeleteBookingsDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onSuccess={fetchBookings}
+      />
     </div>
   );
 };
