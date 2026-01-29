@@ -75,7 +75,7 @@ const Footer = () => {
 
         <div className="border-t border-border pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs sm:text-sm text-center">
-            © 2025 HEVSeRvice. Все права защищены
+            © 2025 HEVSR. Все права защищены
           </p>
           <div className="flex gap-4" role="navigation" aria-label="Социальные сети">
             <Button 
