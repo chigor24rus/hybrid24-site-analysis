@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CallbackWidget from "./components/CallbackWidget";
+// import CallbackWidget from "./components/CallbackWidget";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ErrorLogger from "./utils/errorLogger";
 import Index from "./pages/Index";
@@ -109,7 +109,8 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <CallbackWidget />
+          {/* Custom callback widget - commented out in favor of ZEON widget */}
+          {/* <CallbackWidget /> */}
           </MaintenanceWrapper>
         </ErrorBoundary>
       </BrowserRouter>
