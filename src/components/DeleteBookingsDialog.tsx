@@ -16,9 +16,10 @@ interface DeleteBookingsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  onExport?: (startDate: string, endDate: string) => void;
 }
 
-const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess }: DeleteBookingsDialogProps) => {
+const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess, onExport }: DeleteBookingsDialogProps) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -81,7 +82,7 @@ const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess }: DeleteBookingsD
             Удаление заявок
           </DialogTitle>
           <DialogDescription>
-            Выберите период для удаления заявок. Это действие нельзя отменить.
+            Выберите период для удаления заявок. Рекомендуется сначала экспортировать заявки для архива.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,18 +123,35 @@ const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess }: DeleteBookingsD
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={deleting}
+            className="w-full sm:w-auto"
           >
             Отмена
           </Button>
+          {onExport && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                if (startDate && endDate) {
+                  onExport(startDate, endDate);
+                }
+              }}
+              disabled={deleting || !startDate || !endDate}
+              className="w-full sm:w-auto"
+            >
+              <Icon name="Download" className="mr-2" size={16} />
+              Сначала экспортировать
+            </Button>
+          )}
           <Button
             variant="destructive"
             onClick={handleDelete}
             disabled={deleting || !startDate || !endDate}
+            className="w-full sm:w-auto"
           >
             {deleting ? (
               <>
