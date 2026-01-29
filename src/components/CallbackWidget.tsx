@@ -101,28 +101,44 @@ export default function CallbackWidget() {
     setSubmitStatus('idle');
 
     try {
-      const bookingData = {
-        customer_name: formData.name.trim(),
-        customer_phone: formData.phone.trim(),
-        customer_email: 'Не указано',
-        service_type: 'Обратный звонок',
-        car_brand: 'Не указано',
-        car_model: 'Не указано',
-        preferred_date: 'Как можно скорее',
-        preferred_time: 'Как можно скорее',
-        comment: 'Заявка через виджет обратного звонка'
-      };
-
-      const emailResponse = await fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+      const createBookingResponse = await fetch('https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData)
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          phone: formData.phone.trim(),
+          email: '',
+          service: 'Обратный звонок',
+          brand: '',
+          model: '',
+          date: '',
+          time: 'Как можно скорее',
+          comment: 'Заявка через виджет обратного звонка'
+        })
       });
 
-      if (emailResponse.ok) {
+      if (createBookingResponse.ok) {
         setSubmitStatus('success');
         setFormData({ name: '', phone: '+7' });
         lastSubmitRef.current = Date.now();
+        
+        const bookingData = {
+          customer_name: formData.name.trim(),
+          customer_phone: formData.phone.trim(),
+          customer_email: 'Не указано',
+          service_type: 'Обратный звонок',
+          car_brand: 'Не указано',
+          car_model: 'Не указано',
+          preferred_date: 'Как можно скорее',
+          preferred_time: 'Как можно скорее',
+          comment: 'Заявка через виджет обратного звонка'
+        };
+        
+        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bookingData)
+        }).catch(err => console.warn('Email notification failed:', err));
         
         fetch('https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b', {
           method: 'POST',
