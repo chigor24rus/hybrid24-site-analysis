@@ -73,21 +73,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-border pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="border-t border-border pt-6 flex justify-center items-center">
           <p className="text-muted-foreground text-xs sm:text-sm text-center">
             © 2025 HEVSeRvice. Все права защищены
           </p>
-          <div className="flex gap-3" role="navigation" aria-label="Социальные сети">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Instagram">
-              <Icon name="Instagram" size={18} />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Facebook">
-              <Icon name="Facebook" size={18} />
-            </Button>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Youtube">
-              <Icon name="Youtube" size={18} />
-            </Button>
-          </div>
         </div>
       </div>
     </footer>
