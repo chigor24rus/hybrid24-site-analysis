@@ -5,38 +5,16 @@ import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
 
-const promotions = [
-  {
-    id: 1,
-    title: 'Сезонное ТО',
-    description: 'Комплексная диагностика + замена масла со скидкой 25%',
-    discount: '-25%',
-    oldPrice: '6 000 ₽',
-    newPrice: '4 500 ₽',
-    validUntil: '31 декабря 2025',
-    icon: 'Percent'
-  },
-  {
-    id: 2,
-    title: 'Шиномонтаж 4+1',
-    description: 'При покупке 4 шин — шиномонтаж в подарок',
-    discount: 'Подарок',
-    oldPrice: '8 000 ₽',
-    newPrice: '6 000 ₽',
-    validUntil: '15 января 2026',
-    icon: 'Gift'
-  },
-  {
-    id: 3,
-    title: 'Первое посещение',
-    description: 'Скидка 15% на любые услуги для новых клиентов',
-    discount: '-15%',
-    oldPrice: '',
-    newPrice: 'На все',
-    validUntil: 'Постоянно',
-    icon: 'Sparkles'
-  }
-];
+interface Promotion {
+  id: number;
+  title: string;
+  description: string;
+  discount: string;
+  oldPrice: string;
+  newPrice: string;
+  validUntil: string;
+  icon: string;
+}
 
 interface Review {
   id: number | string;
@@ -63,6 +41,8 @@ interface PromotionsReviewsSectionProps {
 }
 
 const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [loadingPromotions, setLoadingPromotions] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
@@ -132,6 +112,23 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   };
 
   useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d');
+        const data = await response.json();
+        if (response.ok && data.promotions) {
+          setPromotions(data.promotions.slice(0, 3));
+        } else {
+          setPromotions([]);
+        }
+      } catch (error) {
+        console.error('Error fetching promotions:', error);
+        setPromotions([]);
+      } finally {
+        setLoadingPromotions(false);
+      }
+    };
+
     const fetchReviews = async () => {
       try {
         const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce');
@@ -178,6 +175,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       }
     };
 
+    fetchPromotions();
     fetchReviews();
     fetchBlogPosts();
   }, []);
@@ -220,8 +218,18 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             </Link>
             <p className="text-muted-foreground text-base md:text-lg">Выгодные предложения для наших клиентов</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {promotions.map((promo, index) => (
+          {loadingPromotions ? (
+            <div className="text-center py-12">
+              <Icon name="Loader" className="animate-spin mx-auto" size={48} />
+            </div>
+          ) : promotions.length === 0 ? (
+            <div className="text-center py-12">
+              <Icon name="Tag" className="mx-auto mb-4 text-muted-foreground" size={48} />
+              <p className="text-muted-foreground">Акций пока нет</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {promotions.map((promo, index) => (
               <Card
                 key={promo.id}
                 className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
@@ -255,8 +263,9 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
