@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
+import PromotionDetailDialog from '@/components/PromotionDetailDialog';
 
 interface Promotion {
   id: number;
@@ -14,6 +16,7 @@ interface Promotion {
   newPrice: string;
   validUntil: string;
   icon: string;
+  details?: string;
 }
 
 interface Review {
@@ -46,6 +49,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [reviews, setReviews] = useState<Review[]>([]);
   const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion | null>(null);
+  const [isPromotionDetailOpen, setIsPromotionDetailOpen] = useState(false);
   
   useEffect(() => {
     if (allReviews.length > 0 && typeof window !== 'undefined') {
@@ -208,6 +213,15 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
 
   return (
     <>
+      <Dialog open={isPromotionDetailOpen} onOpenChange={setIsPromotionDetailOpen}>
+        <PromotionDetailDialog 
+          promotion={selectedPromotion} 
+          onBookingClick={() => {
+            setIsPromotionDetailOpen(false);
+            setIsBookingOpen(true);
+          }}
+        />
+      </Dialog>
       <section id="promotions" className="py-12 md:py-16 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
@@ -235,6 +249,10 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
                 key={promo.id}
                 className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => {
+                  setSelectedPromotion(promo);
+                  setIsPromotionDetailOpen(true);
+                }}
               >
                 <div className="absolute top-4 right-4">
                   <Badge className="gradient-accent text-lg px-3 py-1">{promo.discount}</Badge>
@@ -258,7 +276,13 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
                       <Icon name="Clock" size={14} />
                       <span>Действует до: {promo.validUntil}</span>
                     </div>
-                    <Button className="w-full gradient-primary btn-glow mt-4" onClick={() => setIsBookingOpen(true)}>
+                    <Button 
+                      className="w-full gradient-primary btn-glow mt-4" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsBookingOpen(true);
+                      }}
+                    >
                       Воспользоваться
                     </Button>
                   </div>
