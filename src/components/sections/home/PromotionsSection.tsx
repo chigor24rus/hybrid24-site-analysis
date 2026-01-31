@@ -72,75 +72,77 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
             <p className="text-muted-foreground">Акций пока нет</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {promotions.map((promo, index) => (
-            <Card
-              key={promo.id}
-              className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
-              style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => onPromotionClick(promo)}
-            >
-              <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
-                <Badge className="gradient-accent text-lg px-3 py-1">{promo.discount}</Badge>
-                {isEndingSoon(promo.validUntil) && (
-                  <Badge variant="destructive" className="text-sm px-2 py-1 animate-pulse">
-                    <Icon name="AlertCircle" size={14} className="mr-1" />
-                    Заканчивается
-                  </Badge>
-                )}
-              </div>
-              <CardHeader>
-                <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                  <Icon name={promo.icon as any} size={24} className="text-white" />
-                </div>
-                <CardTitle className="text-2xl">{promo.title}</CardTitle>
-                <CardDescription className="text-base mt-2">{promo.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-baseline gap-3">
-                    {promo.oldPrice && (
-                      <span className="text-muted-foreground line-through text-lg">{promo.oldPrice}</span>
-                    )}
-                    <span className="text-3xl font-bold text-primary">{promo.newPrice}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Icon name="Clock" size={14} />
-                    <span>Действует до: {formatValidUntil(promo.validUntil)}</span>
-                  </div>
-                  <Button 
-                    className="w-full gradient-primary btn-glow mt-4" 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onBookingClick();
-                    }}
-                  >
-                    Воспользоваться
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            ))}
-          </div>
-          {hasMore && !loading && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
-              <Button 
-                size="lg" 
-                variant="default" 
-                onClick={onRefresh}
-                className="group hover:scale-105 transition-all"
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {promotions.map((promo, index) => (
+              <Card
+                key={promo.id}
+                className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
+                style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => onPromotionClick(promo)}
               >
-                <Icon name="RefreshCw" size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
-                Показать другие акции
-              </Button>
-              <Link to="/promotions">
-                <Button size="lg" variant="outline" className="group hover:bg-primary hover:text-primary-foreground transition-all">
-                  Все акции
-                  <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+                <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
+                  <Badge className="gradient-accent text-lg px-3 py-1">{promo.discount}</Badge>
+                  {isEndingSoon(promo.validUntil) && (
+                    <Badge variant="destructive" className="text-sm px-2 py-1 animate-pulse">
+                      <Icon name="AlertCircle" size={14} className="mr-1" />
+                      Заканчивается
+                    </Badge>
+                  )}
+                </div>
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                    <Icon name={promo.icon as any} size={24} className="text-white" />
+                  </div>
+                  <CardTitle className="text-2xl">{promo.title}</CardTitle>
+                  <CardDescription className="text-base mt-2">{promo.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-baseline gap-3">
+                      {promo.oldPrice && (
+                        <span className="text-muted-foreground line-through text-lg">{promo.oldPrice}</span>
+                      )}
+                      <span className="text-3xl font-bold text-primary">{promo.newPrice}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Icon name="Clock" size={14} />
+                      <span>Действует до: {formatValidUntil(promo.validUntil)}</span>
+                    </div>
+                    <Button 
+                      className="w-full gradient-primary btn-glow mt-4" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onBookingClick();
+                      }}
+                    >
+                      Воспользоваться
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              ))}
             </div>
-          )}
+            {hasMore && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
+                <Button 
+                  size="lg" 
+                  variant="default" 
+                  onClick={onRefresh}
+                  className="group hover:scale-105 transition-all"
+                >
+                  <Icon name="RefreshCw" size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                  Показать другие акции
+                </Button>
+                <Link to="/promotions">
+                  <Button size="lg" variant="outline" className="group hover:bg-primary hover:text-primary-foreground transition-all">
+                    Все акции
+                    <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
