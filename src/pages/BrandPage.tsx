@@ -198,8 +198,10 @@ export default function BrandPage() {
                       <CardDescription>{service.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">{service.price}</p>
-                      <p className="text-sm text-muted-foreground mt-2 flex items-center">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-2xl font-bold text-primary">{service.price}</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground flex items-center">
                         <Icon name="Clock" size={14} className="mr-1" />
                         {service.duration}
                       </p>
