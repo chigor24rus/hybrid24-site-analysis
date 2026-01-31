@@ -1,0 +1,146 @@
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { Card, CardContent } from '@/components/ui/card';
+import Icon from '@/components/ui/icon';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Breadcrumbs from '@/components/Breadcrumbs';
+
+interface Brand {
+  id: number;
+  name: string;
+}
+
+interface Model {
+  id: number;
+  brand_id: number;
+  name: string;
+  year_from: number | null;
+  year_to: number | null;
+}
+
+export default function BrandModelsPage() {
+  const { brandSlug } = useParams<{ brandSlug: string }>();
+  const navigate = useNavigate();
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [brand, setBrand] = useState<Brand | null>(null);
+  const [models, setModels] = useState<Model[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [brandsRes, modelsRes] = await Promise.all([
+          fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f'),
+          fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b'),
+        ]);
+
+        const [brandsData, modelsData] = await Promise.all([
+          brandsRes.json(),
+          modelsRes.json(),
+        ]);
+
+        const brands: Brand[] = brandsData.brands || [];
+        const allModels: Model[] = modelsData.models || [];
+
+        const foundBrand = brands.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === brandSlug);
+
+        if (!foundBrand) {
+          navigate('/404');
+          return;
+        }
+
+        const brandModels = allModels.filter(m => m.brand_id === foundBrand.id);
+
+        setBrand(foundBrand);
+        setModels(brandModels);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        navigate('/404');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [brandSlug, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Icon name="Loader" className="animate-spin" size={48} />
+      </div>
+    );
+  }
+
+  if (!brand) {
+    return null;
+  }
+
+  const handleModelClick = (model: Model) => {
+    const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/${brandSlug}/${modelSlug}`);
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Модели {brand.name} - HEVSeRvice</title>
+        <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание.`} />
+        <link rel="canonical" href={`https://hevservice.ru/${brandSlug}`} />
+      </Helmet>
+
+      <Header setIsBookingOpen={setIsBookingOpen} />
+
+      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs 
+            items={[
+              { label: 'Главная', path: '/' },
+              { label: brand.name }
+            ]} 
+          />
+
+          <div className="mb-12 text-center">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Выберите модель {brand.name}</h1>
+            <p className="text-xl text-muted-foreground">
+              {models.length} {models.length === 1 ? 'модель' : models.length < 5 ? 'модели' : 'моделей'} доступно
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+            {models.map((model, index) => (
+              <Card 
+                key={model.id}
+                className="cursor-pointer hover:border-primary hover:shadow-lg transition-all animate-fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+                onClick={() => handleModelClick(model)}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center">
+                      <Icon name="Car" size={32} className="text-white" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-center mb-2">{model.name}</h3>
+                  {model.year_from && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      {model.year_from}{model.year_to ? `-${model.year_to}` : '+'} г.
+                    </p>
+                  )}
+                  <div className="mt-4 flex items-center justify-center text-primary text-sm font-medium">
+                    Выбрать
+                    <Icon name="ArrowRight" size={16} className="ml-1" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </>
+  );
+}

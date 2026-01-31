@@ -15,6 +15,8 @@ import ReviewsPage from "./pages/ReviewsPage";
 import BlogPage from "./pages/BlogPage";
 import BrandPage from "./pages/BrandPage";
 import BrandsPage from "./pages/BrandsPage";
+import BrandModelsPage from "./pages/BrandModelsPage";
+import ModelServicesPage from "./pages/ModelServicesPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import ServiceModelPage from "./pages/ServiceModelPage";
 import SeoIndexPage from "./pages/SeoIndexPage";
@@ -97,6 +99,8 @@ const App = () => (
             <Route path="/brands" element={<BrandsPage />} />
             <Route path="/brand/:brandId" element={<BrandPage />} />
             <Route path="/services-index" element={<SeoIndexPage />} />
+            <Route path="/:brandSlug" element={<BrandModelsPage />} />
+            <Route path="/:brandSlug/:modelSlug" element={<ModelServicesPage />} />
             <Route path="/:brandSlug/:modelSlug/:serviceSlug" element={<ServiceModelPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
