@@ -88,10 +88,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       try {
         const timestamp = new Date().getTime();
         const response = await fetch(`https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d?t=${timestamp}`, {
-          cache: 'no-store',
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
+          cache: 'no-store'
         });
         const data = await response.json();
         if (response.ok && data.promotions) {
