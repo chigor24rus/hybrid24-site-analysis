@@ -30,7 +30,17 @@ interface ServicesSectionProps {
 const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelectedServices }: ServicesSectionProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [allServices, setAllServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -42,7 +52,9 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
           new Map((data.services || []).map((s: Service) => [s.id, s])).values()
         );
         
-        setServices(uniqueServices);
+        setAllServices(uniqueServices);
+        const shuffled = shuffleArray(uniqueServices);
+        setServices(shuffled.slice(0, 6));
       } catch (error) {
         console.error('Error fetching services:', error);
       } finally {
@@ -75,12 +87,19 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
 
   const calculateTotal = () => {
     return selectedServices.reduce((sum, id) => {
-      const service = services.find(s => s.id === id);
+      const service = allServices.find(s => s.id === id);
       if (service) {
         return sum + extractPrice(service.price);
       }
       return sum;
     }, 0);
+  };
+
+  const refreshServices = () => {
+    if (allServices.length > 0) {
+      const shuffled = shuffleArray(allServices);
+      setServices(shuffled.slice(0, 6));
+    }
   };
 
   if (loading) {
@@ -104,7 +123,7 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
             </Link>
             <p className="text-muted-foreground text-base md:text-lg">Полный спектр услуг для вашего автомобиля</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {services.map((service, index) => {
               const articleId = SERVICE_ARTICLE_MAP[service.title];
               const CardWrapper = articleId ? Link : 'div';
@@ -153,6 +172,25 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
               );
             })}
           </div>
+          {allServices.length > 6 && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <Button 
+                size="lg" 
+                variant="default" 
+                onClick={refreshServices}
+                className="group hover:scale-105 transition-all"
+              >
+                <Icon name="RefreshCw" size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                Показать другие услуги
+              </Button>
+              <Link to="/services">
+                <Button size="lg" variant="outline" className="group hover:bg-primary hover:text-primary-foreground transition-all">
+                  Все услуги
+                  <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
@@ -170,7 +208,7 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {services.map(service => (
+                  {allServices.map(service => (
                     <div
                       key={`calc-${service.id}`}
                       className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
