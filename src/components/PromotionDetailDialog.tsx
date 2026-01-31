@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { format, parse } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface Promotion {
   id: number;
@@ -22,6 +24,15 @@ interface PromotionDetailDialogProps {
 
 const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDialogProps) => {
   if (!promotion) return null;
+
+  const formatValidUntil = (dateString: string) => {
+    try {
+      const date = parse(dateString, 'dd.MM.yyyy', new Date());
+      return format(date, 'd MMMM yyyy', { locale: ru });
+    } catch {
+      return dateString;
+    }
+  };
 
   return (
     <DialogContent className="max-w-2xl">
@@ -56,7 +67,7 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
           </div>
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
             <Icon name="Clock" size={16} />
-            <span>Действует до: {promotion.validUntil}</span>
+            <span>Действует до: {formatValidUntil(promotion.validUntil)}</span>
           </div>
         </div>
 

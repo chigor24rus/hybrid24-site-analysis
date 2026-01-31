@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
+import { format, parse } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export interface Promotion {
   id: number;
@@ -24,6 +26,15 @@ interface PromotionsSectionProps {
 }
 
 const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick }: PromotionsSectionProps) => {
+  const formatValidUntil = (dateString: string) => {
+    try {
+      const date = parse(dateString, 'dd.MM.yyyy', new Date());
+      return format(date, 'd MMMM yyyy', { locale: ru });
+    } catch {
+      return dateString;
+    }
+  };
+
   return (
     <section id="promotions" className="py-12 md:py-16 bg-card/30">
       <div className="container mx-auto px-4">
@@ -74,7 +85,7 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Icon name="Clock" size={14} />
-                    <span>Действует до: {promo.validUntil}</span>
+                    <span>Действует до: {formatValidUntil(promo.validUntil)}</span>
                   </div>
                   <Button 
                     className="w-full gradient-primary btn-glow mt-4" 
