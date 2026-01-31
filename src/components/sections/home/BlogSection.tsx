@@ -19,9 +19,11 @@ interface BlogSectionProps {
   blogPosts: BlogPost[];
   loading: boolean;
   viewCounts: Record<number, number>;
+  onRefresh: () => void;
+  hasMore: boolean;
 }
 
-const BlogSection = ({ blogPosts, loading, viewCounts }: BlogSectionProps) => {
+const BlogSection = ({ blogPosts, loading, viewCounts, onRefresh, hasMore }: BlogSectionProps) => {
   return (
     <section id="blog" className="py-12 md:py-16 bg-card/30">
       <div className="container mx-auto px-4">
@@ -45,7 +47,8 @@ const BlogSection = ({ blogPosts, loading, viewCounts }: BlogSectionProps) => {
             <p className="text-muted-foreground">Статей пока нет</p>
           </div>
         ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {blogPosts.map((post, index) => (
             <Link key={post.id} to={`/blog/${post.id}`}>
               <Card
@@ -100,17 +103,27 @@ const BlogSection = ({ blogPosts, loading, viewCounts }: BlogSectionProps) => {
               </Card>
             </Link>
           ))}
-        </div>
-        )}
-        {blogPosts.length > 0 && (
-          <div className="text-center mt-12 animate-fade-in">
-            <Link to="/blog">
-              <Button variant="outline" size="lg" className="group">
-                Все статьи
-                <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
           </div>
+          {hasMore && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <Button 
+                size="lg" 
+                variant="default" 
+                onClick={onRefresh}
+                className="group hover:scale-105 transition-all"
+              >
+                <Icon name="RefreshCw" size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                Показать другие статьи
+              </Button>
+              <Link to="/blog">
+                <Button size="lg" variant="outline" className="group hover:bg-primary hover:text-primary-foreground transition-all">
+                  Все статьи
+                  <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
+          )}
+        </>
         )}
       </div>
     </section>

@@ -71,6 +71,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   }, [allReviews]);
 
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(true);
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
   const [expandedReviews, setExpandedReviews] = useState<Set<number | string>>(new Set());
@@ -146,8 +147,10 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           const sortedPosts = [...data.posts].sort((a, b) => {
             return (counts[b.id] || 0) - (counts[a.id] || 0);
           });
+          setAllBlogPosts(sortedPosts);
           setBlogPosts(sortedPosts.slice(0, 3));
         } else {
+          setAllBlogPosts([]);
           setBlogPosts([]);
         }
       } catch (error) {
@@ -195,6 +198,13 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     }
   };
 
+  const refreshBlogPosts = () => {
+    if (allBlogPosts.length > 0) {
+      const shuffled = shuffleArray(allBlogPosts);
+      setBlogPosts(shuffled.slice(0, 3));
+    }
+  };
+
   return (
     <>
       <Dialog open={isPromotionDetailOpen} onOpenChange={setIsPromotionDetailOpen}>
@@ -233,6 +243,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         blogPosts={blogPosts}
         loading={loadingBlog}
         viewCounts={viewCounts}
+        onRefresh={refreshBlogPosts}
+        hasMore={allBlogPosts.length > 3}
       />
     </>
   );
