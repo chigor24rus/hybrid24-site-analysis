@@ -3,11 +3,19 @@ Allow: /
 
 User-agent: Yandex
 Allow: /
+Crawl-delay: 1
 
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
 Sitemap: https://hybrid24.ru/sitemap.xml
+
+# Динамические SEO-страницы
+Allow: /*/
+Allow: /*/*/
+Allow: /*/*/*/
