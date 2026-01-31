@@ -90,7 +90,12 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         const response = await fetch(`https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d?t=${timestamp}`);
         const data = await response.json();
         if (response.ok && data.promotions) {
-          setPromotions(data.promotions.slice(0, 3));
+          const now = new Date();
+          const activePromotions = data.promotions.filter((promo: Promotion) => {
+            const validUntil = new Date(promo.validUntil);
+            return validUntil > now;
+          });
+          setPromotions(activePromotions.slice(0, 3));
         } else {
           setPromotions([]);
         }
