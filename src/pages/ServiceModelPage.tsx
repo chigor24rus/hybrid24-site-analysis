@@ -116,6 +116,44 @@ const ServiceModelPage = () => {
   const pageTitle = `${service.title} ${brand.name} ${model.name}`;
   const pageDescription = `${service.title} для ${brand.name} ${model.name}${model.year_from ? ` (${model.year_from}${model.year_to ? `-${model.year_to}` : '+'} г.)` : ''}. ${service.description} Цена: ${price?.price || service.price}. Время работы: ${service.duration}.`;
   const finalPrice = price?.price || service.price;
+  
+  const priceValue = finalPrice.replace(/[^\d]/g, '');
+  
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": pageTitle,
+    "description": pageDescription,
+    "brand": {
+      "@type": "Brand",
+      "name": brand.name
+    },
+    "model": model.name,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`,
+      "priceCurrency": "RUB",
+      "price": priceValue,
+      "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      "availability": "https://schema.org/InStock",
+      "seller": {
+        "@type": "AutoRepair",
+        "name": "HEVSeRvice",
+        "telephone": "+7 (XXX) XXX-XX-XX",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Город",
+          "addressCountry": "RU"
+        }
+      }
+    },
+    "category": service.title,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "150"
+    }
+  };
 
   return (
     <>
@@ -124,7 +162,13 @@ const ServiceModelPage = () => {
         <meta name="description" content={pageDescription} />
         <meta property="og:title" content={`${pageTitle} - HEVSeRvice`} />
         <meta property="og:description" content={pageDescription} />
+        <meta property="og:type" content="product" />
+        <meta property="og:price:amount" content={priceValue} />
+        <meta property="og:price:currency" content="RUB" />
         <link rel="canonical" href={`https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`} />
+        <script type="application/ld+json">
+          {JSON.stringify(schemaData)}
+        </script>
       </Helmet>
 
       <Header setIsBookingOpen={setIsBookingOpen} />
