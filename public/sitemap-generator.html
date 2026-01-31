@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sitemap Generator</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Generating sitemap.xml...</h1>
+    <pre id="output"></pre>
+    <script>
+        async function generateSitemap() {
+            try {
+                const [brandsRes, modelsRes, servicesRes, pricesRes] = await Promise.all([
+                    fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f'),
+                    fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b'),
+                    fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
+                    fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04'),
+                ]);
+
+                const [brandsData, modelsData, servicesData, pricesData] = await Promise.all([
+                    brandsRes.json(),
+                    modelsRes.json(),
+                    servicesRes.json(),
+                    pricesRes.json(),
+                ]);
+
+                const brands = brandsData.brands || [];
+                const models = modelsData.models || [];
+                const services = servicesData.services || [];
+                const prices = pricesData.prices || [];
+
+                let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+                sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+                // Static pages
+                const staticPages = [
+                    { url: '', priority: '1.0' },
+                    { url: 'services', priority: '0.9' },
+                    { url: 'promotions', priority: '0.8' },
+                    { url: 'reviews', priority: '0.7' },
+                    { url: 'blog', priority: '0.8' },
+                    { url: 'brands', priority: '0.8' },
+                    { url: 'services-index', priority: '0.9' },
+                ];
+
+                staticPages.forEach(page => {
+                    sitemap += '  <url>\n';
+                    sitemap += `    <loc>https://hevservice.ru/${page.url}</loc>\n`;
+                    sitemap += `    <changefreq>weekly</changefreq>\n`;
+                    sitemap += `    <priority>${page.priority}</priority>\n`;
+                    sitemap += '  </url>\n';
+                });
+
+                // SEO pages
+                prices.forEach(price => {
+                    const brand = brands.find(b => b.id === price.brand_id);
+                    const model = models.find(m => m.id === price.model_id);
+                    const service = services.find(s => s.id === price.service_id);
+
+                    if (brand && model && service) {
+                        const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
+                        const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
+                        const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
+                        
+                        sitemap += '  <url>\n';
+                        sitemap += `    <loc>https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}</loc>\n`;
+                        sitemap += `    <changefreq>monthly</changefreq>\n`;
+                        sitemap += `    <priority>0.8</priority>\n`;
+                        sitemap += '  </url>\n';
+                    }
+                });
+
+                sitemap += '</urlset>';
+
+                document.getElementById('output').textContent = sitemap;
+                
+                // Download sitemap
+                const blob = new Blob([sitemap], { type: 'text/xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sitemap.xml';
+                a.click();
+                
+            } catch (error) {
+                document.getElementById('output').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        generateSitemap();
+    </script>
+</body>
+</html>

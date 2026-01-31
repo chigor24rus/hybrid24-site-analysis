@@ -1,0 +1,268 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import Icon from '@/components/ui/icon';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+
+interface Brand {
+  id: number;
+  name: string;
+}
+
+interface Model {
+  id: number;
+  brand_id: number;
+  brand_name: string;
+  name: string;
+  year_from: number | null;
+  year_to: number | null;
+}
+
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  duration: string;
+  icon: string;
+}
+
+interface Price {
+  id: number;
+  brand_id: number;
+  model_id: number | null;
+  service_id: number;
+  price: string;
+}
+
+const ServiceModelPage = () => {
+  const { brandSlug, modelSlug, serviceSlug } = useParams<{ brandSlug: string; modelSlug: string; serviceSlug: string }>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [brand, setBrand] = useState<Brand | null>(null);
+  const [model, setModel] = useState<Model | null>(null);
+  const [service, setService] = useState<Service | null>(null);
+  const [price, setPrice] = useState<Price | null>(null);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [brandsRes, modelsRes, servicesRes, pricesRes] = await Promise.all([
+          fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f'),
+          fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b'),
+          fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
+          fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04'),
+        ]);
+
+        const [brandsData, modelsData, servicesData, pricesData] = await Promise.all([
+          brandsRes.json(),
+          modelsRes.json(),
+          servicesRes.json(),
+          pricesRes.json(),
+        ]);
+
+        const brands: Brand[] = brandsData.brands || [];
+        const models: Model[] = modelsData.models || [];
+        const services: Service[] = servicesData.services || [];
+        const prices: Price[] = pricesData.prices || [];
+
+        const foundBrand = brands.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === brandSlug);
+        const foundModel = models.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === modelSlug && m.brand_id === foundBrand?.id);
+        const foundService = services.find(s => s.title.toLowerCase().replace(/\s+/g, '-') === serviceSlug);
+
+        if (!foundBrand || !foundModel || !foundService) {
+          navigate('/404');
+          return;
+        }
+
+        const foundPrice = prices.find(p => 
+          p.brand_id === foundBrand.id && 
+          p.model_id === foundModel.id && 
+          p.service_id === foundService.id
+        );
+
+        setBrand(foundBrand);
+        setModel(foundModel);
+        setService(foundService);
+        setPrice(foundPrice || null);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        navigate('/404');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [brandSlug, modelSlug, serviceSlug, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Icon name="Loader" className="animate-spin" size={48} />
+      </div>
+    );
+  }
+
+  if (!brand || !model || !service) {
+    return null;
+  }
+
+  const pageTitle = `${service.title} ${brand.name} ${model.name}`;
+  const pageDescription = `${service.title} для ${brand.name} ${model.name}${model.year_from ? ` (${model.year_from}${model.year_to ? `-${model.year_to}` : '+'} г.)` : ''}. ${service.description} Цена: ${price?.price || service.price}. Время работы: ${service.duration}.`;
+  const finalPrice = price?.price || service.price;
+
+  return (
+    <>
+      <Helmet>
+        <title>{pageTitle} - HEVSeRvice</title>
+        <meta name="description" content={pageDescription} />
+        <meta property="og:title" content={`${pageTitle} - HEVSeRvice`} />
+        <meta property="og:description" content={pageDescription} />
+        <link rel="canonical" href={`https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`} />
+      </Helmet>
+
+      <Navbar setIsBookingOpen={setIsBookingOpen} />
+
+      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
+        <div className="container mx-auto px-4">
+          <div className="mb-6">
+            <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
+              <Icon name="ArrowLeft" size={18} className="mr-2" />
+              Назад
+            </Button>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-8">
+              <Badge className="mb-4 text-sm px-3 py-1">{service.title}</Badge>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{pageTitle}</h1>
+              <p className="text-xl text-muted-foreground">
+                {brand.name} {model.name}
+                {model.year_from && (
+                  <span className="ml-2">
+                    ({model.year_from}{model.year_to ? `-${model.year_to}` : '+'} г.)
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="animate-fade-in">
+                <CardHeader>
+                  <div className="w-16 h-16 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                    <Icon name={service.icon as any} size={32} className="text-white" />
+                  </div>
+                  <CardTitle className="text-2xl">{service.title}</CardTitle>
+                  <CardDescription className="text-base mt-2">{service.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Icon name="Clock" size={18} />
+                    <span>Время работы: {service.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Icon name="Wrench" size={18} />
+                    <span>Профессиональное оборудование</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Icon name="ShieldCheck" size={18} />
+                    <span>Гарантия качества</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="animate-fade-in border-primary/30" style={{ animationDelay: '100ms' }}>
+                <CardHeader>
+                  <CardTitle className="text-2xl">Стоимость услуги</CardTitle>
+                  <CardDescription>Для вашего автомобиля</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <div className="text-4xl font-bold text-primary mb-2">{finalPrice}</div>
+                    {price && price.price !== service.price && (
+                      <div className="text-sm text-muted-foreground">
+                        Специальная цена для {brand.name} {model.name}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Icon name="Check" size={16} className="text-green-500" />
+                      <span>Оригинальные запчасти</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="Check" size={16} className="text-green-500" />
+                      <span>Опытные мастера</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Icon name="Check" size={16} className="text-green-500" />
+                      <span>Гарантия на работы</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    size="lg" 
+                    className="w-full gradient-primary btn-glow"
+                    onClick={() => setIsBookingOpen(true)}
+                  >
+                    Записаться на услугу
+                    <Icon name="ArrowRight" className="ml-2" size={20} />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="mt-8 animate-fade-in" style={{ animationDelay: '200ms' }}>
+              <CardHeader>
+                <CardTitle>Описание услуги</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 text-muted-foreground">
+                <p>
+                  {service.title} для {brand.name} {model.name} включает в себя комплекс работ, 
+                  направленных на поддержание автомобиля в отличном техническом состоянии. 
+                  Наши специалисты используют профессиональное оборудование и оригинальные запчасти.
+                </p>
+                <p>
+                  Мы работаем с автомобилями {brand.name} более 10 лет и знаем все особенности 
+                  данной модели. Записывайтесь на сервис онлайн или по телефону.
+                </p>
+                <div className="pt-4 border-t">
+                  <h3 className="font-semibold text-foreground mb-2">Почему выбирают нас:</h3>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Быстрое и качественное обслуживание</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Прозрачные цены без скрытых доплат</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Гарантия на все виды работ</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Удобное расположение и график работы</span>
+                    </li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </>
+  );
+};
+
+export default ServiceModelPage;

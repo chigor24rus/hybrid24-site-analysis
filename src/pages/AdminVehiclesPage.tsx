@@ -117,6 +117,10 @@ const AdminVehiclesPage = () => {
             <p className="text-muted-foreground">Бренды, модели и цены на услуги</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
+              <Icon name="ExternalLink" className="mr-2" size={18} />
+              SEO-страницы
+            </Button>
             <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
               <Icon name="Upload" className="mr-2" size={18} />
               Загрузить из XLS
