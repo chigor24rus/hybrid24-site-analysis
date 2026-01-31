@@ -114,6 +114,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': 'service_id, brand_id и base_price обязательны'})
                 }
             
+            # Check if price already exists
+            cur.execute(
+                """
+                SELECT id FROM service_prices 
+                WHERE service_id = %s AND brand_id = %s AND model_id IS NULL
+                """,
+                (service_id, brand_id)
+            )
+            existing = cur.fetchone()
+            
+            if existing:
+                cur.close()
+                conn.close()
+                return {
+                    'statusCode': 409,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'error': 'Цена для этой комбинации услуги и бренда уже существует'})
+                }
+            
             cur.execute(
                 """
                 INSERT INTO service_prices (service_id, brand_id, base_price, currency)
