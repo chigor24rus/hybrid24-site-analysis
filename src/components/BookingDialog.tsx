@@ -76,6 +76,17 @@ const services = [
   }
 ];
 
+interface Promotion {
+  id: number;
+  title: string;
+  description: string;
+  discount: string;
+  oldPrice: string;
+  newPrice: string;
+  validUntil: string;
+  icon: string;
+}
+
 interface BookingDialogProps {
   setIsBookingOpen: (open: boolean) => void;
   initialSelectedServices?: number[];
@@ -84,6 +95,7 @@ interface BookingDialogProps {
 
 const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initialBrandId }: BookingDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
+  const [selectedPromotion, setSelectedPromotion] = useState<string>('');
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
   const [name, setName] = useState('');
@@ -97,7 +109,9 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loadingBrands, setLoadingBrands] = useState(true);
+  const [loadingPromotions, setLoadingPromotions] = useState(true);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -115,7 +129,22 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
         setLoadingBrands(false);
       }
     };
+
+    const fetchPromotions = async () => {
+      try {
+        const timestamp = new Date().getTime();
+        const response = await fetch(`https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d?t=${timestamp}`);
+        const data = await response.json();
+        setPromotions(data.promotions || []);
+      } catch (error) {
+        console.error('Error fetching promotions:', error);
+      } finally {
+        setLoadingPromotions(false);
+      }
+    };
+
     fetchBrands();
+    fetchPromotions();
   }, [initialBrandId]);
 
   useEffect(() => {
@@ -176,11 +205,14 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
       const selectedBrand = brands.find(b => b.id.toString() === brand);
       const selectedModel = models.find(m => m.id.toString() === model);
 
+      const selectedPromotionData = promotions.find(p => p.id.toString() === selectedPromotion);
+
       const bookingData = {
         name,
         phone,
         email,
         service: selectedServiceTitles || 'Не указано',
+        promotion: selectedPromotionData?.title || '',
         brand: selectedBrand?.name || '',
         model: selectedModel?.name || '',
         date: date ? format(date, 'yyyy-MM-dd') : '',
@@ -206,6 +238,7 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
           customer_phone: phone,
           customer_email: email,
           service_type: selectedServiceTitles || 'Не указано',
+          promotion: selectedPromotionData?.title || '',
           car_brand: selectedBrand?.name || '',
           car_model: selectedModel?.name || '',
           preferred_date: date ? format(date, 'dd.MM.yyyy') : '',
@@ -247,6 +280,25 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
       </DialogHeader>
 
       <div className="space-y-6">
+        {!loadingPromotions && promotions.length > 0 && (
+          <div className="space-y-3">
+            <Label>Акция (необязательно)</Label>
+            <Select value={selectedPromotion} onValueChange={setSelectedPromotion}>
+              <SelectTrigger>
+                <SelectValue placeholder="Выберите акцию" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Без акции</SelectItem>
+                {promotions.map(promo => (
+                  <SelectItem key={promo.id} value={promo.id.toString()}>
+                    {promo.title} ({promo.discount})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <div className="space-y-4">
           <Label>Выберите услуги</Label>
           <div className="grid grid-cols-1 gap-3">
