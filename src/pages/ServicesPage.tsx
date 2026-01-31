@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
@@ -19,6 +19,15 @@ interface Service {
   duration: string;
   icon: string;
 }
+
+const SERVICE_ARTICLE_MAP: Record<string, number> = {
+  'Техническое обслуживание': 11,
+  'Диагностика двигателя': 15,
+  'Замена масла': 16,
+  'Шиномонтаж': 19,
+  'Ремонт ходовой': 17,
+  'Кузовной ремонт': 18,
+};
 
 const ServicesPage = () => {
   const location = useLocation();
@@ -114,35 +123,53 @@ const ServicesPage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-            {services.map((service, index) => (
-              <Card
-                key={service.id}
-                className="hover-scale cursor-pointer hover:border-primary/50 transition-all animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <CardHeader>
-                  <div className="w-14 h-14 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={service.icon as any} size={28} className="text-white" />
-                  </div>
-                  <CardTitle className="text-xl">{service.title}</CardTitle>
-                  <CardDescription className="text-base">{service.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-2xl font-bold text-primary">{service.price}</div>
-                      <div className="text-sm text-muted-foreground flex items-center mt-1">
-                        <Icon name="Clock" size={14} className="mr-1" />
-                        {service.duration}
+            {services.map((service, index) => {
+              const articleId = SERVICE_ARTICLE_MAP[service.title];
+              const CardWrapper = articleId ? Link : 'div';
+              const wrapperProps = articleId ? { to: `/blog/${articleId}` } : {};
+              
+              return (
+                <CardWrapper key={service.id} {...wrapperProps}>
+                  <Card
+                    className="hover-scale cursor-pointer hover:border-primary/50 transition-all animate-fade-in h-full"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <CardHeader>
+                      <div className="w-14 h-14 rounded-lg gradient-primary flex items-center justify-center mb-4">
+                        <Icon name={service.icon as any} size={28} className="text-white" />
                       </div>
-                    </div>
-                    <Button variant="outline" size="sm" onClick={() => setIsBookingOpen(true)}>
-                      Записаться
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                      <CardTitle className="text-xl flex items-center justify-between">
+                        {service.title}
+                        {articleId && <Icon name="ExternalLink" size={16} className="text-muted-foreground" />}
+                      </CardTitle>
+                      <CardDescription className="text-base">{service.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-2xl font-bold text-primary">{service.price}</div>
+                          <div className="text-sm text-muted-foreground flex items-center mt-1">
+                            <Icon name="Clock" size={14} className="mr-1" />
+                            {service.duration}
+                          </div>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsBookingOpen(true);
+                          }}
+                        >
+                          Записаться
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CardWrapper>
+              );
+            })}
           </div>
         </div>
       </section>
