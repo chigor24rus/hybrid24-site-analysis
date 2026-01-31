@@ -23,9 +23,11 @@ interface PromotionsSectionProps {
   loading: boolean;
   onPromotionClick: (promotion: Promotion) => void;
   onBookingClick: () => void;
+  onRefresh: () => void;
+  hasMore: boolean;
 }
 
-const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick }: PromotionsSectionProps) => {
+const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick, onRefresh, hasMore }: PromotionsSectionProps) => {
   const formatValidUntil = (dateString: string) => {
     if (dateString === 'Постоянно') return 'Постоянно';
     try {
@@ -58,7 +60,20 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
               <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
             </h2>
           </Link>
-          <p className="text-muted-foreground text-base md:text-lg">Выгодные предложения для наших клиентов</p>
+          <div className="flex items-center justify-center gap-3">
+            <p className="text-muted-foreground text-base md:text-lg">Выгодные предложения для наших клиентов</p>
+            {hasMore && !loading && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRefresh}
+                className="hover:bg-primary/10"
+                title="Показать другие акции"
+              >
+                <Icon name="RefreshCw" size={18} />
+              </Button>
+            )}
+          </div>
         </div>
         {loading ? (
           <div className="text-center py-12">

@@ -11,6 +11,7 @@ interface PromotionsReviewsSectionProps {
 
 const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [allPromotions, setAllPromotions] = useState<Promotion[]>([]);
   const [loadingPromotions, setLoadingPromotions] = useState(true);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [allReviews, setAllReviews] = useState<Review[]>([]);
@@ -96,8 +97,11 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             const validUntil = new Date(promo.validUntil);
             return validUntil > now;
           });
-          setPromotions(activePromotions.slice(0, 3));
+          setAllPromotions(activePromotions);
+          const shuffled = shuffleArray(activePromotions);
+          setPromotions(shuffled.slice(0, 3));
         } else {
+          setAllPromotions([]);
           setPromotions([]);
         }
       } catch (error) {
@@ -184,6 +188,13 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     }
   };
 
+  const refreshPromotions = () => {
+    if (allPromotions.length > 0) {
+      const shuffled = shuffleArray(allPromotions);
+      setPromotions(shuffled.slice(0, 3));
+    }
+  };
+
   return (
     <>
       <Dialog open={isPromotionDetailOpen} onOpenChange={setIsPromotionDetailOpen}>
@@ -204,6 +215,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           setIsPromotionDetailOpen(true);
         }}
         onBookingClick={() => setIsBookingOpen(true)}
+        onRefresh={refreshPromotions}
+        hasMore={allPromotions.length > 3}
       />
 
       <ReviewsSection
