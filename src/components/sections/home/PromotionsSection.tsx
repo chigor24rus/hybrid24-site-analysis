@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import { Link } from 'react-router-dom';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 export interface Promotion {
@@ -28,7 +28,7 @@ interface PromotionsSectionProps {
 const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick }: PromotionsSectionProps) => {
   const formatValidUntil = (dateString: string) => {
     try {
-      const date = parse(dateString, 'dd.MM.yyyy', new Date());
+      const date = new Date(dateString);
       return format(date, 'd MMMM yyyy', { locale: ru });
     } catch {
       return dateString;

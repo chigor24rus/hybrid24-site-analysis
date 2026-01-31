@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 interface Promotion {
@@ -27,7 +27,7 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
 
   const formatValidUntil = (dateString: string) => {
     try {
-      const date = parse(dateString, 'dd.MM.yyyy', new Date());
+      const date = new Date(dateString);
       return format(date, 'd MMMM yyyy', { locale: ru });
     } catch {
       return dateString;
