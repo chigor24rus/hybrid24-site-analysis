@@ -217,6 +217,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         onBookingClick={() => setIsBookingOpen(true)}
         onRefresh={refreshPromotions}
         hasMore={allPromotions.length > 3}
+        totalCount={allPromotions.length}
       />
 
       <ReviewsSection

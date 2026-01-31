@@ -25,9 +25,10 @@ interface PromotionsSectionProps {
   onBookingClick: () => void;
   onRefresh: () => void;
   hasMore: boolean;
+  totalCount: number;
 }
 
-const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick, onRefresh, hasMore }: PromotionsSectionProps) => {
+const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick, onRefresh, hasMore, totalCount }: PromotionsSectionProps) => {
   const formatValidUntil = (dateString: string) => {
     if (dateString === 'Постоянно') return 'Постоянно';
     try {
@@ -54,6 +55,12 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
     <section id="promotions" className="py-12 md:py-16 bg-card/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8 md:mb-12 animate-fade-in">
+          <div className="mb-12">
+            <div className="inline-flex items-center gap-3 px-4 py-2 bg-primary/10 rounded-full">
+              <Icon name="Tag" size={20} className="text-primary" />
+              <span className="text-sm font-semibold text-primary">ВЫГОДНЫЕ ПРЕДЛОЖЕНИЯ • {totalCount} {totalCount === 1 ? 'АКЦИЯ' : totalCount < 5 ? 'АКЦИИ' : 'АКЦИЙ'}</span>
+            </div>
+          </div>
           <Link to="/promotions" className="group inline-block">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 hover:text-primary transition-colors cursor-pointer inline-flex items-center gap-3">
               Акции и спецпредложения
