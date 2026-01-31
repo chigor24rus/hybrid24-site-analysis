@@ -77,24 +77,29 @@ const SeoIndexPage = () => {
 
         const pages: SeoPage[] = [];
 
-        prices.forEach(price => {
-          const brand = brands.find(b => b.id === price.brand_id);
-          const model = models.find(m => m.id === price.model_id);
-          const service = services.find(s => s.id === price.service_id);
+        brands.forEach(brand => {
+          const brandModels = models.filter(m => m.brand_id === brand.id);
+          
+          brandModels.forEach(model => {
+            services.forEach(service => {
+              const price = prices.find(p => 
+                p.brand_id === brand.id && 
+                p.service_id === service.id
+              );
 
-          if (brand && model && service) {
-            const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
-            const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
-            const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
-            
-            pages.push({
-              brand,
-              model,
-              service,
-              price,
-              url: `/${brandSlug}/${modelSlug}/${serviceSlug}`,
+              const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
+              const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
+              const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
+              
+              pages.push({
+                brand,
+                model,
+                service,
+                price: price || null,
+                url: `/${brandSlug}/${modelSlug}/${serviceSlug}`,
+              });
             });
-          }
+          });
         });
 
         setSeoPages(pages);

@@ -82,7 +82,6 @@ const ServiceModelPage = () => {
 
         const foundPrice = prices.find(p => 
           p.brand_id === foundBrand.id && 
-          p.model_id === foundModel.id && 
           p.service_id === foundService.id
         );
 
