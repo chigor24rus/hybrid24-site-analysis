@@ -35,6 +35,17 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
     }
   };
 
+  const isEndingSoon = (dateString: string) => {
+    try {
+      const validUntil = new Date(dateString);
+      const now = new Date();
+      const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+      return validUntil.getTime() - now.getTime() <= threeDaysInMs;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <section id="promotions" className="py-12 md:py-16 bg-card/30">
       <div className="container mx-auto px-4">
@@ -65,8 +76,14 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => onPromotionClick(promo)}
             >
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                 <Badge className="gradient-accent text-lg px-3 py-1">{promo.discount}</Badge>
+                {isEndingSoon(promo.validUntil) && (
+                  <Badge variant="destructive" className="text-sm px-2 py-1 animate-pulse">
+                    <Icon name="AlertCircle" size={14} className="mr-1" />
+                    Заканчивается
+                  </Badge>
+                )}
               </div>
               <CardHeader>
                 <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">

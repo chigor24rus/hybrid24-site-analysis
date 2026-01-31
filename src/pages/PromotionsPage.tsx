@@ -34,6 +34,17 @@ const PromotionsPage = () => {
   const [loading, setLoading] = useState(true);
   const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
+  const isEndingSoon = (dateString: string) => {
+    try {
+      const validUntil = new Date(dateString);
+      const now = new Date();
+      const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+      return validUntil.getTime() - now.getTime() <= threeDaysInMs;
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
@@ -111,8 +122,14 @@ const PromotionsPage = () => {
                 className="hover-scale cursor-pointer animate-fade-in relative overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
                   <Badge className="gradient-accent text-lg px-3 py-1">{promo.discount}</Badge>
+                  {isEndingSoon(promo.validUntil) && (
+                    <Badge variant="destructive" className="text-sm px-2 py-1 animate-pulse">
+                      <Icon name="AlertCircle" size={14} className="mr-1" />
+                      Заканчивается
+                    </Badge>
+                  )}
                 </div>
                 <CardHeader>
                   <div className="w-14 h-14 rounded-lg gradient-primary flex items-center justify-center mb-4">
