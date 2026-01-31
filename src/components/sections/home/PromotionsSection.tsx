@@ -60,20 +60,7 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
               <Icon name="ArrowRight" size={32} className="group-hover:translate-x-2 transition-transform" />
             </h2>
           </Link>
-          <div className="flex items-center justify-center gap-3">
-            <p className="text-muted-foreground text-base md:text-lg">Выгодные предложения для наших клиентов</p>
-            {hasMore && !loading && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={onRefresh}
-                className="hover:bg-primary/10"
-                title="Показать другие акции"
-              >
-                <Icon name="RefreshCw" size={18} />
-              </Button>
-            )}
-          </div>
+          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">Выгодные предложения для наших клиентов</p>
         </div>
         {loading ? (
           <div className="text-center py-12">
@@ -135,6 +122,25 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
             </Card>
             ))}
           </div>
+          {hasMore && !loading && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10 animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <Button 
+                size="lg" 
+                variant="default" 
+                onClick={onRefresh}
+                className="group hover:scale-105 transition-all"
+              >
+                <Icon name="RefreshCw" size={18} className="mr-2 group-hover:rotate-180 transition-transform duration-500" />
+                Показать другие акции
+              </Button>
+              <Link to="/promotions">
+                <Button size="lg" variant="outline" className="group hover:bg-primary hover:text-primary-foreground transition-all">
+                  Все акции
+                  <Icon name="ArrowRight" size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
+          )}
         )}
       </div>
     </section>
