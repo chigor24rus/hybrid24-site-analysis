@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import Navbar from '@/components/Navbar';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 interface Brand {
@@ -127,7 +127,7 @@ const ServiceModelPage = () => {
         <link rel="canonical" href={`https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`} />
       </Helmet>
 
-      <Navbar setIsBookingOpen={setIsBookingOpen} />
+      <Header setIsBookingOpen={setIsBookingOpen} />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
         <div className="container mx-auto px-4">

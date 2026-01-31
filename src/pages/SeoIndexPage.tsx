@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
-import Navbar from '@/components/Navbar';
+import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 interface Brand {
@@ -142,7 +142,7 @@ const SeoIndexPage = () => {
         <link rel="canonical" href="https://hevservice.ru/services-index" />
       </Helmet>
 
-      <Navbar setIsBookingOpen={setIsBookingOpen} />
+      <Header setIsBookingOpen={setIsBookingOpen} />
 
       <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
         <div className="container mx-auto px-4">
