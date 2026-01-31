@@ -39,7 +39,16 @@ const PromotionsPage = () => {
       try {
         const response = await fetch('https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d');
         const data = await response.json();
-        setPromotions(data.promotions || []);
+        if (data.promotions) {
+          const now = new Date();
+          const activePromotions = data.promotions.filter((promo: Promotion) => {
+            const validUntil = new Date(promo.validUntil);
+            return validUntil > now;
+          });
+          setPromotions(activePromotions);
+        } else {
+          setPromotions([]);
+        }
       } catch (error) {
         console.error('Error fetching promotions:', error);
       } finally {
