@@ -34,6 +34,17 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
     }
   };
 
+  const isEndingSoon = (dateString: string) => {
+    try {
+      const validUntil = new Date(dateString);
+      const now = new Date();
+      const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+      return validUntil.getTime() - now.getTime() <= threeDaysInMs;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader>
@@ -41,7 +52,15 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
           <div className="w-16 h-16 rounded-lg gradient-primary flex items-center justify-center">
             <Icon name={promotion.icon as any} size={32} className="text-white" />
           </div>
-          <Badge className="gradient-accent text-lg px-4 py-2">{promotion.discount}</Badge>
+          <div className="flex flex-col gap-2 items-end">
+            <Badge className="gradient-accent text-lg px-4 py-2">{promotion.discount}</Badge>
+            {isEndingSoon(promotion.validUntil) && (
+              <Badge variant="destructive" className="text-sm px-3 py-1 animate-pulse">
+                <Icon name="AlertCircle" size={14} className="mr-1" />
+                Заканчивается
+              </Badge>
+            )}
+          </div>
         </div>
         <DialogTitle className="text-3xl">{promotion.title}</DialogTitle>
         <DialogDescription className="text-base mt-2">{promotion.description}</DialogDescription>
