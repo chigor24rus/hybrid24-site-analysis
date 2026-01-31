@@ -28,7 +28,7 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
   const formatValidUntil = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return format(date, 'd MMMM yyyy', { locale: ru });
+      return format(date, 'd MMMM yyyy, HH:mm', { locale: ru });
     } catch {
       return dateString;
     }
