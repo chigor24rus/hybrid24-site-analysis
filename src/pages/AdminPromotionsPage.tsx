@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface Promotion {
   id: number;
@@ -37,6 +39,16 @@ const AdminPromotionsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const formatValidUntil = (dateString: string) => {
+    if (dateString === 'Постоянно') return 'Постоянно';
+    try {
+      const date = new Date(dateString);
+      return format(date, 'd MMMM yyyy, HH:mm', { locale: ru });
+    } catch {
+      return dateString;
+    }
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -245,7 +257,7 @@ const AdminPromotionsPage = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">До:</span>
-                    <span className="text-sm">{promotion.valid_until}</span>
+                    <span className="text-sm">{formatValidUntil(promotion.valid_until)}</span>
                   </div>
                   <div className="pt-3 border-t flex gap-2">
                     <Button
