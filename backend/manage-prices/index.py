@@ -102,7 +102,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             service_id = body_data.get('service_id')
             brand_id = body_data.get('brand_id')
             base_price = body_data.get('base_price')
-            currency = body_data.get('currency', 'RUB').strip()
+            currency = body_data.get('currency', '₽').strip()
             
             if not service_id or not brand_id or base_price is None:
                 return {
@@ -256,24 +256,17 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             }
         
         else:
+            cur.close()
+            conn.close()
             return {
                 'statusCode': 405,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'Method not allowed'})
+                'body': json.dumps({'error': 'Метод не поддерживается'})
             }
-        
-    except json.JSONDecodeError:
-        return {
-            'statusCode': 400,
-            'headers': {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': json.dumps({'error': 'Неверный формат данных'})
-        }
+            
     except Exception as e:
         return {
             'statusCode': 500,
@@ -281,5 +274,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({'error': f'Ошибка сервера: {str(e)}'})
+            'isBase64Encoded': False,
+            'body': json.dumps({
+                'error': str(e),
+                'message': 'Внутренняя ошибка сервера'
+            })
         }
