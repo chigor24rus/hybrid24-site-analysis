@@ -115,7 +115,7 @@ const BrandsPage = () => {
               {filteredBrands.map((brand, index) => (
               <Link
                 key={brand.id}
-                to={`/brand/${brand.slug}`}
+                to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 30}ms` }}
               >

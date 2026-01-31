@@ -95,7 +95,7 @@ const BrandsSection = () => {
             {brands.concat(brands).map((brand, index) => (
               <Link
                 key={`brand-${brand.id}-${index}`}
-                to={`/brand/${brand.slug}`}
+                to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className="flex-shrink-0"
               >
                 <Card className="hover-scale cursor-pointer text-center p-6 bg-white w-32 h-32 flex flex-col items-center justify-center">

@@ -163,9 +163,10 @@ export default function BrandPage() {
             <h2 className="text-3xl font-bold text-center mb-8">Модели {brand.name}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
               {models.map((model) => (
-                <div 
+                <Link
                   key={model.id}
-                  className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow border border-border"
+                  to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}/${model.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow border border-border cursor-pointer hover:border-primary block"
                 >
                   <div className="flex items-center justify-center mb-2">
                     <Icon name="Car" className="text-primary" size={20} />
@@ -174,7 +175,7 @@ export default function BrandPage() {
                   {model.year_range && (
                     <p className="text-xs text-muted-foreground">{model.year_range}</p>
                   )}
-                </div>
+                </Link>
               ))}
             </div>
           </div>
