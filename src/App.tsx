@@ -20,6 +20,7 @@ import AdminPage from "./pages/AdminPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminDataPage from "./pages/AdminDataPage";
 import AdminModelsPage from "./pages/AdminModelsPage";
+import AdminVehiclesPage from "./pages/AdminVehiclesPage";
 import AdminSettingsPage from "./pages/AdminSettingsPage";
 import AdminReviewsPage from "./pages/AdminReviewsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
@@ -98,6 +99,7 @@ const App = () => (
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/data" element={<AdminDataPage />} />
             <Route path="/admin/models" element={<AdminModelsPage />} />
+            <Route path="/admin/vehicles" element={<AdminVehiclesPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
             <Route path="/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/admin/blog" element={<AdminBlogPage />} />

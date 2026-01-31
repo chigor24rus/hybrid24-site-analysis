@@ -218,13 +218,9 @@ const AdminPage = () => {
               <Icon name="Trash2" className="mr-2" size={18} />
               Удалить заявки
             </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/data')}>
-              <Icon name="Database" className="mr-2" size={18} />
-              Бренды и цены
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/models')}>
+            <Button variant="outline" onClick={() => navigate('/admin/vehicles')}>
               <Icon name="Car" className="mr-2" size={18} />
-              Модели
+              Автомобили
             </Button>
             <Button variant="outline" onClick={() => navigate('/admin/reviews')}>
               <Icon name="MessageSquare" className="mr-2" size={18} />
