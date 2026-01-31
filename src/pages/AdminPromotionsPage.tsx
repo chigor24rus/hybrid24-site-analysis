@@ -61,6 +61,8 @@ const AdminPromotionsPage = () => {
     details: '',
     is_active: true
   });
+  
+  const [isPermanent, setIsPermanent] = useState(false);
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('adminAuth');
@@ -96,22 +98,40 @@ const AdminPromotionsPage = () => {
     fetchPromotions();
   }, []);
 
+  const convertToDatetimeLocal = (dateString: string) => {
+    if (dateString === 'Постоянно') return '';
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch {
+      return '';
+    }
+  };
+
   const handleOpenDialog = (promotion?: Promotion) => {
     if (promotion) {
       setEditingPromotion(promotion);
+      const permanent = promotion.valid_until === 'Постоянно';
+      setIsPermanent(permanent);
       setFormData({
         title: promotion.title,
         description: promotion.description,
         discount: promotion.discount,
         old_price: promotion.old_price || '',
         new_price: promotion.new_price,
-        valid_until: promotion.valid_until,
+        valid_until: permanent ? '' : convertToDatetimeLocal(promotion.valid_until),
         icon: promotion.icon,
         details: promotion.details,
         is_active: promotion.is_active
       });
     } else {
       setEditingPromotion(null);
+      setIsPermanent(false);
       setFormData({
         title: '',
         description: '',
@@ -134,9 +154,25 @@ const AdminPromotionsPage = () => {
         ? 'https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45'
         : 'https://functions.poehali.dev/5a0a3612-f9b3-4eba-8ac1-3230f81d8bc4';
 
+      let validUntil = formData.valid_until;
+      if (isPermanent) {
+        validUntil = 'Постоянно';
+      } else if (validUntil) {
+        const date = new Date(validUntil);
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+        const month = months[date.getMonth()];
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        validUntil = `${month} ${day}, ${year} ${hours}:${minutes}:${seconds}`;
+      }
+
       const body = editingPromotion
-        ? { id: editingPromotion.id, ...formData }
-        : formData;
+        ? { id: editingPromotion.id, ...formData, valid_until: validUntil }
+        : { ...formData, valid_until: validUntil };
 
       const response = await fetch(url, {
         method: 'POST',
@@ -382,13 +418,24 @@ const AdminPromotionsPage = () => {
                 </div>
               </div>
 
-              <div>
+              <div className="space-y-3">
                 <Label>Действительна до</Label>
-                <Input
-                  value={formData.valid_until}
-                  onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                  placeholder="December 31, 2025 23:59:59 или Постоянно"
-                />
+                <div className="flex items-center gap-2 mb-2">
+                  <input
+                    type="checkbox"
+                    checked={isPermanent}
+                    onChange={(e) => setIsPermanent(e.target.checked)}
+                    id="is_permanent"
+                  />
+                  <Label htmlFor="is_permanent" className="cursor-pointer">Постоянная акция</Label>
+                </div>
+                {!isPermanent && (
+                  <Input
+                    type="datetime-local"
+                    value={formData.valid_until}
+                    onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
+                  />
+                )}
               </div>
 
               <div className="flex items-center gap-2">
