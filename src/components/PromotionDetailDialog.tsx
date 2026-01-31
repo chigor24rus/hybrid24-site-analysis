@@ -26,6 +26,7 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
   if (!promotion) return null;
 
   const formatValidUntil = (dateString: string) => {
+    if (dateString === 'Постоянно') return 'Постоянно';
     try {
       const date = new Date(dateString);
       return format(date, 'd MMMM yyyy, HH:mm', { locale: ru });
@@ -35,6 +36,7 @@ const PromotionDetailDialog = ({ promotion, onBookingClick }: PromotionDetailDia
   };
 
   const isEndingSoon = (dateString: string) => {
+    if (dateString === 'Постоянно') return false;
     try {
       const validUntil = new Date(dateString);
       const now = new Date();

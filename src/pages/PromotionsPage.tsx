@@ -35,6 +35,7 @@ const PromotionsPage = () => {
   const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
 
   const isEndingSoon = (dateString: string) => {
+    if (dateString === 'Постоянно') return false;
     try {
       const validUntil = new Date(dateString);
       const now = new Date();
@@ -54,6 +55,7 @@ const PromotionsPage = () => {
         if (data.promotions) {
           const now = new Date();
           const activePromotions = data.promotions.filter((promo: Promotion) => {
+            if (promo.validUntil === 'Постоянно') return true;
             const validUntil = new Date(promo.validUntil);
             return validUntil > now;
           });

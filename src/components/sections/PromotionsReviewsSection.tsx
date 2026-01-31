@@ -92,6 +92,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         if (response.ok && data.promotions) {
           const now = new Date();
           const activePromotions = data.promotions.filter((promo: Promotion) => {
+            if (promo.validUntil === 'Постоянно') return true;
             const validUntil = new Date(promo.validUntil);
             return validUntil > now;
           });

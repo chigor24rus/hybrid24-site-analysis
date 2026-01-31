@@ -27,6 +27,7 @@ interface PromotionsSectionProps {
 
 const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingClick }: PromotionsSectionProps) => {
   const formatValidUntil = (dateString: string) => {
+    if (dateString === 'Постоянно') return 'Постоянно';
     try {
       const date = new Date(dateString);
       return format(date, 'd MMMM yyyy, HH:mm', { locale: ru });
@@ -36,6 +37,7 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
   };
 
   const isEndingSoon = (dateString: string) => {
+    if (dateString === 'Постоянно') return false;
     try {
       const validUntil = new Date(dateString);
       const now = new Date();
