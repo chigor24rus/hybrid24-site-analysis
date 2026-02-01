@@ -1,5 +1,5 @@
 export const SITE_CONFIG = {
-  domain: 'https://hevservice.ru',
+  domain: 'https://hybrid24.ru',
   name: 'HEVSeRvice',
   phone: '+7 (923) 016-67-50',
   address: {
