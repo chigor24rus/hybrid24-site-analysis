@@ -194,7 +194,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
       </Card>
 
       <Dialog open={isPriceDialogOpen} onOpenChange={setIsPriceDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
             <DialogDescription>Укажите бренд, модель (опционально), услугу и цену</DialogDescription>
@@ -206,7 +206,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите бренд" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   {brands.map((brand) => (
                     <SelectItem key={brand.id} value={brand.id.toString()}>
                       {brand.name}
@@ -221,7 +221,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 <SelectTrigger>
                   <SelectValue placeholder="Все модели" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="">Все модели</SelectItem>
                   {models
                     .filter(m => m.brand_id.toString() === priceForm.brand_id)
@@ -239,7 +239,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите услугу" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   {services.map((service) => (
                     <SelectItem key={service.id} value={service.id.toString()}>
                       {service.title}
