@@ -118,7 +118,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Бренд" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Все бренды</SelectItem>
                   {brands.map((brand) => (
                     <SelectItem key={brand.id} value={brand.id.toString()}>
@@ -131,7 +131,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Услуга" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Все услуги</SelectItem>
                   {services.map((service) => (
                     <SelectItem key={service.id} value={service.id.toString()}>
@@ -141,6 +141,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 </SelectContent>
               </Select>
               <Button onClick={() => {
+                console.log('Opening price dialog', { brands: brands.length, models: models.length, services: services.length });
                 setPriceForm({ id: 0, brand_id: '', model_id: '', service_id: '', price: '' });
                 setIsPriceDialogOpen(true);
               }}>
@@ -193,80 +194,82 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         </CardContent>
       </Card>
 
-      <Dialog open={isPriceDialogOpen} onOpenChange={setIsPriceDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
-            <DialogDescription>Укажите бренд, модель (опционально), услугу и цену</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Бренд</Label>
-              <Select value={priceForm.brand_id} onValueChange={(value) => setPriceForm({ ...priceForm, brand_id: value, model_id: '' })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите бренд" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
+      {isPriceDialogOpen && (
+        <Dialog open={isPriceDialogOpen} onOpenChange={setIsPriceDialogOpen}>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
+              <DialogDescription>Укажите бренд, модель (опционально), услугу и цену</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Бренд *</Label>
+                <select 
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={priceForm.brand_id} 
+                  onChange={(e) => setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' })}
+                >
+                  <option value="">Выберите бренд</option>
                   {brands.map((brand) => (
-                    <SelectItem key={brand.id} value={brand.id.toString()}>
+                    <option key={brand.id} value={brand.id.toString()}>
                       {brand.name}
-                    </SelectItem>
+                    </option>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Модель (опционально)</Label>
-              <Select value={priceForm.model_id} onValueChange={(value) => setPriceForm({ ...priceForm, model_id: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Все модели" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  <SelectItem value="">Все модели</SelectItem>
+                </select>
+              </div>
+              <div>
+                <Label>Модель (опционально)</Label>
+                <select 
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={priceForm.model_id} 
+                  onChange={(e) => setPriceForm({ ...priceForm, model_id: e.target.value })}
+                  disabled={!priceForm.brand_id}
+                >
+                  <option value="">Все модели</option>
                   {models
                     .filter(m => m.brand_id.toString() === priceForm.brand_id)
                     .map((model) => (
-                      <SelectItem key={model.id} value={model.id.toString()}>
+                      <option key={model.id} value={model.id.toString()}>
                         {model.name}
-                      </SelectItem>
+                      </option>
                     ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Услуга</Label>
-              <Select value={priceForm.service_id} onValueChange={(value) => setPriceForm({ ...priceForm, service_id: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите услугу" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
+                </select>
+              </div>
+              <div>
+                <Label>Услуга *</Label>
+                <select 
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  value={priceForm.service_id} 
+                  onChange={(e) => setPriceForm({ ...priceForm, service_id: e.target.value })}
+                >
+                  <option value="">Выберите услугу</option>
                   {services.map((service) => (
-                    <SelectItem key={service.id} value={service.id.toString()}>
+                    <option key={service.id} value={service.id.toString()}>
                       {service.title}
-                    </SelectItem>
+                    </option>
                   ))}
-                </SelectContent>
-              </Select>
+                </select>
+              </div>
+              <div>
+                <Label>Цена *</Label>
+                <Input
+                  value={priceForm.price}
+                  onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
+                  placeholder="5 000 ₽"
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleSavePrice} className="flex-1">
+                  Сохранить
+                </Button>
+                <Button variant="outline" onClick={() => setIsPriceDialogOpen(false)}>
+                  Отмена
+                </Button>
+              </div>
             </div>
-            <div>
-              <Label>Цена</Label>
-              <Input
-                value={priceForm.price}
-                onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
-                placeholder="5 000 ₽"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleSavePrice} className="flex-1">
-                Сохранить
-              </Button>
-              <Button variant="outline" onClick={() => setIsPriceDialogOpen(false)}>
-                Отмена
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </TabsContent>
   );
 };
