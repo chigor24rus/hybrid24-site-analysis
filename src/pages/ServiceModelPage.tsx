@@ -275,10 +275,19 @@ const ServiceModelPage = () => {
                 </p>
                 <div>
                   <p className="font-semibold text-foreground mb-2">Наши преимущества:</p>
-                  <ul className="space-y-1 ml-4">
-                    <li>• Профессиональное диагностическое оборудование</li>
-                    <li>• Оригинальные запасные части</li>
-                    <li>• Опытные мастера, знающие специфику моделей {brand.name}</li>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Профессиональное диагностическое оборудование</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Оригинальные запасные части</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
+                      <span>Опытные мастера, знающие специфику моделей {brand.name}</span>
+                    </li>
                   </ul>
                 </div>
                 <p>
