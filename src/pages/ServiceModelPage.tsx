@@ -113,7 +113,16 @@ const ServiceModelPage = () => {
   }
 
   const pageTitle = `${service.title} ${brand.name} ${model.name}`;
-  const pageDescription = `${service.title} для ${brand.name} ${model.name}${model.year_from ? ` (${model.year_from}${model.year_to ? `-${model.year_to}` : '+'} г.)` : ''}. ${service.description} Цена: ${price?.price || service.price}. Время работы: ${service.duration}.`;
+  
+  const getServiceDescription = (serviceTitle: string, modelName: string, baseDescription: string) => {
+    if (serviceTitle.toLowerCase() === 'техническое обслуживание') {
+      return `Техническое обслуживание (ТО) ${modelName} — это комплекс регламентных работ, направленных на поддержание автомобиля в исправном состоянии. Регулярное ТО не только продлевает срок службы машины, но и обеспечивает безопасность на дороге. Не стоит откладывать плановое ТО, ведь профилактика всегда дешевле ремонта. В нашем автосервисе мы проводим полный комплекс работ по техническому обслуживанию любых марок автомобилей.`;
+    }
+    return baseDescription;
+  };
+
+  const serviceDescription = getServiceDescription(service.title, model.name, service.description);
+  const pageDescription = `${service.title} для ${brand.name} ${model.name}${model.year_from ? ` (${model.year_from}${model.year_to ? `-${model.year_to}` : '+'} г.)` : ''}. ${serviceDescription} Цена: ${price?.price || service.price}. Время работы: ${service.duration}.`;
   const finalPrice = price?.price || service.price;
   
   const priceValue = finalPrice.replace(/[^\d]/g, '');
@@ -202,7 +211,7 @@ const ServiceModelPage = () => {
                     <Icon name={service.icon as any} size={32} className="text-white" />
                   </div>
                   <CardTitle className="text-2xl">{service.title}</CardTitle>
-                  <CardDescription className="text-base mt-2">{service.description}</CardDescription>
+                  <CardDescription className="text-base mt-2">{serviceDescription}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-2 text-muted-foreground">
