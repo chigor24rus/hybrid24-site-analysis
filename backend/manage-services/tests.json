@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "Get all services",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "services": "array"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create service",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "title": "Тестовая услуга",
+        "description": "Описание",
+        "icon": "Wrench",
+        "duration": "1 час"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "service": "object"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import Icon from '@/components/ui/icon';
 import VehiclesBrandsTab from '@/components/admin/vehicles/VehiclesBrandsTab';
 import VehiclesModelsTab from '@/components/admin/vehicles/VehiclesModelsTab';
 import VehiclesPricesTab from '@/components/admin/vehicles/VehiclesPricesTab';
+import VehiclesServicesTab from '@/components/admin/vehicles/VehiclesServicesTab';
 import VehiclesUploadDialog from '@/components/admin/vehicles/VehiclesUploadDialog';
 
 interface Brand {
@@ -144,14 +145,16 @@ const AdminVehiclesPage = () => {
         </div>
 
         <Tabs defaultValue="brands" className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full max-w-3xl grid-cols-4">
             <TabsTrigger value="brands">Бренды ({brands.length})</TabsTrigger>
             <TabsTrigger value="models">Модели ({models.length})</TabsTrigger>
+            <TabsTrigger value="services">Услуги ({services.length})</TabsTrigger>
             <TabsTrigger value="prices">Цены ({prices.length})</TabsTrigger>
           </TabsList>
 
           <VehiclesBrandsTab brands={brands} onRefresh={fetchData} />
           <VehiclesModelsTab brands={brands} models={models} onRefresh={fetchData} />
+          <VehiclesServicesTab services={services} onRefresh={fetchData} />
           <VehiclesPricesTab brands={brands} models={models} services={services} prices={prices} onRefresh={fetchData} />
         </Tabs>
 
