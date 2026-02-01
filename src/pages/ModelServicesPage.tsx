@@ -115,13 +115,6 @@ export default function ModelServicesPage() {
     return price ? `${price.base_price} ${price.currency}` : service.price;
   };
 
-  const getServiceDescription = (serviceTitle: string, modelName: string, baseDescription: string) => {
-    if (serviceTitle.toLowerCase() === 'техническое обслуживание') {
-      return `Техническое обслуживание (ТО) ${modelName} — это комплекс регламентных работ, направленных на поддержание автомобиля в исправном состоянии. Регулярное ТО не только продлевает срок службы машины, но и обеспечивает безопасность на дороге.`;
-    }
-    return baseDescription;
-  };
-
   return (
     <>
       <Helmet>
@@ -170,7 +163,7 @@ export default function ModelServicesPage() {
                     <Icon name={service.icon as any} size={32} className="text-white" />
                   </div>
                   <CardTitle className="text-xl">{service.title}</CardTitle>
-                  <CardDescription className="text-base">{getServiceDescription(service.title, model.name, service.description)}</CardDescription>
+                  <CardDescription className="text-base">{service.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
