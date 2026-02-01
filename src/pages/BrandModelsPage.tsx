@@ -6,6 +6,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Brand {
   id: number;
@@ -86,9 +87,20 @@ export default function BrandModelsPage() {
   return (
     <>
       <Helmet>
-        <title>Модели {brand.name} - HEVSeRvice</title>
-        <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание.`} />
-        <link rel="canonical" href={`https://hevservice.ru/${brandSlug}`} />
+        <title>Модели {brand.name} - {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание в ${SITE_CONFIG.address.locality}.`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}`} />
+        <meta property="og:title" content={`Модели ${brand.name} - ${SITE_CONFIG.name}`} />
+        <meta property="og:description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание в ${SITE_CONFIG.address.locality}.`} />
+        <meta property="og:url" content={`${SITE_CONFIG.domain}/${brandSlug}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={SITE_CONFIG.ogImage} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Модели ${brand.name} - ${SITE_CONFIG.name}`} />
+        <meta name="twitter:description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание.`} />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
       </Helmet>
 
       <Header setIsBookingOpen={setIsBookingOpen} />

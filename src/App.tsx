@@ -96,13 +96,13 @@ const App = () => (
             <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/brands" element={<BrandsPage />} />
             <Route path="/brand/:brandId" element={<BrandPage />} />
             <Route path="/services-index" element={<SeoIndexPage />} />
-            <Route path="/:brandSlug" element={<BrandModelsPage />} />
-            <Route path="/:brandSlug/:modelSlug" element={<ModelServicesPage />} />
-            <Route path="/:brandSlug/:modelSlug/:serviceSlug" element={<ServiceModelPage />} />
-            <Route path="/blog/:id" element={<BlogPostPage />} />
+            <Route path="/legal" element={<LegalPage />} />
+            <Route path="/bonus-program" element={<BonusProgramPage />} />
+            <Route path="/warranty" element={<WarrantyPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/data" element={<AdminDataPage />} />
@@ -113,9 +113,10 @@ const App = () => (
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
             <Route path="/admin/logs" element={<AdminLogsPage />} />
-            <Route path="/legal" element={<LegalPage />} />
-            <Route path="/bonus-program" element={<BonusProgramPage />} />
-            <Route path="/warranty" element={<WarrantyPage />} />
+            {/* Dynamic SEO routes - MUST be at the end before catch-all */}
+            <Route path="/:brandSlug" element={<BrandModelsPage />} />
+            <Route path="/:brandSlug/:modelSlug" element={<ModelServicesPage />} />
+            <Route path="/:brandSlug/:modelSlug/:serviceSlug" element={<ServiceModelPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -7,6 +7,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Brand {
   id: number;
@@ -118,9 +119,20 @@ export default function ModelServicesPage() {
   return (
     <>
       <Helmet>
-        <title>Услуги для {brand.name} {model.name} - HEVSeRvice</title>
-        <meta name="description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name}. Диагностика, ремонт, техобслуживание с ценами.`} />
-        <link rel="canonical" href={`https://hevservice.ru/${brandSlug}/${modelSlug}`} />
+        <title>Услуги для {brand.name} {model.name} - {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name} в ${SITE_CONFIG.address.locality}. Диагностика, ремонт, техобслуживание с ценами.`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}`} />
+        <meta property="og:title" content={`Услуги для ${brand.name} ${model.name} - ${SITE_CONFIG.name}`} />
+        <meta property="og:description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name} в ${SITE_CONFIG.address.locality}. Диагностика, ремонт, техобслуживание с ценами.`} />
+        <meta property="og:url" content={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={SITE_CONFIG.ogImage} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Услуги для ${brand.name} ${model.name} - ${SITE_CONFIG.name}`} />
+        <meta name="twitter:description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name}. Диагностика, ремонт, техобслуживание с ценами.`} />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
       </Helmet>
 
       <Header setIsBookingOpen={setIsBookingOpen} />

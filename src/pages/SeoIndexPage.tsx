@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Brand {
   id: number;
@@ -142,9 +143,20 @@ const SeoIndexPage = () => {
   return (
     <>
       <Helmet>
-        <title>Все услуги по маркам и моделям - HEVSeRvice</title>
-        <meta name="description" content="Полный каталог услуг автосервиса для всех марок и моделей автомобилей. Узнайте точную стоимость обслуживания вашего автомобиля." />
-        <link rel="canonical" href="https://hevservice.ru/services-index" />
+        <title>Все услуги по маркам и моделям - {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Полный каталог услуг автосервиса для всех марок и моделей автомобилей в ${SITE_CONFIG.address.locality}. Узнайте точную стоимость обслуживания вашего автомобиля.`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_CONFIG.domain}/services-index`} />
+        <meta property="og:title" content={`Все услуги по маркам и моделям - ${SITE_CONFIG.name}`} />
+        <meta property="og:description" content={`Полный каталог услуг автосервиса для всех марок и моделей автомобилей в ${SITE_CONFIG.address.locality}. Узнайте точную стоимость обслуживания.`} />
+        <meta property="og:url" content={`${SITE_CONFIG.domain}/services-index`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content={SITE_CONFIG.ogImage} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Все услуги по маркам и моделям - ${SITE_CONFIG.name}`} />
+        <meta name="twitter:description" content="Полный каталог услуг автосервиса для всех марок и моделей автомобилей." />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
       </Helmet>
 
       <Header setIsBookingOpen={setIsBookingOpen} />

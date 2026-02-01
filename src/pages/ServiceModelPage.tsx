@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Brand {
   id: number;
@@ -130,19 +131,20 @@ const ServiceModelPage = () => {
     "model": model.name,
     "offers": {
       "@type": "Offer",
-      "url": `https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`,
+      "url": `${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}/${serviceSlug}`,
       "priceCurrency": "RUB",
       "price": priceValue,
       "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "AutoRepair",
-        "name": "HEVSeRvice",
-        "telephone": "+7 (XXX) XXX-XX-XX",
+        "name": SITE_CONFIG.name,
+        "telephone": SITE_CONFIG.phone,
         "address": {
           "@type": "PostalAddress",
-          "addressLocality": "Город",
-          "addressCountry": "RU"
+          "streetAddress": SITE_CONFIG.address.street,
+          "addressLocality": SITE_CONFIG.address.locality,
+          "addressCountry": SITE_CONFIG.address.country
         }
       }
     },
@@ -157,14 +159,22 @@ const ServiceModelPage = () => {
   return (
     <>
       <Helmet>
-        <title>{pageTitle} - HEVSeRvice</title>
+        <title>{pageTitle} - {SITE_CONFIG.name}</title>
         <meta name="description" content={pageDescription} />
-        <meta property="og:title" content={`${pageTitle} - HEVSeRvice`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}/${serviceSlug}`} />
+        <meta property="og:title" content={`${pageTitle} - ${SITE_CONFIG.name}`} />
         <meta property="og:description" content={pageDescription} />
+        <meta property="og:url" content={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}/${serviceSlug}`} />
         <meta property="og:type" content="product" />
         <meta property="og:price:amount" content={priceValue} />
         <meta property="og:price:currency" content="RUB" />
-        <link rel="canonical" href={`https://hevservice.ru/${brandSlug}/${modelSlug}/${serviceSlug}`} />
+        <meta property="og:image" content={SITE_CONFIG.ogImage} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${pageTitle} - ${SITE_CONFIG.name}`} />
+        <meta name="twitter:description" content={pageDescription} />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
           {JSON.stringify(schemaData)}
         </script>

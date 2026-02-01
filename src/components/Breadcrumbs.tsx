@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Icon from '@/components/ui/icon';
+import { SITE_CONFIG } from '@/config/site';
 
 interface BreadcrumbItem {
   label: string;
@@ -20,13 +21,13 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Главная",
-        "item": "https://hybrid24.ru/"
+        "item": `${SITE_CONFIG.domain}/`
       },
       ...items.map((item, index) => ({
         "@type": "ListItem",
         "position": index + 2,
         "name": item.label,
-        ...(item.path && { "item": `https://hybrid24.ru${item.path}` })
+        ...(item.path && { "item": `${SITE_CONFIG.domain}${item.path}` })
       }))
     ]
   };

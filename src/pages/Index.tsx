@@ -7,6 +7,7 @@ import BookingDialog from '@/components/BookingDialog';
 import Sections from '@/components/Sections';
 import Footer from '@/components/Footer';
 import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Review {
   id: number | string;
@@ -22,7 +23,7 @@ const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -45,18 +46,18 @@ const Index = () => {
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="HEVSR - Сертифицированная СТО в Красноярске" />
-        <meta property="og:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование. Звоните +7(923)0166750" />
-        <meta property="og:site_name" content="HEVSR" />
+        <meta property="og:title" content={`${SITE_CONFIG.name} - Сертифицированная СТО в Красноярске`} />
+        <meta property="og:description" content={`Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование. Звоните ${SITE_CONFIG.phone}`} />
+        <meta property="og:site_name" content={SITE_CONFIG.name} />
         <meta property="og:locale" content="ru_RU" />
-        <meta property="og:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="HEVSR - Профессиональный автосервис в Красноярске" />
+        <meta property="og:image" content={SITE_CONFIG.ogImage} />
+        <meta property="og:image:width" content={SITE_CONFIG.ogImageWidth} />
+        <meta property="og:image:height" content={SITE_CONFIG.ogImageHeight} />
+        <meta property="og:image:alt" content={`${SITE_CONFIG.name} - Профессиональный автосервис в Красноярске`} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="HEVSR - Сертифицированная СТО в Красноярске" />
+        <meta name="twitter:title" content={`${SITE_CONFIG.name} - Сертифицированная СТО в Красноярске`} />
         <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
-        <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>
