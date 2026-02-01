@@ -56,12 +56,23 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   const [priceForm, setPriceForm] = useState({ id: 0, brand_id: '', model_id: '', service_id: '', price: '' });
   const [filterBrand, setFilterBrand] = useState<string>('all');
   const [filterService, setFilterService] = useState<string>('all');
+  const [searchBrand, setSearchBrand] = useState('');
+  const [searchModel, setSearchModel] = useState('');
+  const [searchService, setSearchService] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
 
   const filteredPrices = prices.filter(p => {
     if (filterBrand !== 'all' && p.brand_id.toString() !== filterBrand) return false;
     if (filterService !== 'all' && p.service_id.toString() !== filterService) return false;
     return true;
   });
+
+  const totalPages = Math.ceil(filteredPrices.length / itemsPerPage);
+  const paginatedPrices = filteredPrices.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleSavePrice = async () => {
     if (!priceForm.brand_id || !priceForm.service_id || !priceForm.price) return;
@@ -114,7 +125,10 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
           <div className="flex items-center justify-between">
             <CardTitle>Цены на услуги</CardTitle>
             <div className="flex gap-2">
-              <Select value={filterBrand} onValueChange={setFilterBrand}>
+              <Select value={filterBrand} onValueChange={(value) => {
+                setFilterBrand(value);
+                setCurrentPage(1);
+              }}>
                 <SelectTrigger className="w-[150px]">
                   <SelectValue placeholder="Бренд" />
                 </SelectTrigger>
@@ -127,7 +141,10 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                   ))}
                 </SelectContent>
               </Select>
-              <Select value={filterService} onValueChange={setFilterService}>
+              <Select value={filterService} onValueChange={(value) => {
+                setFilterService(value);
+                setCurrentPage(1);
+              }}>
                 <SelectTrigger className="w-[200px]">
                   <SelectValue placeholder="Услуга" />
                 </SelectTrigger>
@@ -150,7 +167,10 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
               </Button>
             </div>
           </div>
-          <CardDescription>Цены на услуги для брендов и моделей ({filteredPrices.length})</CardDescription>
+          <CardDescription>
+            Цены на услуги для брендов и моделей ({filteredPrices.length})
+            {totalPages > 1 && ` • Страница ${currentPage} из ${totalPages}`}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -164,7 +184,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPrices.map((price) => (
+              {paginatedPrices.map((price) => (
                 <TableRow key={price.id}>
                   <TableCell className="font-medium">{price.brand_name}</TableCell>
                   <TableCell>{price.model_name || 'Все модели'}</TableCell>
@@ -191,11 +211,64 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
               ))}
             </TableBody>
           </Table>
+          
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-muted-foreground">
+                Показано {(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredPrices.length)} из {filteredPrices.length}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  <Icon name="ChevronsLeft" size={16} />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <Icon name="ChevronLeft" size={16} />
+                </Button>
+                <div className="flex items-center gap-2 px-4">
+                  <span className="text-sm font-medium">{currentPage}</span>
+                  <span className="text-sm text-muted-foreground">из {totalPages}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <Icon name="ChevronRight" size={16} />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  <Icon name="ChevronsRight" size={16} />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {isPriceDialogOpen && (
-        <Dialog open={isPriceDialogOpen} onOpenChange={setIsPriceDialogOpen}>
+        <Dialog open={isPriceDialogOpen} onOpenChange={(open) => {
+          setIsPriceDialogOpen(open);
+          if (!open) {
+            setSearchBrand('');
+            setSearchModel('');
+            setSearchService('');
+          }
+        }}>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
@@ -204,30 +277,53 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
             <div className="space-y-4">
               <div>
                 <Label>Бренд *</Label>
+                <Input
+                  placeholder="Поиск бренда..."
+                  value={searchBrand}
+                  onChange={(e) => setSearchBrand(e.target.value)}
+                  className="mb-2"
+                />
                 <select 
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={priceForm.brand_id} 
-                  onChange={(e) => setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' })}
+                  onChange={(e) => {
+                    setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' });
+                    setSearchBrand('');
+                  }}
+                  size={Math.min(brands.filter(b => b.name.toLowerCase().includes(searchBrand.toLowerCase())).length + 1, 8)}
                 >
                   <option value="">Выберите бренд</option>
-                  {brands.map((brand) => (
-                    <option key={brand.id} value={brand.id.toString()}>
-                      {brand.name}
-                    </option>
-                  ))}
+                  {brands
+                    .filter(brand => brand.name.toLowerCase().includes(searchBrand.toLowerCase()))
+                    .map((brand) => (
+                      <option key={brand.id} value={brand.id.toString()}>
+                        {brand.name}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div>
                 <Label>Модель (опционально)</Label>
+                <Input
+                  placeholder="Поиск модели..."
+                  value={searchModel}
+                  onChange={(e) => setSearchModel(e.target.value)}
+                  className="mb-2"
+                  disabled={!priceForm.brand_id}
+                />
                 <select 
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={priceForm.model_id} 
-                  onChange={(e) => setPriceForm({ ...priceForm, model_id: e.target.value })}
+                  onChange={(e) => {
+                    setPriceForm({ ...priceForm, model_id: e.target.value });
+                    setSearchModel('');
+                  }}
                   disabled={!priceForm.brand_id}
+                  size={priceForm.brand_id ? Math.min(models.filter(m => m.brand_id.toString() === priceForm.brand_id && m.name.toLowerCase().includes(searchModel.toLowerCase())).length + 1, 8) : 2}
                 >
                   <option value="">Все модели</option>
                   {models
-                    .filter(m => m.brand_id.toString() === priceForm.brand_id)
+                    .filter(m => m.brand_id.toString() === priceForm.brand_id && m.name.toLowerCase().includes(searchModel.toLowerCase()))
                     .map((model) => (
                       <option key={model.id} value={model.id.toString()}>
                         {model.name}
@@ -237,17 +333,29 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
               </div>
               <div>
                 <Label>Услуга *</Label>
+                <Input
+                  placeholder="Поиск услуги..."
+                  value={searchService}
+                  onChange={(e) => setSearchService(e.target.value)}
+                  className="mb-2"
+                />
                 <select 
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
                   value={priceForm.service_id} 
-                  onChange={(e) => setPriceForm({ ...priceForm, service_id: e.target.value })}
+                  onChange={(e) => {
+                    setPriceForm({ ...priceForm, service_id: e.target.value });
+                    setSearchService('');
+                  }}
+                  size={Math.min(services.filter(s => s.title.toLowerCase().includes(searchService.toLowerCase())).length + 1, 8)}
                 >
                   <option value="">Выберите услугу</option>
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id.toString()}>
-                      {service.title}
-                    </option>
-                  ))}
+                  {services
+                    .filter(service => service.title.toLowerCase().includes(searchService.toLowerCase()))
+                    .map((service) => (
+                      <option key={service.id} value={service.id.toString()}>
+                        {service.title}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div>
