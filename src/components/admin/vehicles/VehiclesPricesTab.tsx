@@ -55,6 +55,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   const [isPriceDialogOpen, setIsPriceDialogOpen] = useState(false);
   const [priceForm, setPriceForm] = useState({ id: 0, brand_id: '', model_id: '', service_id: '', price: '' });
   const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [filterModel, setFilterModel] = useState<string>('all');
   const [filterService, setFilterService] = useState<string>('all');
   const [searchBrand, setSearchBrand] = useState('');
   const [searchModel, setSearchModel] = useState('');
@@ -64,9 +65,14 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
 
   const filteredPrices = prices.filter(p => {
     if (filterBrand !== 'all' && p.brand_id.toString() !== filterBrand) return false;
+    if (filterModel !== 'all' && (p.model_id?.toString() || 'null') !== filterModel) return false;
     if (filterService !== 'all' && p.service_id.toString() !== filterService) return false;
     return true;
   });
+
+  const availableModels = filterBrand !== 'all' 
+    ? models.filter(m => m.brand_id.toString() === filterBrand)
+    : models;
 
   const totalPages = Math.ceil(filteredPrices.length / itemsPerPage);
   const paginatedPrices = filteredPrices.slice(
@@ -127,6 +133,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
             <div className="flex gap-2">
               <Select value={filterBrand} onValueChange={(value) => {
                 setFilterBrand(value);
+                setFilterModel('all');
                 setCurrentPage(1);
               }}>
                 <SelectTrigger className="w-[150px]">
@@ -137,6 +144,27 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                   {brands.map((brand) => (
                     <SelectItem key={brand.id} value={brand.id.toString()}>
                       {brand.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select 
+                value={filterModel} 
+                onValueChange={(value) => {
+                  setFilterModel(value);
+                  setCurrentPage(1);
+                }}
+                disabled={filterBrand === 'all'}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Модель" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  <SelectItem value="all">Все модели</SelectItem>
+                  <SelectItem value="null">Без модели</SelectItem>
+                  {availableModels.map((model) => (
+                    <SelectItem key={model.id} value={model.id.toString()}>
+                      {model.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
