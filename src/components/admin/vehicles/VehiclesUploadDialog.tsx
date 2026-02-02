@@ -139,17 +139,42 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
             />
           </div>
-          <div className="bg-muted p-4 rounded-lg text-sm">
-            <p className="font-semibold mb-2">Формат файла:</p>
-            {uploadType === 'brands' && (
-              <p>Колонка: <code>name</code></p>
-            )}
-            {uploadType === 'models' && (
-              <p>Колонки: <code>brand_name, model_name, year_from, year_to</code></p>
-            )}
-            {uploadType === 'prices' && (
-              <p>Колонки: <code>brand_name, model_name, service_title, price</code></p>
-            )}
+          <div className="bg-muted p-4 rounded-lg text-sm space-y-3">
+            <div>
+              <p className="font-semibold mb-2">Формат файла:</p>
+              {uploadType === 'brands' && (
+                <p>Колонка: <code className="bg-background px-1 py-0.5 rounded">name</code></p>
+              )}
+              {uploadType === 'models' && (
+                <p>Колонки: <code className="bg-background px-1 py-0.5 rounded">brand_name, model_name, year_from, year_to</code></p>
+              )}
+              {uploadType === 'prices' && (
+                <p>Колонки: <code className="bg-background px-1 py-0.5 rounded">brand_name, model_name, service_title, price</code></p>
+              )}
+            </div>
+            <div className="pt-2 border-t border-border">
+              <p className="font-semibold mb-2">Скачать пример:</p>
+              <div className="flex flex-wrap gap-2">
+                {uploadType === 'brands' && (
+                  <a href="/examples/brands_example.csv" download className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <Icon name="Download" size={14} />
+                    brands_example.csv
+                  </a>
+                )}
+                {uploadType === 'models' && (
+                  <a href="/examples/models_example.csv" download className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <Icon name="Download" size={14} />
+                    models_example.csv
+                  </a>
+                )}
+                {uploadType === 'prices' && (
+                  <a href="/examples/prices_example.csv" download className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <Icon name="Download" size={14} />
+                    prices_example.csv
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
           <div className="flex gap-2">
             <Button onClick={handleFileUpload} disabled={!uploadFile} className="flex-1">
