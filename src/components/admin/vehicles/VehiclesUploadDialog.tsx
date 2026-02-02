@@ -112,7 +112,7 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Загрузить из XLS файла</DialogTitle>
           <DialogDescription>Выберите тип данных и файл для загрузки</DialogDescription>
@@ -131,14 +131,67 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
               </SelectContent>
             </Select>
           </div>
-          <div>
-            <Label>Файл XLS/XLSX</Label>
-            <Input
-              type="file"
-              accept=".xls,.xlsx"
-              onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-            />
+
+          <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-3">
+            <div className="flex items-start gap-2">
+              <Icon name="Info" size={18} className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="text-sm space-y-2">
+                <p className="font-semibold text-blue-900 dark:text-blue-100">Инструкция по заполнению:</p>
+                
+                {uploadType === 'brands' && (
+                  <ul className="space-y-1 text-blue-800 dark:text-blue-200">
+                    <li>• Скачайте файл-пример ниже</li>
+                    <li>• Откройте его в Excel или Google Таблицах</li>
+                    <li>• Заполните колонку <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">name</code> названиями брендов</li>
+                    <li>• Пример: <span className="italic">Toyota, BMW, Mercedes-Benz</span></li>
+                    <li>• Сохраните файл в формате .xlsx или .csv</li>
+                    <li>• Загрузите файл через форму ниже</li>
+                  </ul>
+                )}
+
+                {uploadType === 'models' && (
+                  <ul className="space-y-1 text-blue-800 dark:text-blue-200">
+                    <li>• Скачайте файл-пример ниже</li>
+                    <li>• Заполните колонки:</li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">brand_name</code> — название бренда (должен существовать в системе)
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">model_name</code> — название модели
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">year_from</code> — год начала выпуска (можно оставить пустым)
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">year_to</code> — год окончания выпуска (оставьте пустым для текущих)
+                    </li>
+                    <li>• Пример: <span className="italic">Toyota, Camry, 2010, 2023</span></li>
+                  </ul>
+                )}
+
+                {uploadType === 'prices' && (
+                  <ul className="space-y-1 text-blue-800 dark:text-blue-200">
+                    <li>• Скачайте файл-пример ниже</li>
+                    <li>• Заполните колонки:</li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">brand_name</code> — название бренда (должен существовать)
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">model_name</code> — модель (оставьте пустым для всех моделей бренда)
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">service_title</code> — название услуги (должна существовать)
+                    </li>
+                    <li className="ml-4">
+                      → <code className="bg-blue-100 dark:bg-blue-900 px-1 py-0.5 rounded">price</code> — цена (например: "от 8 500 ₽")
+                    </li>
+                    <li>• Если model_name пустой — цена применится ко всем моделям бренда</li>
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
+
           <div className="bg-muted p-4 rounded-lg text-sm space-y-3">
             <div>
               <p className="font-semibold mb-2">Формат файла:</p>
@@ -176,6 +229,16 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
               </div>
             </div>
           </div>
+
+          <div>
+            <Label>Файл XLS/XLSX/CSV</Label>
+            <Input
+              type="file"
+              accept=".xls,.xlsx,.csv"
+              onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
+            />
+          </div>
+
           <div className="flex gap-2">
             <Button onClick={handleFileUpload} disabled={!uploadFile} className="flex-1">
               <Icon name="Upload" className="mr-2" size={18} />
