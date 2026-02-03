@@ -65,25 +65,74 @@ def handler(event: dict, context) -> dict:
                 }
             
             elif action == 'metadata':
+                import xml.etree.ElementTree as ET
+                
                 response = requests.get(
                     f"{odata_url}/$metadata",
                     auth=auth,
                     timeout=10
                 )
                 
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'success': True,
-                        'message': 'Метаданные получены',
-                        'metadata': response.text[:2000] if len(response.text) > 2000 else response.text,
-                        'full_length': len(response.text)
-                    })
-                }
+                try:
+                    root = ET.fromstring(response.text)
+                    namespaces = {
+                        'edmx': 'http://schemas.microsoft.com/ado/2007/06/edmx',
+                        'edm': 'http://schemas.microsoft.com/ado/2009/11/edm',
+                        'm': 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata'
+                    }
+                    
+                    entity_types = []
+                    for entity in root.findall('.//edm:EntityType', namespaces):
+                        entity_name = entity.get('Name', 'Unknown')
+                        properties = []
+                        for prop in entity.findall('.//edm:Property', namespaces):
+                            properties.append({
+                                'name': prop.get('Name'),
+                                'type': prop.get('Type'),
+                                'nullable': prop.get('Nullable', 'true')
+                            })
+                        entity_types.append({
+                            'name': entity_name,
+                            'properties': properties[:20]
+                        })
+                    
+                    entity_sets = []
+                    for entity_set in root.findall('.//edm:EntitySet', namespaces):
+                        entity_sets.append({
+                            'name': entity_set.get('Name'),
+                            'type': entity_set.get('EntityType')
+                        })
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': 'Метаданные получены',
+                            'entity_sets': entity_sets,
+                            'entity_types': entity_types[:10],
+                            'total_entities': len(entity_types),
+                            'total_sets': len(entity_sets)
+                        }, ensure_ascii=False)
+                    }
+                except Exception as parse_error:
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': 'Метаданные получены (raw)',
+                            'metadata': response.text[:2000],
+                            'full_length': len(response.text),
+                            'parse_error': str(parse_error)
+                        })
+                    }
             
             elif action == 'services':
                 response = requests.get(
