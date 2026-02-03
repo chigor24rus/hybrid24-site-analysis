@@ -47,22 +47,42 @@ def handler(event: dict, context) -> dict:
                 response = requests.get(
                     odata_url,
                     auth=auth,
-                    timeout=10
+                    timeout=10,
+                    headers={'Accept': 'application/json'}
                 )
                 
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'success': True,
-                        'message': 'Подключение к 1С успешно',
-                        'status_code': response.status_code,
-                        'url': odata_url
-                    })
-                }
+                try:
+                    data = response.json()
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': 'Подключение к 1С успешно',
+                            'status_code': response.status_code,
+                            'url': odata_url,
+                            'available_entities': data.get('value', []) if isinstance(data, dict) else [],
+                            'response_preview': str(data)[:500]
+                        }, ensure_ascii=False)
+                    }
+                except:
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': True,
+                            'message': 'Подключение к 1С успешно',
+                            'status_code': response.status_code,
+                            'url': odata_url,
+                            'response_text': response.text[:500]
+                        })
+                    }
             
             elif action == 'metadata':
                 import xml.etree.ElementTree as ET
