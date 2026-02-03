@@ -242,6 +242,10 @@ const AdminPage = () => {
               <Icon name="Settings" className="mr-2" size={18} />
               Настройки
             </Button>
+            <Button variant="outline" onClick={() => navigate('/admin/1c-test')}>
+              <Icon name="Database" className="mr-2" size={18} />
+              Тест 1С
+            </Button>
             <Button
               variant="outline"
               onClick={() => {
