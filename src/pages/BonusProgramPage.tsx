@@ -56,8 +56,8 @@ const BonusProgramPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Условия бонусной программы - HEVSR</title>
-        <meta name="description" content="Бонусная программа лояльности автосервиса HEVSR. Накапливайте бонусы и получайте скидки до 10% на обслуживание автомобиля в Красноярске" />
+        <title>Бонусная программа HEVSR Красноярск - скидки до 10%</title>
+        <meta name="description" content="Бонусная программа лояльности в Красноярске. ✓ Скидки до 10% ✓ VIP-обслуживание ✓ Бесплатная мойка. Накапливайте бонусы!" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -86,7 +86,7 @@ const BonusProgramPage = () => {
           
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Программа лояльности</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Бонусная программа</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Бонусная программа HEVSR в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Получайте скидки и привилегии за обслуживание в нашем автосервисе
             </p>

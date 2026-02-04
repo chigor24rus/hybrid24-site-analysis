@@ -60,8 +60,8 @@ const WarrantyPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Гарантийная политика - HEVSR</title>
-        <meta name="description" content="Гарантийная политика автосервиса HEVSR в Красноярске. Гарантия на все виды работ до 12 месяцев. Прозрачные условия и полная ответственность за качество" />
+        <title>Гарантия на ремонт авто HEVSR Красноярск - до 12 месяцев</title>
+        <meta name="description" content="Гарантия на ремонт в Красноярске до 12 месяцев. ✓ Прозрачные условия ✓ Ответственность за качество ✓ Документальное подтверждение. Узнайте больше!" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -90,7 +90,7 @@ const WarrantyPage = () => {
           
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Качество и надежность</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Гарантийная политика</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Гарантия на ремонт в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Мы отвечаем за качество выполненных работ и используемых запчастей
             </p>

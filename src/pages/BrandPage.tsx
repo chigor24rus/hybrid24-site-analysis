@@ -111,6 +111,8 @@ export default function BrandPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
+        <title>Ремонт и обслуживание {brand.name} в Красноярске - HEVSR</title>
+        <meta name="description" content={`Профессиональный ремонт и обслуживание ${brand.name} в Красноярске. ✓ Опытные мастера ✓ Оригинальные запчасти ✓ Гарантия на работы. Запись онлайн!`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -141,7 +143,7 @@ export default function BrandPage() {
             </div>
             <div className="flex-1 text-center md:text-left">
               <Badge className="mb-3 gradient-accent">Специализация</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{brand.name}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Ремонт и обслуживание {brand.name} в Красноярске</h1>
               <p className="text-lg text-muted-foreground max-w-2xl">{brand.description}</p>
             </div>
           </div>
