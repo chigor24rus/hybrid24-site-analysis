@@ -1,9 +1,10 @@
 {
   "tests": [
     {
-      "name": "Verify with correct password",
+      "name": "Verify with correct credentials",
       "method": "POST",
       "body": {
+        "login": "admin",
         "password": "admin123"
       },
       "expectedStatus": 200,
@@ -13,9 +14,10 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Reject incorrect password",
+      "name": "Reject incorrect credentials",
       "method": "POST",
       "body": {
+        "login": "admin",
         "password": "wrongpassword"
       },
       "expectedStatus": 401,
@@ -25,14 +27,28 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Reject empty password",
+      "name": "Reject empty login or password",
       "method": "POST",
       "body": {
+        "login": "",
         "password": ""
       },
       "expectedStatus": 400,
       "expectedBody": {
         "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject wrong login",
+      "method": "POST",
+      "body": {
+        "login": "wronguser",
+        "password": "admin123"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "success": false
       },
       "bodyMatcher": "partial"
     }

@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 
 const AdminLoginPage = () => {
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -23,18 +24,18 @@ const AdminLoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ login, password }),
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Save password to localStorage for API requests
-        localStorage.setItem('adminAuth', password);
+        // Save credentials to localStorage for API requests
+        localStorage.setItem('adminAuth', JSON.stringify({ login, password }));
         localStorage.setItem('adminAuthTime', Date.now().toString());
         navigate('/admin');
       } else {
-        setError(data.error || 'Неверный пароль');
+        setError(data.error || 'Неверный логин или пароль');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -52,10 +53,23 @@ const AdminLoginPage = () => {
             <Icon name="Lock" size={32} className="text-white" />
           </div>
           <CardTitle className="text-2xl">Вход в админ-панель</CardTitle>
-          <CardDescription>Введите пароль для доступа</CardDescription>
+          <CardDescription>Введите логин и пароль для доступа</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login">Логин</Label>
+              <Input
+                id="login"
+                type="text"
+                placeholder="Введите логин"
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+                disabled={isSubmitting}
+                autoFocus
+              />
+            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password">Пароль</Label>
               <Input
@@ -65,7 +79,6 @@ const AdminLoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting}
-                autoFocus
               />
             </div>
 
@@ -80,7 +93,7 @@ const AdminLoginPage = () => {
               type="submit"
               className="w-full gradient-primary btn-glow"
               size="lg"
-              disabled={isSubmitting || !password}
+              disabled={isSubmitting || !login || !password}
             >
               {isSubmitting ? (
                 <>

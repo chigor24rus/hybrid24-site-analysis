@@ -4,8 +4,8 @@ from typing import Dict, Any
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Verify admin password for authentication
-    Args: event with httpMethod POST, body with password
+    Business: Verify admin credentials (login + password) for authentication
+    Args: event with httpMethod POST, body with login and password
     Returns: HTTP response with authentication result
     '''
     method: str = event.get('httpMethod', 'POST')
@@ -36,33 +36,35 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     try:
         # Parse request body
         body_data = json.loads(event.get('body', '{}'))
+        login = body_data.get('login', '').strip()
         password = body_data.get('password', '').strip()
         
-        if not password:
+        if not login or not password:
             return {
                 'statusCode': 400,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'Пароль обязателен'})
+                'body': json.dumps({'error': 'Логин и пароль обязательны'})
             }
         
-        # Get admin password from environment
+        # Get admin credentials from environment
+        admin_login = os.environ.get('ADMIN_LOGIN', '')
         admin_password = os.environ.get('ADMIN_PASSWORD', '')
         
-        if not admin_password:
+        if not admin_login or not admin_password:
             return {
                 'statusCode': 500,
                 'headers': {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*'
                 },
-                'body': json.dumps({'error': 'ADMIN_PASSWORD не настроен'})
+                'body': json.dumps({'error': 'ADMIN_LOGIN или ADMIN_PASSWORD не настроены'})
             }
         
-        # Verify password
-        if password == admin_password:
+        # Verify credentials
+        if login == admin_login and password == admin_password:
             return {
                 'statusCode': 200,
                 'headers': {
@@ -84,7 +86,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 },
                 'body': json.dumps({
                     'success': False,
-                    'error': 'Неверный пароль'
+                    'error': 'Неверный логин или пароль'
                 })
             }
         
