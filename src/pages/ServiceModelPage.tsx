@@ -113,7 +113,7 @@ const ServiceModelPage = () => {
     return null;
   }
 
-  const pageTitle = `${service.title} ${brand.name} ${model.name}`;
+  const pageTitle = `${service.title} ${brand.name} ${model.name} в Красноярске`;
   const pageDescription = `${service.title} для ${brand.name} ${model.name}${model.year_from ? ` (${model.year_from}${model.year_to ? `-${model.year_to}` : '+'} г.)` : ''}. ${service.description} Цена: ${price?.price || service.price}. Время работы: ${service.duration}.`;
   const finalPrice = price?.price || service.price;
   
@@ -194,7 +194,7 @@ const ServiceModelPage = () => {
           <div className="max-w-4xl mx-auto">
             <div className="mb-8">
               <Badge className="mb-4 text-sm px-3 py-1">{service.title}</Badge>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{pageTitle}</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">{service.title} {brand.name} {model.name} в Красноярске</h1>
               <p className="text-xl text-muted-foreground">
                 {brand.name} {model.name}
                 {model.year_from && (

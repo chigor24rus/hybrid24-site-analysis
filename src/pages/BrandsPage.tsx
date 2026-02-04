@@ -82,7 +82,7 @@ const BrandsPage = () => {
         <div className="container mx-auto px-4">
           <Breadcrumbs items={[{ label: 'Все бренды' }]} />
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Ремонт и обслуживание всех марок авто</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Ремонт и обслуживание всех марок авто в Красноярске</h1>
             <p className="text-muted-foreground text-base md:text-lg">
               Мы обслуживаем {brands.length} популярных марок автомобилей
             </p>

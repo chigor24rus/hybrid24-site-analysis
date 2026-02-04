@@ -119,8 +119,8 @@ export default function ModelServicesPage() {
   return (
     <>
       <Helmet>
-        <title>Услуги для {brand.name} {model.name} - {SITE_CONFIG.name}</title>
-        <meta name="description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name} в ${SITE_CONFIG.address.locality}. Диагностика, ремонт, техобслуживание с ценами.`} />
+        <title>Услуги для {brand.name} {model.name} в Красноярске - {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name} в Красноярске. ✓ Диагностика ✓ Ремонт ✓ ТО. Запись онлайн!`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}`} />
         <meta property="og:title" content={`Услуги для ${brand.name} ${model.name} - ${SITE_CONFIG.name}`} />
@@ -149,7 +149,7 @@ export default function ModelServicesPage() {
 
           <div className="mb-12 text-center">
             <Badge className="mb-4 text-sm px-3 py-1">{brand.name}</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{model.name}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">{brand.name} {model.name} в Красноярске</h1>
             <p className="text-xl text-muted-foreground">
               {model.year_from && (
                 <span>

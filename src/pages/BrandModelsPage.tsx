@@ -87,8 +87,8 @@ export default function BrandModelsPage() {
   return (
     <>
       <Helmet>
-        <title>Модели {brand.name} - {SITE_CONFIG.name}</title>
-        <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание в ${SITE_CONFIG.address.locality}.`} />
+        <title>Модели {brand.name} в Красноярске - {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание в Красноярске. ✓ Профессиональный ремонт ✓ Запись онлайн!`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}`} />
         <meta property="og:title" content={`Модели ${brand.name} - ${SITE_CONFIG.name}`} />
@@ -115,7 +115,7 @@ export default function BrandModelsPage() {
           />
 
           <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Выберите модель {brand.name}</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">Модели {brand.name} в Красноярске</h1>
             <p className="text-xl text-muted-foreground">
               {models.length} {models.length === 1 ? 'модель' : models.length < 5 ? 'модели' : 'моделей'} доступно
             </p>
