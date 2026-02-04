@@ -97,8 +97,8 @@ const ServicesPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Услуги автосервиса - HEVSR Красноярск</title>
-        <meta name="description" content="Полный спектр услуг по ремонту и обслуживанию автомобилей в Красноярске. Техническое обслуживание, диагностика, шиномонтаж, кузовной ремонт." />
+        <title>Услуги автосервиса в Красноярске - HEVSR | ТО, ремонт, диагностика</title>
+        <meta name="description" content="Полный спектр услуг по ремонту и обслуживанию автомобилей в Красноярске. ✓ Техническое обслуживание ✓ Диагностика ✓ Шиномонтаж ✓ Кузовной ремонт. Запись онлайн!" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -116,7 +116,7 @@ const ServicesPage = () => {
         <div className="container mx-auto px-4">
           <Breadcrumbs items={[{ label: 'Услуги' }]} />
           <div className="text-center mb-12 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Наши услуги</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Услуги автосервиса в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Полный спектр услуг для вашего автомобиля от профессиональных мастеров
             </p>

@@ -98,6 +98,8 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
+        <title>Блог HEVSR - советы по ремонту авто | Красноярск</title>
+        <meta name="description" content="Полезные статьи о ремонте, обслуживании и эксплуатации автомобилей. Профессиональные советы экспертов автосервиса HEVSR в Красноярске. Читайте и узнавайте больше!" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -124,7 +126,7 @@ const BlogPage = () => {
           <Breadcrumbs items={[{ label: 'Блог' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Полезные материалы</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Блог АвтоТехЦентра</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Блог автосервиса HEVSR в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Статьи и советы по обслуживанию и ремонту автомобилей
             </p>

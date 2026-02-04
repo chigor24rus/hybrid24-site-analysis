@@ -76,6 +76,8 @@ const PromotionsPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
+        <title>Акции автосервиса HEVSR в Красноярске | Скидки до 50%</title>
+        <meta name="description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске. Скидки до 50% на диагностику, ТО, шиномонтаж. Запишитесь сейчас!" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -102,7 +104,7 @@ const PromotionsPage = () => {
           <Breadcrumbs items={[{ label: 'Акции' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Специальные предложения</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Акции АвтоТехЦентра</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Акции автосервиса HEVSR в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Выгодные предложения на обслуживание и ремонт автомобилей
             </p>

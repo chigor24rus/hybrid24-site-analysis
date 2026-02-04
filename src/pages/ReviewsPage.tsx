@@ -59,6 +59,8 @@ const ReviewsPage = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
+        <title>Отзывы о HEVSR - {reviews.length} отзывов клиентов | Красноярск</title>
+        <meta name="description" content={`Читайте реальные отзывы клиентов автосервиса HEVSR в Красноярске. ${reviews.length} отзывов, средняя оценка: ${averageRating} из 5.0. Оцените качество нашей работы!`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -89,7 +91,7 @@ const ReviewsPage = () => {
           <Breadcrumbs items={[{ label: 'Отзывы' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Отзывы клиентов</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Что говорят о нас</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Отзывы клиентов HEVSR в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Мнения наших клиентов о качестве обслуживания
             </p>

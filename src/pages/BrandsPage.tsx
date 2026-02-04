@@ -60,6 +60,8 @@ const BrandsPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Helmet>
+        <title>Ремонт и обслуживание всех марок авто - HEVSR Красноярск</title>
+        <meta name="description" content={`Ремонт и обслуживание ${brands.length} популярных марок автомобилей в Красноярске. Профессиональный сервис, опытные мастера. Выберите свой бренд!`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
@@ -80,7 +82,7 @@ const BrandsPage = () => {
         <div className="container mx-auto px-4">
           <Breadcrumbs items={[{ label: 'Все бренды' }]} />
           <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Все бренды</h1>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Ремонт и обслуживание всех марок авто</h1>
             <p className="text-muted-foreground text-base md:text-lg">
               Мы обслуживаем {brands.length} популярных марок автомобилей
             </p>
