@@ -86,6 +86,7 @@ const BrandsPage = () => {
             </p>
           </div>
           <div className="max-w-md mx-auto mb-8 animate-fade-in">
+            <h2 className="text-2xl font-bold text-center mb-4">Поиск бренда</h2>
             <div className="relative">
               <Icon name="Search" className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
               <Input
@@ -111,7 +112,9 @@ const BrandsPage = () => {
               <p className="text-muted-foreground">Бренды не найдены</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+            <>
+              <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Популярные марки автомобилей</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
               {filteredBrands.map((brand, index) => (
               <Link
                 key={brand.id}
@@ -126,6 +129,7 @@ const BrandsPage = () => {
               </Link>
               ))}
             </div>
+            </>
           )}
         </div>
       </main>

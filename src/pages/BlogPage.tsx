@@ -132,6 +132,8 @@ const BlogPage = () => {
 
           {!loading && posts.length > 0 && (
             <>
+              <h2 className="text-3xl font-bold text-center mb-6">Поиск статей</h2>
+
               <div className="max-w-2xl mx-auto mb-8 animate-fade-in">
                 <div className="relative">
                   <Icon name="Search" size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -154,6 +156,8 @@ const BlogPage = () => {
                   )}
                 </div>
               </div>
+
+              <h2 className="text-3xl font-bold text-center mb-6">Категории и сортировка</h2>
 
               <div className="flex flex-col gap-4 mb-12">
                 <div className="flex flex-wrap justify-center gap-3 animate-fade-in">

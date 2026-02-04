@@ -205,6 +205,8 @@ const ServiceModelPage = () => {
               </p>
             </div>
 
+            <h2 className="text-3xl font-bold mb-6">Детали услуги</h2>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="animate-fade-in">
                 <CardHeader>
@@ -272,9 +274,11 @@ const ServiceModelPage = () => {
               </Card>
             </div>
 
-            <Card className="mt-8 animate-fade-in" style={{ animationDelay: '200ms' }}>
+            <h2 className="text-3xl font-bold mt-12 mb-6">Описание услуги</h2>
+
+            <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
               <CardHeader>
-                <CardTitle>Описание услуги</CardTitle>
+                <CardTitle>Что входит в работу</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
                 {service.title === 'Техническое обслуживание' && (
