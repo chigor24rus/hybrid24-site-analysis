@@ -31,11 +31,8 @@ def handler(event: dict, context) -> dict:
     
     try:
         headers = event.get('headers', {})
-        print(f"DEBUG: All headers: {headers}")
         auth_header = headers.get('X-Authorization') or headers.get('x-authorization') or headers.get('Authorization') or headers.get('authorization') or ''
-        print(f"DEBUG: auth_header = '{auth_header}'")
         admin_password = os.environ.get('ADMIN_PASSWORD', 'hybrid24')
-        print(f"DEBUG: admin_password exists: {bool(admin_password)}")
         
         if not auth_header or auth_header.replace('Bearer ', '') != admin_password:
             return {

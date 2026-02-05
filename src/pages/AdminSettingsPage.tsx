@@ -57,10 +57,10 @@ const AdminSettingsPage = () => {
     try {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
       
-      const adminPassword = localStorage.getItem('adminAuth');
+      const adminAuthData = localStorage.getItem('adminAuth');
       
       // If old session (adminAuth='true'), redirect to login
-      if (adminPassword === 'true' || !adminPassword) {
+      if (adminAuthData === 'true' || !adminAuthData) {
         toast({
           title: "Требуется повторная авторизация",
           description: "Пожалуйста, войдите в систему снова",
@@ -70,6 +70,17 @@ const AdminSettingsPage = () => {
         localStorage.removeItem('adminAuthTime');
         navigate('/admin/login');
         return;
+      }
+      
+      // Extract password from JSON object
+      let adminPassword = adminAuthData;
+      try {
+        const authObj = JSON.parse(adminAuthData);
+        if (authObj.password) {
+          adminPassword = authObj.password;
+        }
+      } catch {
+        // If not JSON, use as is
       }
       
       const response = await fetch('https://functions.poehali.dev/731360dc-a17d-4bc3-b22a-974f46b9bac2', {
