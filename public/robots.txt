@@ -25,7 +25,7 @@ Disallow: /admin
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://hevsr.ru/sitemap.xml
+Sitemap: https://hybrid24.ru/sitemap.xml
 
 # Разрешить индексацию всех страниц брендов и услуг
 Allow: /brands/*
