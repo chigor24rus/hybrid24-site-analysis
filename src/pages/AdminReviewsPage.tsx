@@ -8,6 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import { AdminLayout, AdminPageHeader, LoadingScreen } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { formatDate } from '@/utils/dateFormatters';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 interface Review {
   id: number;
@@ -23,6 +27,7 @@ interface Review {
 const AdminReviewsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout } = useAdminAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -38,29 +43,13 @@ const AdminReviewsPage = () => {
   });
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-      return;
-    }
-
     fetchReviews();
-  }, [navigate]);
+  }, []);
 
   const fetchReviews = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce?show_all=true');
+      const response = await fetch(`${API_ENDPOINTS.reviews.list}?show_all=true`);
       const data = await response.json();
       setReviews(data.reviews || []);
     } catch (error) {
@@ -80,7 +69,7 @@ const AdminReviewsPage = () => {
     
     try {
       if (editingReview) {
-        const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce', {
+        const response = await fetch(API_ENDPOINTS.reviews.manage, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -96,7 +85,7 @@ const AdminReviewsPage = () => {
           });
         }
       } else {
-        const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce', {
+        const response = await fetch(API_ENDPOINTS.reviews.manage, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)
@@ -133,7 +122,7 @@ const AdminReviewsPage = () => {
     if (!confirm('Вы уверены, что хотите удалить этот отзыв?')) return;
 
     try {
-      const response = await fetch(`https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce?review_id=${reviewId}`, {
+      const response = await fetch(`${API_ENDPOINTS.reviews.manage}?review_id=${reviewId}`, {
         method: 'DELETE'
       });
 
@@ -219,7 +208,7 @@ const AdminReviewsPage = () => {
 
   const handleToggleVisibility = async (reviewId: number, currentVisibility: boolean) => {
     try {
-      const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce', {
+      const response = await fetch(API_ENDPOINTS.reviews.manage, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -251,23 +240,18 @@ const AdminReviewsPage = () => {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Icon name="Loader" className="animate-spin" size={48} />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Управление отзывами</h1>
-              <p className="text-muted-foreground">Модерируйте и публикуйте отзывы клиентов</p>
-            </div>
-            <div className="flex gap-2">
+    <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <AdminPageHeader
+            title="Управление отзывами"
+            description="Модерируйте и публикуйте отзывы клиентов"
+            actions={
+              <>
             <Button
               variant="outline"
               onClick={handleSyncDgis}
@@ -360,8 +344,14 @@ const AdminReviewsPage = () => {
               <Icon name="ArrowLeft" className="mr-2" size={18} />
               Назад
             </Button>
-          </div>
-          </div>
+            <Button variant="outline" onClick={logout}>
+              <Icon name="LogOut" className="mr-2" size={18} />
+              Выйти
+            </Button>
+              </>
+            }
+          />
+
           <div className="flex gap-2 mb-4">
             <Button
               variant={filterStatus === 'all' ? 'default' : 'outline'}
@@ -384,9 +374,8 @@ const AdminReviewsPage = () => {
               Скрытые ({reviews.filter(r => !r.is_visible).length})
             </Button>
           </div>
-        </div>
 
-        <div className="grid gap-4">
+          <div className="grid gap-4">
           {filteredReviews.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
@@ -450,9 +439,10 @@ const AdminReviewsPage = () => {
               </Card>
             ))
           )}
+          </div>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

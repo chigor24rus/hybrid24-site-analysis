@@ -8,10 +8,14 @@ import { seedBlogPosts } from '@/utils/seedBlogPosts';
 import { BlogPost, BlogSection, BlogFormData } from '@/types/blog';
 import BlogPostForm from '@/components/admin/BlogPostForm';
 import BlogPostCard from '@/components/admin/BlogPostCard';
+import { AdminLayout, AdminPageHeader, LoadingScreen } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 const AdminBlogPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout } = useAdminAuth();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -31,28 +35,12 @@ const AdminBlogPage = () => {
   });
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-      return;
-    }
-
     fetchPosts();
-  }, [navigate]);
+  }, []);
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch('https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a');
+      const response = await fetch(API_ENDPOINTS.blog.list);
       const data = await response.json();
       setPosts(data.posts || []);
     } catch (error) {
@@ -210,11 +198,7 @@ const AdminBlogPage = () => {
     });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('adminAuthTime');
-    navigate('/admin/login');
-  };
+
 
   const handleImportDemoPosts = async () => {
     if (!confirm('Загрузить 6 демо-статей в блог? Это добавит готовые примеры статей.')) return;
@@ -249,29 +233,28 @@ const AdminBlogPage = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Icon name="Loader" className="animate-spin" size={48} />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Управление блогом</h1>
-            <Button variant="ghost" onClick={() => navigate('/admin')} className="pl-0">
-              <Icon name="ArrowLeft" className="mr-2" size={18} />
-              Назад в админ-панель
-            </Button>
-          </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <Icon name="LogOut" className="mr-2" size={18} />
-            Выйти
-          </Button>
-        </div>
+    <AdminLayout>
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-7xl mx-auto">
+          <AdminPageHeader
+            title="Управление блогом"
+            actions={
+              <>
+                <Button variant="outline" onClick={() => navigate('/admin')}>
+                  <Icon name="ArrowLeft" className="mr-2" size={18} />
+                  Назад
+                </Button>
+                <Button variant="outline" onClick={logout}>
+                  <Icon name="LogOut" className="mr-2" size={18} />
+                  Выйти
+                </Button>
+              </>
+            }
+          />
 
         <Card className="mb-6">
           <CardHeader>
@@ -325,8 +308,9 @@ const AdminBlogPage = () => {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { AdminLayout, LoadingScreen } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { formatDateTimeFull } from '@/utils/dateFormatters';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 interface Promotion {
   id: number;
