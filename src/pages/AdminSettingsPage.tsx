@@ -76,7 +76,7 @@ const AdminSettingsPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${adminPassword}`
+          'X-Authorization': `Bearer ${adminPassword}`
         },
         body: JSON.stringify({
           maintenanceMode,
