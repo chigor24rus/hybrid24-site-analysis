@@ -8,7 +8,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
   return (
-    <section className="py-12 md:py-20 lg:py-32 relative overflow-hidden" aria-label="Главный баннер">
+    <section id="hero" className="py-12 md:py-20 lg:py-32 relative overflow-hidden" aria-label="Главный баннер">
       <div 
         className="absolute inset-0 opacity-100"
         style={{
