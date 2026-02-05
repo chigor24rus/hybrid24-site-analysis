@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
@@ -8,6 +7,8 @@ import VehiclesModelsTab from '@/components/admin/vehicles/VehiclesModelsTab';
 import VehiclesPricesTab from '@/components/admin/vehicles/VehiclesPricesTab';
 import VehiclesServicesTab from '@/components/admin/vehicles/VehiclesServicesTab';
 import VehiclesUploadDialog from '@/components/admin/vehicles/VehiclesUploadDialog';
+import { AdminLayout, LoadingScreen, AdminPageHeader } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface Brand {
   id: number;
@@ -44,30 +45,13 @@ interface Price {
 }
 
 const AdminVehiclesPage = () => {
-  const navigate = useNavigate();
+  const { logout } = useAdminAuth();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [prices, setPrices] = useState<Price[]>([]);
   const [loading, setLoading] = useState(true);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-    }
-  }, [navigate]);
 
   useEffect(() => {
     fetchData();
@@ -101,48 +85,30 @@ const AdminVehiclesPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Icon name="Loader" className="animate-spin" size={48} />
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Управление автомобилями</h1>
-            <p className="text-muted-foreground">Бренды, модели и цены на услуги</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
-              <Icon name="ExternalLink" className="mr-2" size={18} />
-              SEO-страницы
-            </Button>
-            <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
-              <Icon name="Upload" className="mr-2" size={18} />
-              Загрузить из XLS
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin')}>
-              <Icon name="ArrowLeft" className="mr-2" size={18} />
-              К заявкам
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                localStorage.removeItem('adminAuth');
-                localStorage.removeItem('adminAuthTime');
-                navigate('/admin/login');
-              }}
-            >
-              <Icon name="LogOut" className="mr-2" size={18} />
-              Выйти
-            </Button>
-          </div>
-        </div>
+    <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <AdminPageHeader
+            title="Управление автомобилями"
+            description="Бренды, модели и цены на услуги"
+            onLogout={logout}
+            backLink="/admin"
+            actions={
+              <>
+                <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
+                  <Icon name="ExternalLink" className="mr-2" size={18} />
+                  SEO-страницы
+                </Button>
+                <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
+                  <Icon name="Upload" className="mr-2" size={18} />
+                  Загрузить из XLS
+                </Button>
+              </>
+            }
+          />
 
         <Tabs defaultValue="brands" className="space-y-6">
           <TabsList className="grid w-full max-w-3xl grid-cols-4">
@@ -166,8 +132,9 @@ const AdminVehiclesPage = () => {
           services={services}
           onRefresh={fetchData}
         />
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

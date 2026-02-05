@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,10 +8,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
-import { AdminLayout, LoadingScreen } from '@/components/admin';
+import { AdminLayout, LoadingScreen, AdminPageHeader } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
-import { formatDateTimeFull } from '@/utils/dateFormatters';
 import { API_ENDPOINTS } from '@/utils/apiClient';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface Promotion {
   id: number;
@@ -35,7 +35,7 @@ const iconOptions = [
 ];
 
 const AdminPromotionsPage = () => {
-  const navigate = useNavigate();
+  const { logout } = useAdminAuth();
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -66,27 +66,10 @@ const AdminPromotionsPage = () => {
   
   const [isPermanent, setIsPermanent] = useState(false);
 
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-    }
-  }, [navigate]);
-
   const fetchPromotions = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://functions.poehali.dev/0a5a5f24-24e2-4ab9-9cd1-b55adbc62b49');
+      const response = await fetch(API_ENDPOINTS.promotions.listAdmin);
       const data = await response.json();
       setPromotions(data.promotions || []);
     } catch (error) {
@@ -153,8 +136,8 @@ const AdminPromotionsPage = () => {
     setSaving(true);
     try {
       const url = editingPromotion
-        ? 'https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45'
-        : 'https://functions.poehali.dev/5a0a3612-f9b3-4eba-8ac1-3230f81d8bc4';
+        ? API_ENDPOINTS.promotions.update
+        : API_ENDPOINTS.promotions.create;
 
       let validUntil = formData.valid_until;
       if (isPermanent) {
@@ -197,7 +180,7 @@ const AdminPromotionsPage = () => {
     if (!confirm('Удалить эту акцию?')) return;
 
     try {
-      const response = await fetch('https://functions.poehali.dev/4a0720cb-4906-457f-8860-4f6196d93031', {
+      const response = await fetch(API_ENDPOINTS.promotions.delete, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -213,7 +196,7 @@ const AdminPromotionsPage = () => {
 
   const toggleActive = async (promotion: Promotion) => {
     try {
-      const response = await fetch('https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45', {
+      const response = await fetch(API_ENDPOINTS.promotions.update, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -231,33 +214,24 @@ const AdminPromotionsPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Icon name="Loader" className="animate-spin" size={48} />
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Управление акциями</h1>
-            <p className="text-muted-foreground">Создавайте и редактируйте акции для клиентов</p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => handleOpenDialog()}>
-              <Icon name="Plus" className="mr-2" size={18} />
-              Добавить акцию
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin')}>
-              <Icon name="ArrowLeft" className="mr-2" size={18} />
-              Назад
-            </Button>
-          </div>
-        </div>
+    <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <AdminPageHeader
+            title="Управление акциями"
+            description="Создавайте и редактируйте акции для клиентов"
+            onLogout={logout}
+            backLink="/admin"
+            actions={
+              <Button onClick={() => handleOpenDialog()}>
+                <Icon name="Plus" className="mr-2" size={18} />
+                Добавить акцию
+              </Button>
+            }
+          />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {promotions.map((promotion) => (
@@ -461,8 +435,9 @@ const AdminPromotionsPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
