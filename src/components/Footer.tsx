@@ -51,6 +51,14 @@ const Footer = () => {
               <Link to="/legal" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Правовая информация
               </Link>
+              <a 
+                href="https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Sitemap
+              </a>
             </nav>
           </div>
 

@@ -1,5 +1,6 @@
 {
   "test-1c": "https://functions.poehali.dev/1a8a5028-260f-4d4c-8b91-294a21afdd86",
+  "generate-sitemap": "https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385",
   "export-bookings": "https://functions.poehali.dev/aec56852-2ec9-4a3d-88bb-f6a21b412e84",
   "delete-bookings": "https://functions.poehali.dev/6441c23c-e63f-4a3e-8cd7-aabdb983ca45",
   "send-telegram-notification": "https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b",
