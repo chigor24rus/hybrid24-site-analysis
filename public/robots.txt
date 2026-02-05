@@ -1,21 +1,36 @@
+# Основные правила для всех роботов
 User-agent: *
 Allow: /
 
+# Закрыть админ-панель от индексации
+Disallow: /admin
+Disallow: /admin/*
+
+# Яндекс
 User-agent: Yandex
 Allow: /
+Disallow: /admin
 Crawl-delay: 1
 
+# Google
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
 Crawl-delay: 1
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
 Crawl-delay: 1
 
-Sitemap: https://hybrid24.ru/sitemap.xml
+# Sitemap (динамический из базы данных)
+Sitemap: https://hevsr.ru/sitemap.xml
+Sitemap: https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385
 
-# Динамические SEO-страницы
-Allow: /*/
-Allow: /*/*/
-Allow: /*/*/*/
+# Разрешить индексацию всех страниц брендов и услуг
+Allow: /brands/*
+Allow: /services
+Allow: /blog/*
+Allow: /promotions
+Allow: /reviews
