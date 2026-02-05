@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import DeleteBookingsDialog from '@/components/DeleteBookingsDialog';
+import { AdminLayout, AdminPageHeader, StatusBadge } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { formatDate, formatDateTime } from '@/utils/dateFormatters';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 interface Booking {
   id: number;
@@ -25,22 +26,11 @@ interface Booking {
   updated_at: string;
 }
 
-const statusColors: Record<string, string> = {
-  new: 'bg-blue-100 text-blue-800 border-blue-200',
-  confirmed: 'bg-green-100 text-green-800 border-green-200',
-  completed: 'bg-gray-100 text-gray-800 border-gray-200',
-  cancelled: 'bg-red-100 text-red-800 border-red-200',
-};
 
-const statusLabels: Record<string, string> = {
-  new: 'Новая',
-  confirmed: 'Подтверждена',
-  completed: 'Завершена',
-  cancelled: 'Отменена',
-};
 
 const AdminPage = () => {
   const navigate = useNavigate();
+  const { logout } = useAdminAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -48,29 +38,12 @@ const AdminPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
 
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-    }
-  }, [navigate]);
-
   const fetchBookings = async () => {
     setLoading(true);
     try {
       const url = filterStatus === 'all'
-        ? 'https://functions.poehali.dev/07871607-696c-49db-b330-8d0d08b2896e'
-        : `https://functions.poehali.dev/07871607-696c-49db-b330-8d0d08b2896e?status=${filterStatus}`;
+        ? API_ENDPOINTS.bookings.list
+        : `${API_ENDPOINTS.bookings.list}?status=${filterStatus}`;
       
       const response = await fetch(url);
       const data = await response.json();
@@ -89,7 +62,7 @@ const AdminPage = () => {
   const handleStatusChange = async (bookingId: number, newStatus: string) => {
     setUpdatingId(bookingId);
     try {
-      const response = await fetch('https://functions.poehali.dev/04351be8-3746-49dd-9c00-c57ea8ad97f3', {
+      const response = await fetch(API_ENDPOINTS.bookings.updateStatus, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -121,22 +94,7 @@ const AdminPage = () => {
     }
   };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '—';
-    try {
-      return format(new Date(dateString), 'dd MMMM yyyy', { locale: ru });
-    } catch {
-      return dateString;
-    }
-  };
 
-  const formatDateTime = (dateString: string) => {
-    try {
-      return format(new Date(dateString), 'dd.MM.yyyy HH:mm', { locale: ru });
-    } catch {
-      return dateString;
-    }
-  };
 
   const getStatusCount = (status: string) => {
     if (status === 'all') return bookings.length;
@@ -155,7 +113,7 @@ const AdminPage = () => {
         body.end_date = endDate;
       }
 
-      const response = await fetch('https://functions.poehali.dev/aec56852-2ec9-4a3d-88bb-f6a21b412e84', {
+      const response = await fetch(API_ENDPOINTS.bookings.export, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -189,23 +147,21 @@ const AdminPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Icon name="Loader" className="animate-spin" size={48} />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Админ-панель</h1>
-            <p className="text-muted-foreground">Управление заявками клиентов</p>
-          </div>
-          <div className="flex gap-2">
+    <AdminLayout>
+      {loading && (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Icon name="Loader" className="animate-spin" size={48} />
+        </div>
+      )}
+      {!loading && (
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto px-4 py-8">
+            <AdminPageHeader
+              title="Админ-панель"
+              description="Управление заявками клиентов"
+              actions={
+                <>
             <Button variant="outline" onClick={() => handleExport()} disabled={exporting || bookings.length === 0}>
               {exporting ? (
                 <Icon name="Loader" className="mr-2 animate-spin" size={18} />
@@ -246,21 +202,15 @@ const AdminPage = () => {
               <Icon name="Database" className="mr-2" size={18} />
               Тест 1С
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => {
-                localStorage.removeItem('adminAuth');
-                localStorage.removeItem('adminAuthTime');
-                navigate('/admin/login');
-              }}
-            >
+            <Button variant="outline" onClick={logout}>
               <Icon name="LogOut" className="mr-2" size={18} />
               Выйти
             </Button>
-          </div>
-        </div>
+                </>
+              }
+            />
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
           <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('all')}>
             <CardHeader className="p-4">
               <CardDescription className="text-xs">Всего заявок</CardDescription>
@@ -291,19 +241,19 @@ const AdminPage = () => {
               <CardTitle className="text-2xl text-red-600">{getStatusCount('cancelled')}</CardTitle>
             </CardHeader>
           </Card>
-        </div>
+            </div>
 
-        {bookings.length === 0 ? (
-          <Card>
-            <CardContent className="py-16 text-center">
-              <Icon name="FolderOpen" className="mx-auto mb-4 text-muted-foreground" size={64} />
-              <p className="text-xl font-semibold mb-2">Заявок нет</p>
-              <p className="text-muted-foreground">
-                {filterStatus === 'all' ? 'Пока не поступило ни одной заявки' : `Нет заявок со статусом "${statusLabels[filterStatus]}"`}
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
+            {bookings.length === 0 ? (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <Icon name="FolderOpen" className="mx-auto mb-4 text-muted-foreground" size={64} />
+                  <p className="text-xl font-semibold mb-2">Заявок нет</p>
+                  <p className="text-muted-foreground">
+                    {filterStatus === 'all' ? 'Пока не поступило ни одной заявки' : 'Нет заявок с выбранным статусом'}
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
           <div className="space-y-4">
             {bookings.map((booking) => (
               <Card key={booking.id} className="hover:shadow-md transition-shadow">
@@ -314,9 +264,7 @@ const AdminPage = () => {
                         <div>
                           <h3 className="font-semibold text-lg mb-1">{booking.customer_name}</h3>
                           <div className="flex flex-wrap gap-2 mb-2">
-                            <Badge className={statusColors[booking.status] || 'bg-gray-100 text-gray-800'}>
-                              {statusLabels[booking.status] || booking.status}
-                            </Badge>
+                            <StatusBadge status={booking.status} type="booking" />
                             <Badge variant="outline">#{booking.id}</Badge>
                           </div>
                         </div>
@@ -402,16 +350,18 @@ const AdminPage = () => {
               </Card>
             ))}
           </div>
-        )}
-      </div>
+            )}
+          </div>
 
-      <DeleteBookingsDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onSuccess={fetchBookings}
-        onExport={handleExport}
-      />
-    </div>
+          <DeleteBookingsDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            onSuccess={fetchBookings}
+            onExport={handleExport}
+          />
+        </div>
+      )}
+    </AdminLayout>
   );
 };
 

@@ -2,44 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import ErrorLogger, { ErrorLog } from '@/utils/errorLogger';
+import { AdminLayout, AdminPageHeader, StatusBadge, EmptyState } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { formatDateTimeLocale } from '@/utils/dateFormatters';
 
-const typeColors: Record<string, string> = {
-  error: 'bg-red-100 text-red-800 border-red-200',
-  warning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  info: 'bg-blue-100 text-blue-800 border-blue-200',
-};
 
-const typeLabels: Record<string, string> = {
-  error: 'Ошибка',
-  warning: 'Предупреждение',
-  info: 'Информация',
-};
 
 const AdminLogsPage = () => {
   const navigate = useNavigate();
+  const { logout } = useAdminAuth();
   const [logs, setLogs] = useState<ErrorLog[]>([]);
   const [filterType, setFilterType] = useState<string>('all');
   const [expandedLog, setExpandedLog] = useState<number | null>(null);
-
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-    }
-  }, [navigate]);
 
   useEffect(() => {
     loadLogs();
@@ -70,20 +46,7 @@ const AdminLogsPage = () => {
     URL.revokeObjectURL(url);
   };
 
-  const formatDate = (timestamp: string) => {
-    try {
-      return new Date(timestamp).toLocaleString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
-    } catch {
-      return timestamp;
-    }
-  };
+
 
   const filteredLogs = filterType === 'all'
     ? logs
@@ -95,36 +58,39 @@ const AdminLogsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Button variant="ghost" onClick={() => navigate('/admin')}>
-              <Icon name="ArrowLeft" className="mr-2" size={18} />
-              Назад
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold mb-2">Логи ошибок сайта</h1>
-              <p className="text-muted-foreground">Мониторинг и диагностика проблем</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={loadLogs}>
-                <Icon name="RefreshCw" className="mr-2" size={18} />
-                Обновить
-              </Button>
-              <Button variant="outline" onClick={exportLogs} disabled={logs.length === 0}>
-                <Icon name="Download" className="mr-2" size={18} />
-                Экспорт
-              </Button>
-              <Button variant="destructive" onClick={clearLogs} disabled={logs.length === 0}>
-                <Icon name="Trash2" className="mr-2" size={18} />
-                Очистить
-              </Button>
-            </div>
-          </div>
-        </div>
+    <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          <AdminPageHeader
+            title="Логи ошибок сайта"
+            description="Мониторинг и диагностика проблем"
+            actions={
+              <>
+                <Button variant="outline" onClick={loadLogs}>
+                  <Icon name="RefreshCw" className="mr-2" size={18} />
+                  Обновить
+                </Button>
+                <Button variant="outline" onClick={exportLogs} disabled={logs.length === 0}>
+                  <Icon name="Download" className="mr-2" size={18} />
+                  Экспорт
+                </Button>
+                <Button variant="destructive" onClick={clearLogs} disabled={logs.length === 0}>
+                  <Icon name="Trash2" className="mr-2" size={18} />
+                  Очистить
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/admin')}>
+                  <Icon name="ArrowLeft" className="mr-2" size={18} />
+                  Назад
+                </Button>
+                <Button variant="outline" onClick={logout}>
+                  <Icon name="LogOut" className="mr-2" size={18} />
+                  Выйти
+                </Button>
+              </>
+            }
+          />
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card 
             className={`cursor-pointer hover:border-primary transition-colors ${filterType === 'all' ? 'border-primary' : ''}`}
             onClick={() => setFilterType('all')}
@@ -161,29 +127,26 @@ const AdminLogsPage = () => {
               <CardTitle className="text-2xl text-blue-600">{getTypeCount('info')}</CardTitle>
             </CardHeader>
           </Card>
-        </div>
+          </div>
 
-        {logs.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <Icon name="CheckCircle" className="mx-auto mb-4 text-green-500" size={64} />
-              <h3 className="text-xl font-semibold mb-2">Ошибок не обнаружено</h3>
-              <p className="text-muted-foreground">Сайт работает стабильно</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {filteredLogs.map((log, index) => (
-              <Card key={index} className="overflow-hidden">
-                <CardHeader 
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
-                  onClick={() => setExpandedLog(expandedLog === index ? null : index)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Badge className={typeColors[log.type]}>
-                          {typeLabels[log.type]}
+          {logs.length === 0 ? (
+            <EmptyState
+              icon="CheckCircle"
+              title="Ошибок не обнаружено"
+              description="Сайт работает стабильно"
+            />
+          ) : (
+            <div className="space-y-4">
+              {filteredLogs.map((log, index) => (
+                <Card key={index} className="overflow-hidden">
+                  <CardHeader 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => setExpandedLog(expandedLog === index ? null : index)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <StatusBadge status={log.type} type="error" />
                         </Badge>
                         <span className="text-sm text-muted-foreground">
                           {formatDate(log.timestamp)}
