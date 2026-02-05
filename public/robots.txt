@@ -24,9 +24,8 @@ Allow: /
 Disallow: /admin
 Crawl-delay: 1
 
-# Sitemap (динамический из базы данных)
+# Sitemap
 Sitemap: https://hevsr.ru/sitemap.xml
-Sitemap: https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385
 
 # Разрешить индексацию всех страниц брендов и услуг
 Allow: /brands/*
