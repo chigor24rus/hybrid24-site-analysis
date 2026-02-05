@@ -7,31 +7,20 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+import { AdminLayout, AdminPageHeader } from '@/components/admin';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 const AdminSettingsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout, adminPassword } = useAdminAuth();
   const [yandexOrgId, setYandexOrgId] = useState('');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [maintenanceEndTime, setMaintenanceEndTime] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('adminAuth');
-    const authTime = localStorage.getItem('adminAuthTime');
-    
-    if (!isAuthenticated || !authTime) {
-      navigate('/admin/login');
-      return;
-    }
-    
-    const hoursSinceAuth = (Date.now() - parseInt(authTime)) / (1000 * 60 * 60);
-    if (hoursSinceAuth > 24) {
-      localStorage.removeItem('adminAuth');
-      localStorage.removeItem('adminAuthTime');
-      navigate('/admin/login');
-      return;
-    }
 
     const savedOrgId = localStorage.getItem('yandexMapsOrgId');
     if (savedOrgId) {
@@ -40,7 +29,7 @@ const AdminSettingsPage = () => {
 
     const fetchSettings = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
+        const response = await fetch(API_ENDPOINTS.settings.get);
         const data = await response.json();
         setMaintenanceMode(data.maintenanceMode);
         setMaintenanceEndTime(data.maintenanceEndTime);
@@ -50,40 +39,25 @@ const AdminSettingsPage = () => {
     };
 
     fetchSettings();
-  }, [navigate]);
+  }, []);
 
   const handleSave = async () => {
     setLoading(true);
     try {
       localStorage.setItem('yandexMapsOrgId', yandexOrgId);
       
-      const adminAuthData = localStorage.getItem('adminAuth');
-      
-      // If old session (adminAuth='true'), redirect to login
-      if (adminAuthData === 'true' || !adminAuthData) {
+      if (!adminPassword) {
         toast({
           title: "Требуется повторная авторизация",
           description: "Пожалуйста, войдите в систему снова",
           variant: "destructive",
         });
-        localStorage.removeItem('adminAuth');
-        localStorage.removeItem('adminAuthTime');
+        logout();
         navigate('/admin/login');
         return;
       }
-      
-      // Extract password from JSON object
-      let adminPassword = adminAuthData;
-      try {
-        const authObj = JSON.parse(adminAuthData);
-        if (authObj.password) {
-          adminPassword = authObj.password;
-        }
-      } catch {
-        // If not JSON, use as is
-      }
-      
-      const response = await fetch('https://functions.poehali.dev/731360dc-a17d-4bc3-b22a-974f46b9bac2', {
+
+      const response = await fetch(API_ENDPOINTS.settings.update, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,21 +98,25 @@ const AdminSettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Настройки</h1>
-            <p className="text-muted-foreground">Интеграция с внешними сервисами</p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/admin')}
-          >
-            <Icon name="ArrowLeft" className="mr-2" size={18} />
-            Назад
-          </Button>
-        </div>
+    <AdminLayout>
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8 max-w-3xl">
+          <AdminPageHeader
+            title="Настройки"
+            description="Интеграция с внешними сервисами"
+            actions={
+              <>
+                <Button variant="outline" onClick={() => navigate('/admin')}>
+                  <Icon name="ArrowLeft" className="mr-2" size={18} />
+                  Назад
+                </Button>
+                <Button variant="outline" onClick={logout}>
+                  <Icon name="LogOut" className="mr-2" size={18} />
+                  Выйти
+                </Button>
+              </>
+            }
+          />
 
         <Card className="mb-6">
           <CardHeader>
@@ -256,8 +234,9 @@ const AdminSettingsPage = () => {
             </Button>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 

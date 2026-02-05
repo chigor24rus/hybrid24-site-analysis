@@ -147,26 +147,25 @@ const AdminLogsPage = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <StatusBadge status={log.type} type="error" />
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDate(log.timestamp)}
-                        </span>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDateTimeLocale(log.timestamp)}
+                          </span>
+                        </div>
+                        <CardTitle className="text-lg mb-1 font-mono text-sm">
+                          {log.message.length > 150 
+                            ? log.message.substring(0, 150) + '...' 
+                            : log.message}
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          {log.url}
+                        </CardDescription>
                       </div>
-                      <CardTitle className="text-lg mb-1 font-mono text-sm">
-                        {log.message.length > 150 
-                          ? log.message.substring(0, 150) + '...' 
-                          : log.message}
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        {log.url}
-                      </CardDescription>
+                      <Icon 
+                        name={expandedLog === index ? 'ChevronUp' : 'ChevronDown'} 
+                        size={24}
+                        className="text-muted-foreground"
+                      />
                     </div>
-                    <Icon 
-                      name={expandedLog === index ? 'ChevronUp' : 'ChevronDown'} 
-                      size={24}
-                      className="text-muted-foreground"
-                    />
-                  </div>
                 </CardHeader>
                 
                 {expandedLog === index && (
@@ -232,10 +231,11 @@ const AdminLogsPage = () => {
                 )}
               </Card>
             ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
