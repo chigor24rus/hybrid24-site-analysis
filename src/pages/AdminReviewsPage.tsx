@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Star, Plus, Trash2, Eye, EyeOff, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,6 +19,9 @@ const AdminReviewsPage = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [importing, setImporting] = useState(false);
   
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -88,6 +91,40 @@ const AdminReviewsPage = () => {
     }
   };
 
+  const handleImportReviews = async () => {
+    if (!importUrl.trim()) {
+      toast.error('Введите URL организации на Яндекс.Картах');
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/e046b52b-bb1a-44dd-a9e3-989af297c485', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ organization_url: importUrl })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(`Импортировано ${data.imported} отзывов, пропущено ${data.skipped}`);
+        setIsImportDialogOpen(false);
+        setImportUrl('');
+        fetchReviews();
+      } else {
+        toast.error(data.error || data.note || 'Ошибка при импорте отзывов');
+      }
+    } catch (error) {
+      console.error('Error importing reviews:', error);
+      toast.error('Ошибка при импорте отзывов');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-1">
@@ -127,13 +164,22 @@ const AdminReviewsPage = () => {
               <h1 className="text-4xl font-bold mb-2">Управление отзывами</h1>
               <p className="text-muted-foreground">Всего отзывов: {reviews.length}</p>
             </div>
-            <Button 
-              onClick={() => setIsAddDialogOpen(true)}
-              className="gradient-primary"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Добавить отзыв
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setIsImportDialogOpen(true)}
+                variant="outline"
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Импорт из Яндекс.Карт
+              </Button>
+              <Button 
+                onClick={() => setIsAddDialogOpen(true)}
+                className="gradient-primary"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Добавить отзыв
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -267,6 +313,66 @@ const AdminReviewsPage = () => {
                   onClick={() => setIsAddDialogOpen(false)} 
                   variant="outline"
                   className="flex-1"
+                >
+                  Отмена
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Dialog>
+
+      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <Card className="w-full max-w-lg">
+            <CardHeader>
+              <CardTitle>Импорт отзывов из Яндекс.Карт</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="import_url">URL организации на Яндекс.Картах</Label>
+                <Input
+                  id="import_url"
+                  value={importUrl}
+                  onChange={(e) => setImportUrl(e.target.value)}
+                  placeholder="https://yandex.ru/maps/org/..."
+                  className="mt-2"
+                />
+                <p className="text-sm text-muted-foreground mt-2">
+                  Откройте вашу организацию на Яндекс.Картах и скопируйте URL из адресной строки
+                </p>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <p className="text-sm text-amber-800">
+                  <strong>Обратите внимание:</strong> Автоматический импорт может работать не всегда из-за ограничений API Яндекс.Карт. 
+                  Если импорт не удался, используйте ручное добавление отзывов через форму.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button 
+                  onClick={handleImportReviews} 
+                  className="gradient-primary flex-1"
+                  disabled={importing}
+                >
+                  {importing ? (
+                    <>
+                      <Download className="mr-2 h-4 w-4 animate-pulse" />
+                      Импортируем...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="mr-2 h-4 w-4" />
+                      Импортировать
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  onClick={() => setIsImportDialogOpen(false)} 
+                  variant="outline"
+                  className="flex-1"
+                  disabled={importing}
                 >
                   Отмена
                 </Button>
