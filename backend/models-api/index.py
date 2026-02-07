@@ -71,10 +71,10 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'error': 'brand_id и name обязательны'})
                 }
             
-            # Проверка на дубликат
+            # Проверка на дубликат (без LOWER - проблемы с правами)
             cur.execute("""
                 SELECT id FROM car_models 
-                WHERE brand_id = %s AND LOWER(name) = LOWER(%s)
+                WHERE brand_id = %s AND name = %s
                 LIMIT 1
             """, (brand_id, name))
             
@@ -144,13 +144,13 @@ def handler(event: dict, context) -> dict:
             
             # Удаление дубликатов
             if action == 'remove_duplicates':
-                # Находим дубликаты (одинаковые brand_id + name)
+                # Находим дубликаты (одинаковые brand_id + name, без LOWER - проблемы с правами)
                 cur.execute("""
                     DELETE FROM car_models
                     WHERE id NOT IN (
                         SELECT MIN(id)
                         FROM car_models
-                        GROUP BY brand_id, LOWER(name)
+                        GROUP BY brand_id, name
                     )
                 """)
                 deleted_count = cur.rowcount
