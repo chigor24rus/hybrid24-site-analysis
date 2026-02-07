@@ -54,6 +54,14 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
 
+      if (jsonData.length === 0) {
+        toast.error('Файл не содержит данных');
+        return;
+      }
+
+      console.log('Первая строка данных:', jsonData[0]);
+      console.log('Доступные колонки:', Object.keys(jsonData[0] as any));
+
       let successCount = 0;
       let errorCount = 0;
       const errors: string[] = [];
