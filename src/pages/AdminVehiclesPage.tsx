@@ -131,6 +131,34 @@ const AdminVehiclesPage = () => {
     }
   };
 
+  const handleImportLogos = async () => {
+    if (!confirm('Загрузить логотипы всех брендов из Car Logos Dataset (GitHub)? Это займет несколько минут.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/68543ce4-24ca-4f4d-9ecc-7756d3540704', {
+        method: 'POST',
+      });
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        const message = `Загружено логотипов: ${result.uploaded} из ${result.total_brands}\nПропущено: ${result.skipped}`;
+        if (result.errors && result.errors.length > 0) {
+          alert(message + '\n\nНе найдены:\n' + result.errors.slice(0, 5).join('\n'));
+        } else {
+          alert(message);
+        }
+        fetchData();
+      } else {
+        alert(`Ошибка: ${result.error || 'Неизвестная ошибка'}`);
+      }
+    } catch (error) {
+      console.error('Error importing logos:', error);
+      alert('Ошибка при загрузке логотипов');
+    }
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -165,6 +193,12 @@ const AdminVehiclesPage = () => {
                   icon="Upload"
                   label="Загрузить из XLS"
                   onClick={() => setIsUploadDialogOpen(true)}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Image"
+                  label="Загрузить логотипы"
+                  onClick={handleImportLogos}
                   variant="outline"
                 />
                 <AdminActionButton

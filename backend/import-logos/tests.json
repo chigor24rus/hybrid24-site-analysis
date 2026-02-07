@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Test logo import endpoint",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "uploaded": "number",
+        "skipped": "number",
+        "total_brands": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
