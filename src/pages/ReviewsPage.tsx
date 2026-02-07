@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
@@ -9,11 +9,44 @@ import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
+import ReviewsSection, { Review } from '@/components/sections/home/ReviewsSection';
+import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
 
 const ReviewsPage = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
   const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc');
+        const data = await response.json();
+        if (response.ok && data.reviews) {
+          setReviews(data.reviews);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
+
+  const schemaReviews = reviews
+    .filter(r => r.is_visible)
+    .map(r => ({
+      id: r.id,
+      name: r.customer_name,
+      rating: r.rating,
+      date: r.review_date,
+      text: r.review_text,
+      service: r.service_name
+    }));
 
   return (
     <div className="min-h-screen">
@@ -34,6 +67,9 @@ const ReviewsPage = () => {
         <meta name="twitter:title" content="Отзывы клиентов - HEVSR" />
         <meta name="twitter:description" content="Реальные отзывы клиентов автосервиса" />
         <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
+        <script type="application/ld+json">
+          {JSON.stringify(generateSchemaMarkup(schemaReviews))}
+        </script>
       </Helmet>
       
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
@@ -46,10 +82,26 @@ const ReviewsPage = () => {
         <div className="container mx-auto px-4">
           <Breadcrumbs items={[{ label: 'Отзывы' }]} />
           <div className="text-center mb-12 md:mb-16 animate-fade-in">
-            <Badge className="mb-4 gradient-accent text-sm">Отзывы клиентов</Badge>
+            <Badge className="mb-4 gradient-accent text-sm">Все отзывы</Badge>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Отзывы клиентов HEVSR в Красноярске</h1>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-              Мнения наших клиентов о качестве обслуживания
+              Реальные и проверенные отзывы о качестве нашего обслуживания
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <ReviewsSection reviews={reviews} loading={loadingReviews} />
+
+      <section className="py-12 md:py-16 bg-gradient-to-b from-background to-card/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 animate-fade-in">
+            <Badge className="mb-4 gradient-primary text-sm">Актуальные отзывы</Badge>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Что говорят о нас в интернете
+            </h2>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+              Свежие отзывы из Яндекс.Карт, 2GIS и других площадок
             </p>
           </div>
 

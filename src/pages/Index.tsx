@@ -13,7 +13,34 @@ const Index = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc');
+        const data = await response.json();
+        if (response.ok && data.reviews) {
+          const formattedReviews = data.reviews
+            .filter((r: any) => r.is_visible)
+            .map((r: any) => ({
+              id: r.id,
+              name: r.customer_name,
+              rating: r.rating,
+              date: r.review_date,
+              text: r.review_text,
+              service: r.service_name
+            }));
+          setReviews(formattedReviews);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews for schema:', error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -36,7 +63,7 @@ const Index = () => {
         <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
         <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
-          {JSON.stringify(generateSchemaMarkup([]))}
+          {JSON.stringify(generateSchemaMarkup(reviews))}
         </script>
       </Helmet>
       

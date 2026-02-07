@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import PromotionDetailDialog from '@/components/PromotionDetailDialog';
 import PromotionsSection, { Promotion } from './home/PromotionsSection';
 import BlogSection, { BlogPost } from './home/BlogSection';
+import ReviewsSection, { Review } from './home/ReviewsSection';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import { Badge } from '@/components/ui/badge';
 
@@ -21,6 +22,9 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>([]);
   const [loadingBlog, setLoadingBlog] = useState(true);
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
+
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(true);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -88,8 +92,23 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       }
     };
 
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc');
+        const data = await response.json();
+        if (response.ok && data.reviews) {
+          setReviews(data.reviews);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
     fetchPromotions();
     fetchBlogPosts();
+    fetchReviews();
   }, []);
 
   const refreshPromotions = () => {
@@ -131,15 +150,17 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         totalCount={allPromotions.length}
       />
 
-      <section id="reviews" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
+      <ReviewsSection reviews={reviews} loading={loadingReviews} />
+
+      <section id="reviews-live" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
-            <Badge className="mb-4 gradient-accent text-sm">Отзывы клиентов</Badge>
+            <Badge className="mb-4 gradient-accent text-sm">Актуальные отзывы</Badge>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Что говорят наши клиенты
+              Что говорят о нас в интернете
             </h2>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-6">
-              Реальные отзывы из Яндекс.Карт, 2GIS и других площадок
+              Свежие отзывы из Яндекс.Карт, 2GIS и других площадок
             </p>
           </div>
 
