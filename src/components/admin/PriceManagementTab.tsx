@@ -50,7 +50,7 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
             base_price: parseFloat(priceForm.base_price),
           };
 
-      const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+      const response = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -74,7 +74,7 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
     if (!confirm('Удалить эту цену?')) return;
     
     try {
-      const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+      const response = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
@@ -119,7 +119,7 @@ const PriceManagementTab = ({ prices, brands, services, onRefresh }: PriceManage
 
     for (const brandId of bulkForm.brand_ids) {
       try {
-        const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+        const response = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

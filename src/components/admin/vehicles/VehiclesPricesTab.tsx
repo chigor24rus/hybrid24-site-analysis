@@ -84,7 +84,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     if (!priceForm.brand_id || !priceForm.service_id || !priceForm.price) return;
 
     try {
-      const url = 'https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04';
+      const url = 'https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791';
       const method = priceForm.id ? 'PUT' : 'POST';
       const body = {
         ...(priceForm.id && { id: priceForm.id }),
@@ -114,7 +114,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     if (!confirm('Удалить эту цену?')) return;
 
     try {
-      const response = await fetch(`https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04?id=${id}`, {
+      const response = await fetch(`https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791?id=${id}`, {
         method: 'DELETE',
       });
 
@@ -165,7 +165,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
           newPrice = `${Math.round(currentValue * multiplier)} ₽`;
         }
 
-        return fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+        return fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

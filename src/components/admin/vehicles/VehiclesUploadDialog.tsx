@@ -162,7 +162,7 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
           }
           
           try {
-            const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+            const response = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

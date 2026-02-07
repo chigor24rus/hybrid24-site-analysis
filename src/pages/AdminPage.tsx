@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import DeleteBookingsDialog from '@/components/DeleteBookingsDialog';
 import { AdminLayout, AdminPageHeader, StatusBadge } from '@/components/admin';
