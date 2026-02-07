@@ -21,9 +21,10 @@ interface ReviewsSectionProps {
   reviews: Review[];
   loading: boolean;
   showViewAllButton?: boolean;
+  showHeader?: boolean;
 }
 
-const ReviewsSection = ({ reviews, loading, showViewAllButton = false }: ReviewsSectionProps) => {
+const ReviewsSection = ({ reviews, loading, showViewAllButton = false, showHeader = true }: ReviewsSectionProps) => {
   const navigate = useNavigate();
 
   const renderStars = (rating: number) => {
@@ -47,12 +48,14 @@ const ReviewsSection = ({ reviews, loading, showViewAllButton = false }: Reviews
     return (
       <section id="reviews-own" className="py-12 md:py-16 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <Badge className="mb-4 gradient-primary text-sm">Отзывы наших клиентов</Badge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Проверенные отзывы
-            </h2>
-          </div>
+          {showHeader && (
+            <div className="text-center mb-12">
+              <Badge className="mb-4 gradient-primary text-sm">Отзывы наших клиентов</Badge>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                Проверенные отзывы
+              </h2>
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
@@ -76,15 +79,17 @@ const ReviewsSection = ({ reviews, loading, showViewAllButton = false }: Reviews
   return (
     <section id="reviews-own" className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12 animate-fade-in">
-          <Badge className="mb-4 gradient-primary text-sm">Отзывы наших клиентов</Badge>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            Проверенные отзывы
-          </h2>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Реальные отзывы клиентов, которые доверили нам свои автомобили
-          </p>
-        </div>
+        {showHeader && (
+          <div className="text-center mb-12 animate-fade-in">
+            <Badge className="mb-4 gradient-primary text-sm">Отзывы наших клиентов</Badge>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Проверенные отзывы
+            </h2>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+              Реальные отзывы клиентов, которые доверили нам свои автомобили
+            </p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mb-8">
           {visibleReviews.map((review) => (

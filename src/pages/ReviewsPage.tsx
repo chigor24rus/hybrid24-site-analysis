@@ -93,7 +93,7 @@ const ReviewsPage = () => {
         </div>
       </section>
 
-      <ReviewsSection reviews={reviews} loading={loadingReviews} showViewAllButton={false} />
+      <ReviewsSection reviews={reviews} loading={loadingReviews} showViewAllButton={false} showHeader={false} />
       
       <Footer />
       <ScrollToTopButton />
