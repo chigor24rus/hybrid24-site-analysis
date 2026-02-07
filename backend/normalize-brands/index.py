@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    '''Нормализация названий брендов: первая буква заглавная, остальные строчные'''
+    '''Нормализация названий брендов согласно официальной регистрации'''
     method: str = event.get('httpMethod', 'GET')
     
     if method == 'OPTIONS':
@@ -20,6 +20,30 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': ''
         }
     
+    # Официальные названия брендов
+    OFFICIAL_NAMES = {
+        'faw': 'FAW',
+        'gac': 'GAC',
+        'byd': 'BYD',
+        'baic': 'BAIC',
+        'jac': 'JAC',
+        'saic': 'SAIC',
+        'jmc': 'JMC',
+        'kgm': 'KGM',
+        'mg': 'MG',
+        'bmw': 'BMW',
+        'gmc': 'GMC',
+        'ram': 'RAM',
+        'uaz': 'UAZ',
+        'vaz': 'VAZ',
+        'aito': 'AITO',
+        'avatr': 'AVATR',
+        'icar': 'iCAR',
+        'dfsk': 'DFSK',
+        'lynk co': 'Lynk & Co',
+        'lynk & co': 'Lynk & Co',
+    }
+    
     dsn = os.environ.get('DATABASE_URL')
     if not dsn:
         return {
@@ -31,7 +55,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     conn = psycopg2.connect(dsn)
     cur = conn.cursor(cursor_factory=RealDictCursor)
     
-    # Получить все бренды
     cur.execute("SELECT id, name FROM brands")
     brands = cur.fetchall()
     
@@ -40,8 +63,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     for brand in brands:
         original_name = brand['name']
-        # Нормализация: первая буква заглавная, остальные строчные
-        normalized_name = original_name.title()
+        name_lower = original_name.lower().strip()
+        
+        # Проверить официальное название
+        if name_lower in OFFICIAL_NAMES:
+            normalized_name = OFFICIAL_NAMES[name_lower]
+        else:
+            # Стандартная нормализация: первая буква заглавная
+            normalized_name = original_name.title()
         
         if original_name != normalized_name:
             try:
