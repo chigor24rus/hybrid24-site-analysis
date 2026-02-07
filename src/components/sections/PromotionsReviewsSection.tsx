@@ -7,6 +7,7 @@ import BlogSection, { BlogPost } from './home/BlogSection';
 import ReviewsSection, { Review } from './home/ReviewsSection';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 interface PromotionsReviewsSectionProps {
@@ -172,6 +173,15 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
 
           <div className="max-w-7xl mx-auto">
             <ReviewLabWidget widgetId="6986979cd4927bc247d4f508" />
+          </div>
+
+          <div className="text-center mt-12">
+            <Link to="/reviews">
+              <Button size="lg" className="gradient-primary">
+                Смотреть все отзывы
+                <Icon name="ArrowRight" className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
