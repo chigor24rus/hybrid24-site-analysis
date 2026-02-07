@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
 import DeleteBookingsDialog from '@/components/DeleteBookingsDialog';
-import { AdminLayout, AdminPageHeader, StatusBadge } from '@/components/admin';
+import {
+  AdminLayout,
+  AdminPageHeader,
+  StatusBadge,
+  AdminStatsGrid,
+  AdminStat,
+  AdminCard,
+  AdminCardItem,
+  AdminCardActions,
+  AdminActionButton,
+  AdminIconButton
+} from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { formatDate, formatDateTime } from '@/utils/dateFormatters';
 import { API_ENDPOINTS } from '@/utils/apiClient';
@@ -26,8 +34,6 @@ interface Booking {
   created_at: string;
   updated_at: string;
 }
-
-
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -95,8 +101,6 @@ const AdminPage = () => {
     }
   };
 
-
-
   const getStatusCount = (status: string) => {
     if (status === 'all') return bookings.length;
     return bookings.filter(b => b.status === status).length;
@@ -163,205 +167,193 @@ const AdminPage = () => {
               description="Управление заявками клиентов"
               actions={
                 <>
-            <Button variant="outline" onClick={() => handleExport()} disabled={exporting || bookings.length === 0}>
-              {exporting ? (
-                <Icon name="Loader" className="mr-2 animate-spin" size={18} />
-              ) : (
-                <Icon name="Download" className="mr-2" size={18} />
-              )}
-              Экспорт в Excel
-            </Button>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(true)}>
-              <Icon name="Trash2" className="mr-2" size={18} />
-              Удалить заявки
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/vehicles')}>
-              <Icon name="Car" className="mr-2" size={18} />
-              Автомобили
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/blog')}>
-              <Icon name="FileText" className="mr-2" size={18} />
-              Блог
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/promotions')}>
-              <Icon name="Percent" className="mr-2" size={18} />
-              Акции
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/reviews')}>
-              <Icon name="Star" className="mr-2" size={18} />
-              Отзывы
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/logs')}>
-              <Icon name="Bug" className="mr-2" size={18} />
-              Логи ошибок
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/settings')}>
-              <Icon name="Settings" className="mr-2" size={18} />
-              Настройки
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/admin/1c-test')}>
-              <Icon name="Database" className="mr-2" size={18} />
-              Тест 1С
-            </Button>
-            <Button variant="outline" onClick={logout}>
-              <Icon name="LogOut" className="mr-2" size={18} />
-              Выйти
-            </Button>
+                  <AdminActionButton
+                    icon="Download"
+                    label="Экспорт в Excel"
+                    onClick={() => handleExport()}
+                    disabled={exporting || bookings.length === 0}
+                    loading={exporting}
+                  />
+                  <AdminActionButton
+                    icon="Trash2"
+                    label="Удалить заявки"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  />
+                  <AdminActionButton
+                    icon="Car"
+                    label="Автомобили"
+                    onClick={() => navigate('/admin/vehicles')}
+                  />
+                  <AdminActionButton
+                    icon="FileText"
+                    label="Блог"
+                    onClick={() => navigate('/admin/blog')}
+                  />
+                  <AdminActionButton
+                    icon="Percent"
+                    label="Акции"
+                    onClick={() => navigate('/admin/promotions')}
+                  />
+                  <AdminActionButton
+                    icon="Star"
+                    label="Отзывы"
+                    onClick={() => navigate('/admin/reviews')}
+                  />
+                  <AdminActionButton
+                    icon="Bug"
+                    label="Логи ошибок"
+                    onClick={() => navigate('/admin/logs')}
+                  />
+                  <AdminActionButton
+                    icon="Settings"
+                    label="Настройки"
+                    onClick={() => navigate('/admin/settings')}
+                  />
+                  <AdminActionButton
+                    icon="Database"
+                    label="Тест 1С"
+                    onClick={() => navigate('/admin/1c-test')}
+                  />
+                  <AdminActionButton
+                    icon="LogOut"
+                    label="Выйти"
+                    onClick={logout}
+                  />
                 </>
               }
             />
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('all')}>
-            <CardHeader className="p-4">
-              <CardDescription className="text-xs">Всего заявок</CardDescription>
-              <CardTitle className="text-2xl">{getStatusCount('all')}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('new')}>
-            <CardHeader className="p-4">
-              <CardDescription className="text-xs">Новые</CardDescription>
-              <CardTitle className="text-2xl text-blue-600">{getStatusCount('new')}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('confirmed')}>
-            <CardHeader className="p-4">
-              <CardDescription className="text-xs">Подтверждены</CardDescription>
-              <CardTitle className="text-2xl text-green-600">{getStatusCount('confirmed')}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('completed')}>
-            <CardHeader className="p-4">
-              <CardDescription className="text-xs">Завершены</CardDescription>
-              <CardTitle className="text-2xl text-gray-600">{getStatusCount('completed')}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="cursor-pointer hover:border-primary transition-colors" onClick={() => setFilterStatus('cancelled')}>
-            <CardHeader className="p-4">
-              <CardDescription className="text-xs">Отменены</CardDescription>
-              <CardTitle className="text-2xl text-red-600">{getStatusCount('cancelled')}</CardTitle>
-            </CardHeader>
-          </Card>
-            </div>
+            <AdminStatsGrid cols={5} className="mb-8">
+              <AdminStat
+                label="Всего заявок"
+                value={getStatusCount('all')}
+                onClick={() => setFilterStatus('all')}
+              />
+              <AdminStat
+                label="Новые"
+                value={getStatusCount('new')}
+                color="primary"
+                onClick={() => setFilterStatus('new')}
+              />
+              <AdminStat
+                label="Подтверждены"
+                value={getStatusCount('confirmed')}
+                color="success"
+                onClick={() => setFilterStatus('confirmed')}
+              />
+              <AdminStat
+                label="Завершены"
+                value={getStatusCount('completed')}
+                onClick={() => setFilterStatus('completed')}
+              />
+              <AdminStat
+                label="Отменены"
+                value={getStatusCount('cancelled')}
+                color="danger"
+                onClick={() => setFilterStatus('cancelled')}
+              />
+            </AdminStatsGrid>
 
             {bookings.length === 0 ? (
-              <Card>
-                <CardContent className="py-16 text-center">
-                  <Icon name="FolderOpen" className="mx-auto mb-4 text-muted-foreground" size={64} />
-                  <p className="text-xl font-semibold mb-2">Заявок нет</p>
-                  <p className="text-muted-foreground">
-                    {filterStatus === 'all' ? 'Пока не поступило ни одной заявки' : 'Нет заявок с выбранным статусом'}
-                  </p>
-                </CardContent>
-              </Card>
+              <AdminCard title="Нет заявок">
+                <div className="py-8 text-center text-muted-foreground">
+                  <Icon name="Inbox" size={48} className="mx-auto mb-4 opacity-50" />
+                  <p>Заявок пока нет</p>
+                </div>
+              </AdminCard>
             ) : (
-          <div className="space-y-4">
-            {bookings.map((booking) => (
-              <Card key={booking.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="grid md:grid-cols-4 gap-4">
-                    <div className="md:col-span-2">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h3 className="font-semibold text-lg mb-1">{booking.customer_name}</h3>
-                          <div className="flex flex-wrap gap-2 mb-2">
-                            <StatusBadge status={booking.status} type="booking" />
-                            <Badge variant="outline">#{booking.id}</Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Icon name="Phone" size={14} />
-                          <a href={`tel:${booking.customer_phone}`} className="hover:text-foreground">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {bookings.map((booking) => (
+                  <AdminCard
+                    key={booking.id}
+                    title={booking.customer_name}
+                    description={formatDateTime(booking.created_at)}
+                    icon="User"
+                    actions={
+                      <StatusBadge status={booking.status} />
+                    }
+                  >
+                    <div className="space-y-3">
+                      <AdminCardItem
+                        icon="Phone"
+                        label="Телефон"
+                        value={
+                          <a href={`tel:${booking.customer_phone}`} className="text-primary hover:underline">
                             {booking.customer_phone}
                           </a>
-                        </div>
-                        {booking.customer_email && (
-                          <div className="flex items-center gap-2">
-                            <Icon name="Mail" size={14} />
-                            <a href={`mailto:${booking.customer_email}`} className="hover:text-foreground">
+                        }
+                      />
+                      
+                      {booking.customer_email && (
+                        <AdminCardItem
+                          icon="Mail"
+                          label="Email"
+                          value={
+                            <a href={`mailto:${booking.customer_email}`} className="text-primary hover:underline">
                               {booking.customer_email}
                             </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Детали</p>
-                      <div className="space-y-1 text-sm">
-                        {booking.service_type && (
-                          <div className="flex items-center gap-2">
-                            <Icon name="Wrench" size={14} className="text-muted-foreground" />
-                            <span>{booking.service_type}</span>
-                          </div>
-                        )}
-                        {booking.car_brand && booking.car_model && (
-                          <div className="flex items-center gap-2">
-                            <Icon name="Car" size={14} className="text-muted-foreground" />
-                            <span>{booking.car_brand} {booking.car_model}</span>
-                          </div>
-                        )}
-                        {booking.preferred_date && (
-                          <div className="flex items-center gap-2">
-                            <Icon name="Calendar" size={14} className="text-muted-foreground" />
-                            <span>{formatDate(booking.preferred_date)}</span>
-                          </div>
-                        )}
-                        {booking.preferred_time && (
-                          <div className="flex items-center gap-2">
-                            <Icon name="Clock" size={14} className="text-muted-foreground" />
-                            <span>{booking.preferred_time}</span>
-                          </div>
-                        )}
-                      </div>
+                          }
+                        />
+                      )}
+                      
+                      <AdminCardItem
+                        icon="Wrench"
+                        label="Услуга"
+                        value={booking.service_type}
+                      />
+                      
+                      <AdminCardItem
+                        icon="Car"
+                        label="Автомобиль"
+                        value={`${booking.car_brand} ${booking.car_model}`}
+                      />
+                      
+                      {booking.preferred_date && (
+                        <AdminCardItem
+                          icon="Calendar"
+                          label="Дата и время"
+                          value={`${formatDate(booking.preferred_date)}, ${booking.preferred_time}`}
+                        />
+                      )}
+                      
                       {booking.comment && (
-                        <div className="mt-2 text-sm">
-                          <p className="text-muted-foreground mb-1">Комментарий:</p>
-                          <p className="text-foreground italic">"{booking.comment}"</p>
+                        <div className="pt-2">
+                          <p className="text-xs text-muted-foreground mb-1">Комментарий:</p>
+                          <p className="text-sm">{booking.comment}</p>
                         </div>
                       )}
-                    </div>
 
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Управление</p>
-                      <Select
-                        value={booking.status}
-                        onValueChange={(value) => handleStatusChange(booking.id, value)}
-                        disabled={updatingId === booking.id}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="new">Новая</SelectItem>
-                          <SelectItem value="confirmed">Подтверждена</SelectItem>
-                          <SelectItem value="completed">Завершена</SelectItem>
-                          <SelectItem value="cancelled">Отменена</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <div className="mt-4 text-xs text-muted-foreground">
-                        <div>Создана: {formatDateTime(booking.created_at)}</div>
-                        <div>Обновлена: {formatDateTime(booking.updated_at)}</div>
-                      </div>
+                      <AdminCardActions>
+                        <Select
+                          value={booking.status}
+                          onValueChange={(value) => handleStatusChange(booking.id, value)}
+                          disabled={updatingId === booking.id}
+                        >
+                          <SelectTrigger className="flex-1">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="new">Новая</SelectItem>
+                            <SelectItem value="confirmed">Подтверждена</SelectItem>
+                            <SelectItem value="completed">Завершена</SelectItem>
+                            <SelectItem value="cancelled">Отменена</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </AdminCardActions>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </AdminCard>
+                ))}
+              </div>
             )}
           </div>
-
-          <DeleteBookingsDialog
-            open={isDeleteDialogOpen}
-            onOpenChange={setIsDeleteDialogOpen}
-            onSuccess={fetchBookings}
-            onExport={handleExport}
-          />
         </div>
       )}
+
+      <DeleteBookingsDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onSuccess={fetchBookings}
+      />
     </AdminLayout>
   );
 };
