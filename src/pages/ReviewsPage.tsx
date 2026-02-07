@@ -54,7 +54,7 @@ const ReviewsPage = () => {
           </div>
 
           <div className="max-w-7xl mx-auto">
-            <ReviewLabWidget widgetId="YOUR_WIDGET_ID" />
+            <ReviewLabWidget widgetId="6986979cd4927bc247d4f508" />
           </div>
         </div>
       </section>

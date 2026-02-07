@@ -1,28 +1,27 @@
 import { useEffect } from 'react';
 
 interface ReviewLabWidgetProps {
-  widgetId?: string;
+  widgetId: string;
 }
 
-const ReviewLabWidget = ({ widgetId = 'YOUR_WIDGET_ID' }: ReviewLabWidgetProps) => {
+const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   useEffect(() => {
     const script = document.createElement('script');
-    script.src = 'https://reviewlab.ru/static/widget.js';
-    script.async = true;
-    script.setAttribute('data-reviewlab-widget-id', widgetId);
+    script.src = 'https://app.reviewlab.ru/widget/index-es2015.js';
+    script.defer = true;
     document.body.appendChild(script);
 
     return () => {
-      const existingScript = document.querySelector(`script[src="https://reviewlab.ru/static/widget.js"]`);
+      const existingScript = document.querySelector(`script[src="https://app.reviewlab.ru/widget/index-es2015.js"]`);
       if (existingScript) {
         existingScript.remove();
       }
     };
-  }, [widgetId]);
+  }, []);
 
   return (
     <div className="reviewlab-widget-container">
-      <div id={`reviewlab-widget-${widgetId}`} />
+      <review-lab data-widgetid={widgetId}></review-lab>
     </div>
   );
 };
