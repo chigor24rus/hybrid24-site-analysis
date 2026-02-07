@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@/components/ui/dialog';
+import { Link } from 'react-router-dom';
 import PromotionDetailDialog from '@/components/PromotionDetailDialog';
 import PromotionsSection, { Promotion } from './home/PromotionsSection';
 import BlogSection, { BlogPost } from './home/BlogSection';
 import ReviewsSection, { Review } from './home/ReviewsSection';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import { Badge } from '@/components/ui/badge';
+import Icon from '@/components/ui/icon';
 
 interface PromotionsReviewsSectionProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -156,10 +158,14 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
             <Badge className="mb-4 gradient-accent text-sm">Актуальные отзывы</Badge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <Link 
+              to="/reviews" 
+              className="inline-flex items-center gap-2 text-3xl md:text-4xl lg:text-5xl font-bold mb-4 hover:text-primary transition-colors group"
+            >
               Что говорят о нас в интернете
-            </h2>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-6">
+              <Icon name="ArrowRight" className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-6 mt-4">
               Свежие отзывы из Яндекс.Карт, 2GIS и других площадок
             </p>
           </div>
