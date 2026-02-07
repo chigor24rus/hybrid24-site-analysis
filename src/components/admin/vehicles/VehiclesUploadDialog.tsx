@@ -70,23 +70,27 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
 
       if (uploadType === 'brands') {
         for (const row of jsonData as any[]) {
-          if (row.name) {
+          const brandName = row.name || row.brand_name;
+          if (brandName) {
             try {
-              const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f', {
+              const response = await fetch('https://functions.poehali.dev/6e998d6c-035e-480a-b85e-9b690fa6733a', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: row.name }),
+                body: JSON.stringify({ name: brandName }),
               });
               const result = await response.json();
               if (response.ok) {
                 successCount++;
+              } else if (response.status === 409) {
+                // Дубликат - пропускаем без ошибки
+                console.log(`Бренд "${brandName}" уже существует, пропускаем`);
               } else {
                 errorCount++;
-                errors.push(`Бренд "${row.name}": ${result.error || 'неизвестная ошибка'}`);
+                errors.push(`Бренд "${brandName}": ${result.error || 'неизвестная ошибка'}`);
               }
             } catch (err) {
               errorCount++;
-              errors.push(`Бренд "${row.name}": ошибка сети`);
+              errors.push(`Бренд "${brandName}": ${err instanceof Error ? err.message : 'ошибка сети'}`);
             }
           }
         }

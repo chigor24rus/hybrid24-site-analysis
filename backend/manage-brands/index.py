@@ -41,14 +41,28 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             logo_url = body_data.get('logo_url', '').strip()
             description = body_data.get('description', '').strip()
             
-            if not name or not slug:
+            if not name:
                 return {
                     'statusCode': 400,
                     'headers': {
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'Название и slug обязательны'})
+                    'body': json.dumps({'error': 'Название обязательно'})
+                }
+            
+            # Автогенерация slug если не указан
+            if not slug:
+                slug = name.lower().replace(' ', '-').replace('&', 'and')
+            
+            # Проверка на дубликат
+            cur.execute("SELECT id FROM brands WHERE LOWER(name) = LOWER(%s) LIMIT 1", (name,))
+            existing = cur.fetchone()
+            if existing:
+                return {
+                    'statusCode': 409,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Бренд уже существует', 'duplicate': True})
                 }
             
             cur.execute(
