@@ -118,11 +118,14 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
               successCount++;
             } else {
               errorCount++;
-              errors.push(`Модель "${row.model_name}": ${result.error || 'неизвестная ошибка'}`);
+              const errorMsg = result.error || response.statusText || 'неизвестная ошибка';
+              errors.push(`Модель "${row.model_name}" (бренд: ${row.brand_name}): ${errorMsg}`);
+              console.error('Model upload error:', { row, response: result });
             }
           } catch (err) {
             errorCount++;
-            errors.push(`Модель "${row.model_name}": ошибка сети`);
+            errors.push(`Модель "${row.model_name}": ${err instanceof Error ? err.message : 'ошибка сети'}`);
+            console.error('Model upload exception:', err);
           }
         }
       } else if (uploadType === 'prices') {

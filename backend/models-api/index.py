@@ -152,6 +152,9 @@ def handler(event: dict, context) -> dict:
         }
         
     except Exception as e:
+        print(f"ERROR: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return {
             'statusCode': 500,
             'headers': {
