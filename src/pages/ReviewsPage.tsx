@@ -10,7 +10,7 @@ import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import ReviewsSection, { Review } from '@/components/sections/home/ReviewsSection';
-import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
+import { generateSchemaMarkup, generateYandexSchema } from '@/utils/generateSchemaMarkup';
 
 const ReviewsPage = () => {
   const location = useLocation();
@@ -69,6 +69,9 @@ const ReviewsPage = () => {
         <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(schemaReviews))}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(generateYandexSchema(schemaReviews))}
         </script>
       </Helmet>
       

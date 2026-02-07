@@ -1,0 +1,60 @@
+{
+  "tests": [
+    {
+      "name": "Add new review successfully",
+      "method": "POST",
+      "body": {
+        "customer_name": "Иван Тестовый",
+        "rating": 5,
+        "review_text": "Отличный сервис, всё сделали быстро и качественно!",
+        "service_name": "Замена масла",
+        "review_date": "2025-02-07",
+        "source": "yandex",
+        "is_visible": true
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "review": {
+          "id": "number",
+          "customer_name": "string",
+          "rating": "number",
+          "review_text": "string",
+          "service_name": "string",
+          "review_date": "string",
+          "source": "string",
+          "is_visible": "boolean",
+          "created_at": "string"
+        }
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing required fields",
+      "method": "POST",
+      "body": {
+        "customer_name": "Тест"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Invalid rating",
+      "method": "POST",
+      "body": {
+        "customer_name": "Иван",
+        "rating": 10,
+        "review_text": "Текст",
+        "service_name": "Сервис"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

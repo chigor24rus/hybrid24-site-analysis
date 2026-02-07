@@ -1,4 +1,5 @@
 {
+  "reviews-add": "https://functions.poehali.dev/0916c610-058d-41be-ba74-88b82dac175e",
   "test-1c": "https://functions.poehali.dev/1a8a5028-260f-4d4c-8b91-294a21afdd86",
   "generate-sitemap": "https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385",
   "export-bookings": "https://functions.poehali.dev/aec56852-2ec9-4a3d-88bb-f6a21b412e84",
@@ -15,7 +16,6 @@
   "delete-promotion-admin": "https://functions.poehali.dev/4a0720cb-4906-457f-8860-4f6196d93031",
   "create-promotion-admin": "https://functions.poehali.dev/5a0a3612-f9b3-4eba-8ac1-3230f81d8bc4",
   "blog": "https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a",
-  "manage-reviews": "https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce",
   "upload-image": "https://functions.poehali.dev/2083652a-f56c-4d58-85e2-2e0af2b8a48a",
   "manage-brands": "https://functions.poehali.dev/6e998d6c-035e-480a-b85e-9b690fa6733a",
   "verify-admin": "https://functions.poehali.dev/f154dcd8-cf73-4c58-b0c2-63e293d16b4a",

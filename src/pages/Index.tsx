@@ -6,7 +6,7 @@ import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Sections from '@/components/Sections';
 import Footer from '@/components/Footer';
-import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
+import { generateSchemaMarkup, generateYandexSchema } from '@/utils/generateSchemaMarkup';
 import { SITE_CONFIG } from '@/config/site';
 
 const Index = () => {
@@ -64,6 +64,9 @@ const Index = () => {
         <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(generateYandexSchema(reviews))}
         </script>
       </Helmet>
       

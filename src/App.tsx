@@ -32,6 +32,7 @@ import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminPromotionsPage from "./pages/AdminPromotionsPage";
 import AdminLogsPage from "./pages/AdminLogsPage";
 import Admin1CTestPage from "./pages/Admin1CTestPage";
+import AdminReviewsPage from "./pages/AdminReviewsPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
@@ -115,6 +116,7 @@ const App = () => (
 
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
+            <Route path="/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/admin/logs" element={<AdminLogsPage />} />
             <Route path="/admin/1c-test" element={<Admin1CTestPage />} />
             {/* Dynamic SEO routes - MUST be at the end before catch-all */}

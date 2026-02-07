@@ -7,10 +7,15 @@ interface Review {
   service: string;
 }
 
-export const generateSchemaMarkup = (reviews: Review[]) => {
-  const averageRating = reviews.length > 0 
+export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rating: number; reviewCount: number }) => {
+  // Calculate average from our database reviews
+  const dbAverageRating = reviews.length > 0 
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : '0.0';
+  
+  // Use Google Maps rating if provided, otherwise use database rating
+  const averageRating = googleMapsRating ? googleMapsRating.rating.toFixed(1) : dbAverageRating;
+  const totalReviews = googleMapsRating ? googleMapsRating.reviewCount : reviews.length;
 
   const reviewsSchema = reviews.slice(0, 10).map(review => ({
     "@type": "Review",
@@ -74,10 +79,10 @@ export const generateSchemaMarkup = (reviews: Review[]) => {
       "Техническое обслуживание автомобилей",
       "Диагностика автомобилей"
     ],
-    "aggregateRating": reviews.length > 0 ? {
+    "aggregateRating": (reviews.length > 0 || googleMapsRating) ? {
       "@type": "AggregateRating",
       "ratingValue": averageRating,
-      "reviewCount": reviews.length,
+      "reviewCount": totalReviews,
       "bestRating": "5",
       "worstRating": "1"
     } : undefined,
@@ -112,4 +117,42 @@ export const generateSchemaMarkup = (reviews: Review[]) => {
   };
 
   return schema;
+};
+
+// Generate Yandex.Organizations schema markup
+export const generateYandexSchema = (reviews: Review[]) => {
+  const averageRating = reviews.length > 0 
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : '0.0';
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "HEVSeRvice",
+    "description": "Профессиональный ремонт и обслуживание гибридных автомобилей в Красноярске",
+    "url": "https://hybrids24.ru",
+    "logo": "https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png",
+    "image": "https://cdn.poehali.dev/files/2025-12-13_14-19-48.png",
+    "telephone": "+79230166750",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "ул. Водопьянова, д. 1К",
+      "addressLocality": "Красноярск",
+      "addressRegion": "Красноярский край",
+      "postalCode": "660135",
+      "addressCountry": "RU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "56.062692",
+      "longitude": "92.900855"
+    },
+    "aggregateRating": reviews.length > 0 ? {
+      "@type": "AggregateRating",
+      "ratingValue": averageRating,
+      "reviewCount": reviews.length,
+      "bestRating": "5",
+      "worstRating": "1"
+    } : undefined
+  };
 };
