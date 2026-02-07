@@ -10,15 +10,29 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   const errorHandlerRef = useRef<((event: ErrorEvent) => void) | null>(null);
 
   useEffect(() => {
-    errorHandlerRef.current = (event: ErrorEvent) => {
-      if (event.message && event.message.includes('styled-components')) {
+    const globalErrorHandler = (event: ErrorEvent) => {
+      const errorMsg = event.message?.toString() || '';
+      if (errorMsg.includes('styled-components') || 
+          errorMsg.includes('reviewlab') ||
+          event.filename?.includes('reviewlab')) {
         event.preventDefault();
-        event.stopPropagation();
-        console.warn('ReviewLab styled-components error suppressed');
+        event.stopImmediatePropagation();
+        return false;
       }
     };
 
-    window.addEventListener('error', errorHandlerRef.current, true);
+    const unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
+      const reason = event.reason?.toString() || '';
+      if (reason.includes('styled-components') || reason.includes('reviewlab')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return false;
+      }
+    };
+
+    errorHandlerRef.current = globalErrorHandler;
+    window.addEventListener('error', globalErrorHandler, true);
+    window.addEventListener('unhandledrejection', unhandledRejectionHandler, true);
 
     const existingScript = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
     
@@ -31,23 +45,20 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
     script.src = 'https://app.reviewlab.ru/widget/index-es2015.js';
     script.async = true;
     script.onload = () => {
-      console.log('ReviewLab script loaded successfully');
       setIsLoaded(true);
     };
     script.onerror = () => {
-      console.error('Failed to load ReviewLab script');
       setHasError(true);
     };
     
     document.body.appendChild(script);
 
     return () => {
-      if (errorHandlerRef.current) {
-        window.removeEventListener('error', errorHandlerRef.current, true);
-      }
+      window.removeEventListener('error', globalErrorHandler, true);
+      window.removeEventListener('unhandledrejection', unhandledRejectionHandler, true);
       const scriptToRemove = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
+      if (scriptToRemove && scriptToRemove.parentNode) {
+        scriptToRemove.parentNode.removeChild(scriptToRemove);
       }
     };
   }, []);
