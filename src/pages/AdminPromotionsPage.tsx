@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
-import { AdminLayout, LoadingScreen, AdminPageHeader } from '@/components/admin';
+import { 
+  AdminLayout, 
+  LoadingScreen, 
+  AdminPageHeader, 
+  PromotionCard, 
+  PromotionFormDialog 
+} from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { API_ENDPOINTS } from '@/utils/apiClient';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 
 interface Promotion {
   id: number;
@@ -41,16 +38,6 @@ const AdminPromotionsPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [saving, setSaving] = useState(false);
-
-  const formatValidUntil = (dateString: string) => {
-    if (dateString === 'Постоянно') return 'Постоянно';
-    try {
-      const date = new Date(dateString);
-      return format(date, 'd MMMM yyyy, HH:mm', { locale: ru });
-    } catch {
-      return dateString;
-    }
-  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -235,206 +222,28 @@ const AdminPromotionsPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {promotions.map((promotion) => (
-            <Card key={promotion.id} className={!promotion.is_active ? 'opacity-50' : ''}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Icon name={promotion.icon as any} size={24} className="text-primary" />
-                      <Badge variant={promotion.is_active ? 'default' : 'secondary'}>
-                        {promotion.is_active ? 'Активна' : 'Неактивна'}
-                      </Badge>
-                    </div>
-                    <CardTitle className="mb-2">{promotion.title}</CardTitle>
-                    <CardDescription>{promotion.description}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Скидка:</span>
-                    <Badge className="gradient-accent">{promotion.discount}</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Цена:</span>
-                    <div className="text-right">
-                      {promotion.old_price && (
-                        <span className="text-sm line-through text-muted-foreground mr-2">
-                          {promotion.old_price}
-                        </span>
-                      )}
-                      <span className="font-bold text-primary">{promotion.new_price}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">До:</span>
-                    <span className="text-sm">{formatValidUntil(promotion.valid_until)}</span>
-                  </div>
-                  <div className="pt-3 border-t flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => toggleActive(promotion)}
-                    >
-                      <Icon name={promotion.is_active ? 'EyeOff' : 'Eye'} size={16} className="mr-1" />
-                      {promotion.is_active ? 'Скрыть' : 'Показать'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleOpenDialog(promotion)}
-                    >
-                      <Icon name="Edit" size={16} />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleDelete(promotion.id)}
-                    >
-                      <Icon name="Trash" size={16} />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <PromotionCard
+              key={promotion.id}
+              promotion={promotion}
+              onToggleActive={toggleActive}
+              onEdit={handleOpenDialog}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                {editingPromotion ? 'Редактировать акцию' : 'Новая акция'}
-              </DialogTitle>
-              <DialogDescription>
-                Заполните информацию об акции
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              <div>
-                <Label>Название</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Сезонное ТО"
-                />
-              </div>
-
-              <div>
-                <Label>Описание</Label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Комплексная диагностика + замена масла со скидкой 25%"
-                />
-              </div>
-
-              <div>
-                <Label>Подробности</Label>
-                <Textarea
-                  value={formData.details}
-                  onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-                  placeholder="Включает проверку всех систем автомобиля..."
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Скидка</Label>
-                  <Input
-                    value={formData.discount}
-                    onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-                    placeholder="-25%"
-                  />
-                </div>
-
-                <div>
-                  <Label>Иконка</Label>
-                  <Select
-                    value={formData.icon}
-                    onValueChange={(value) => setFormData({ ...formData, icon: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {iconOptions.map((icon) => (
-                        <SelectItem key={icon} value={icon}>
-                          <div className="flex items-center gap-2">
-                            <Icon name={icon as any} size={16} />
-                            {icon}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Старая цена (опционально)</Label>
-                  <Input
-                    value={formData.old_price}
-                    onChange={(e) => setFormData({ ...formData, old_price: e.target.value })}
-                    placeholder="6 000 ₽"
-                  />
-                </div>
-
-                <div>
-                  <Label>Новая цена</Label>
-                  <Input
-                    value={formData.new_price}
-                    onChange={(e) => setFormData({ ...formData, new_price: e.target.value })}
-                    placeholder="4 500 ₽"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label>Действительна до</Label>
-                <div className="flex items-center gap-2 mb-2">
-                  <input
-                    type="checkbox"
-                    checked={isPermanent}
-                    onChange={(e) => setIsPermanent(e.target.checked)}
-                    id="is_permanent"
-                  />
-                  <Label htmlFor="is_permanent" className="cursor-pointer">Постоянная акция</Label>
-                </div>
-                {!isPermanent && (
-                  <Input
-                    type="datetime-local"
-                    value={formData.valid_until}
-                    onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                  />
-                )}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={formData.is_active}
-                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                  id="is_active"
-                />
-                <Label htmlFor="is_active">Акция активна</Label>
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button onClick={handleSave} disabled={saving} className="flex-1">
-                  {saving ? 'Сохранение...' : 'Сохранить'}
-                </Button>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                  Отмена
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <PromotionFormDialog
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          isEditing={!!editingPromotion}
+          formData={formData}
+          onFormDataChange={setFormData}
+          isPermanent={isPermanent}
+          onIsPermanentChange={setIsPermanent}
+          onSave={handleSave}
+          saving={saving}
+          iconOptions={iconOptions}
+        />
         </div>
       </div>
     </AdminLayout>

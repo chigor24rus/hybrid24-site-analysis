@@ -6,3 +6,5 @@ export { StatusBadge } from './StatusBadge';
 export { ReviewCard } from './ReviewCard';
 export { ReviewFormDialog } from './ReviewFormDialog';
 export { ImportDialog } from './ImportDialog';
+export { PromotionCard } from './PromotionCard';
+export { PromotionFormDialog } from './PromotionFormDialog';
