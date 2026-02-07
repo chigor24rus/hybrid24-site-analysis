@@ -9,36 +9,11 @@ import Footer from '@/components/Footer';
 import { generateSchemaMarkup } from '@/utils/generateSchemaMarkup';
 import { SITE_CONFIG } from '@/config/site';
 
-interface Review {
-  id: number | string;
-  name: string;
-  rating: number;
-  date: string;
-  text: string;
-  service: string;
-}
-
 const Index = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch('https://functions.poehali.dev/24530517-9b0c-4a6b-957e-ac05025d52ce');
-        const data = await response.json();
-        if (response.ok && data.reviews) {
-          setReviews(data.reviews);
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      }
-    };
-    fetchReviews();
-  }, []);
 
   return (
     <div className="min-h-screen">
@@ -61,7 +36,7 @@ const Index = () => {
         <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
         <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
-          {JSON.stringify(generateSchemaMarkup(reviews))}
+          {JSON.stringify(generateSchemaMarkup([]))}
         </script>
       </Helmet>
       

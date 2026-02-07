@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import ServicesPage from "./pages/ServicesPage";
 import PromotionsPage from "./pages/PromotionsPage";
 import ReviewsPage from "./pages/ReviewsPage";
+
 import BlogPage from "./pages/BlogPage";
 import BrandPage from "./pages/BrandPage";
 import BrandsPage from "./pages/BrandsPage";
@@ -26,7 +27,7 @@ import AdminDataPage from "./pages/AdminDataPage";
 import AdminModelsPage from "./pages/AdminModelsPage";
 import AdminVehiclesPage from "./pages/AdminVehiclesPage";
 import AdminSettingsPage from "./pages/AdminSettingsPage";
-import AdminReviewsPage from "./pages/AdminReviewsPage";
+
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminPromotionsPage from "./pages/AdminPromotionsPage";
 import AdminLogsPage from "./pages/AdminLogsPage";
@@ -96,6 +97,7 @@ const App = () => (
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/promotions" element={<PromotionsPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
+
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/brands" element={<BrandsPage />} />
@@ -110,7 +112,7 @@ const App = () => (
             <Route path="/admin/models" element={<AdminModelsPage />} />
             <Route path="/admin/vehicles" element={<AdminVehiclesPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
-            <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+
             <Route path="/admin/blog" element={<AdminBlogPage />} />
             <Route path="/admin/promotions" element={<AdminPromotionsPage />} />
             <Route path="/admin/logs" element={<AdminLogsPage />} />
