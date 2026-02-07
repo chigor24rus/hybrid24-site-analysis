@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface ReviewLabWidgetProps {
   widgetId: string;
@@ -6,8 +6,20 @@ interface ReviewLabWidgetProps {
 
 const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const errorHandlerRef = useRef<((event: ErrorEvent) => void) | null>(null);
 
   useEffect(() => {
+    errorHandlerRef.current = (event: ErrorEvent) => {
+      if (event.message && event.message.includes('styled-components')) {
+        event.preventDefault();
+        event.stopPropagation();
+        console.warn('ReviewLab styled-components error suppressed');
+      }
+    };
+
+    window.addEventListener('error', errorHandlerRef.current, true);
+
     const existingScript = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
     
     if (existingScript) {
@@ -24,17 +36,29 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
     };
     script.onerror = () => {
       console.error('Failed to load ReviewLab script');
+      setHasError(true);
     };
     
     document.body.appendChild(script);
 
     return () => {
+      if (errorHandlerRef.current) {
+        window.removeEventListener('error', errorHandlerRef.current, true);
+      }
       const scriptToRemove = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
       if (scriptToRemove) {
         scriptToRemove.remove();
       }
     };
   }, []);
+
+  if (hasError) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">Не удалось загрузить виджет отзывов</p>
+      </div>
+    );
+  }
 
   return (
     <div className="reviewlab-widget-container" style={{ minHeight: '400px' }}>
