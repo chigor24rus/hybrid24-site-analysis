@@ -90,7 +90,7 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
         }
       } else if (uploadType === 'models') {
         for (const row of jsonData as any[]) {
-          const brand = brands.find(b => b.name === row.brand_name);
+          const brand = brands.find(b => b.name.toLowerCase() === row.brand_name?.toLowerCase());
           if (!brand) {
             errorCount++;
             errors.push(`Модель "${row.model_name}": бренд "${row.brand_name}" не найден`);
@@ -127,14 +127,14 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
         }
       } else if (uploadType === 'prices') {
         for (const row of jsonData as any[]) {
-          const brand = brands.find(b => b.name === row.brand_name);
+          const brand = brands.find(b => b.name.toLowerCase() === row.brand_name?.toLowerCase());
           if (!brand) {
             errorCount++;
             errors.push(`Цена: бренд "${row.brand_name}" не найден`);
             continue;
           }
           
-          const model = row.model_name ? models.find(m => m.name === row.model_name && m.brand_id === brand?.id) : null;
+          const model = row.model_name ? models.find(m => m.name.toLowerCase() === row.model_name?.toLowerCase() && m.brand_id === brand?.id) : null;
           const service = services.find(s => s.title === row.service_title);
           
           if (!service) {
