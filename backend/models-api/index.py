@@ -64,8 +64,6 @@ def handler(event: dict, context) -> dict:
             year_from = body.get('year_from')
             year_to = body.get('year_to')
             
-            print(f"POST: brand_id={brand_id}, name={name}")
-            
             if not brand_id or not name:
                 return {
                     'statusCode': 400,
@@ -73,30 +71,21 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'error': 'brand_id и name обязательны'})
                 }
             
-            # Проверка на дубликат
-            print("Checking for duplicate...")
-            cur.execute("""
-                SELECT id FROM car_models 
-                WHERE brand_id = %s AND name = %s
-                LIMIT 1
-            """, (brand_id, name))
-            
-            existing = cur.fetchone()
-            print(f"Duplicate check result: {existing}")
-            if existing:
+            # Вставка напрямую, дубликаты обработает база через UNIQUE constraint
+            try:
+                cur.execute("""
+                    INSERT INTO car_models (brand_id, name, year_from, year_to)
+                    VALUES (%s, %s, %s, %s)
+                    RETURNING *
+                """, (brand_id, name, year_from, year_to))
+            except psycopg2.errors.UniqueViolation:
+                # Дубликат модели для данного бренда
+                conn.rollback()
                 return {
                     'statusCode': 409,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                     'body': json.dumps({'error': 'Модель уже существует для этого бренда', 'duplicate': True})
                 }
-            
-            print("Inserting new model...")
-            cur.execute("""
-                INSERT INTO car_models (brand_id, name, year_from, year_to)
-                VALUES (%s, %s, %s, %s)
-                RETURNING *
-            """, (brand_id, name, year_from, year_to))
-            print("Insert successful")
             
             model = cur.fetchone()
             conn.commit()
