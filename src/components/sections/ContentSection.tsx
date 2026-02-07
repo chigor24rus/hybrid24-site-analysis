@@ -3,16 +3,6 @@ const ContentSection = () => {
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
         <article className="prose prose-lg max-w-none">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
-            Профессиональный ремонт и обслуживание автомобилей в Красноярске
-          </h2>
-          
-          <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-            HEVSR — это сертифицированная СТО в Красноярске, специализирующаяся на ремонте и обслуживании 
-            автомобилей различных марок. Наша команда опытных мастеров обеспечивает качественный сервис 
-            с использованием современного диагностического оборудования и оригинальных запчастей.
-          </p>
-
           <h3 className="text-2xl font-semibold mb-4 mt-8 text-foreground">
             Почему выбирают наш автосервис
           </h3>
