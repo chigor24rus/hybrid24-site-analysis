@@ -7,8 +7,9 @@ export const API_ENDPOINTS = {
     delete: 'https://functions.poehali.dev/6441c23c-e63f-4a3e-8cd7-aabdb983ca45',
   },
   reviews: {
-    list: 'https://functions.poehali.dev/fa4a2381-b1d3-48ab-8ec7-3c9df4fe9d09',
-    manage: 'https://functions.poehali.dev/25d54ff6-3db8-4b64-905a-f5ff9c92aaf3',
+    list: 'https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9',
+    add: 'https://functions.poehali.dev/0916c610-058d-41be-ba74-88b82dac175e',
+    import: 'https://functions.poehali.dev/e046b52b-bb1a-44dd-a9e3-989af297c485',
   },
   brands: {
     list: 'https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f',

@@ -97,7 +97,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
 
     const fetchReviews = async () => {
       try {
-        const response = await fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc');
+        const response = await fetch('https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9');
         const data = await response.json();
         if (response.ok && data.reviews) {
           setReviews(data.reviews);
