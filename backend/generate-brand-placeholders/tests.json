@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Generate placeholders for brands without logos",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "generated": "number",
+        "total_brands": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

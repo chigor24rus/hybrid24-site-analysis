@@ -159,6 +159,29 @@ const AdminVehiclesPage = () => {
     }
   };
 
+  const handleGeneratePlaceholders = async () => {
+    if (!confirm('Создать заглушки с первой буквой для всех брендов без логотипов?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/3e88b79c-cf86-412b-852e-0e3efed8a855', {
+        method: 'POST',
+      });
+      const result = await response.json();
+      
+      if (response.ok && result.success) {
+        alert(`Создано заглушек: ${result.generated} из ${result.total_brands}`);
+        fetchData();
+      } else {
+        alert(`Ошибка: ${result.error || 'Неизвестная ошибка'}`);
+      }
+    } catch (error) {
+      console.error('Error generating placeholders:', error);
+      alert('Ошибка при создании заглушек');
+    }
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -199,6 +222,12 @@ const AdminVehiclesPage = () => {
                   icon="Image"
                   label="Загрузить логотипы"
                   onClick={handleImportLogos}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Type"
+                  label="Создать заглушки"
+                  onClick={handleGeneratePlaceholders}
                   variant="outline"
                 />
                 <AdminActionButton
