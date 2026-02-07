@@ -3,6 +3,10 @@ import { Dialog } from '@/components/ui/dialog';
 import PromotionDetailDialog from '@/components/PromotionDetailDialog';
 import PromotionsSection, { Promotion } from './home/PromotionsSection';
 import BlogSection, { BlogPost } from './home/BlogSection';
+import ReviewLabWidget from '@/components/ReviewLabWidget';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface PromotionsReviewsSectionProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -104,6 +108,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     }
   };
 
+  const navigate = useNavigate();
+
   return (
     <>
       <Dialog open={isPromotionDetailOpen} onOpenChange={setIsPromotionDetailOpen}>
@@ -129,7 +135,33 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         totalCount={allPromotions.length}
       />
 
+      <section id="reviews" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 animate-fade-in">
+            <Badge className="mb-4 gradient-accent text-sm">Отзывы клиентов</Badge>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              Что говорят наши клиенты
+            </h2>
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-6">
+              Реальные отзывы из Яндекс.Карт, 2GIS и других площадок
+            </p>
+          </div>
 
+          <div className="max-w-7xl mx-auto mb-8">
+            <ReviewLabWidget widgetId="6986979cd4927bc247d4f508" />
+          </div>
+
+          <div className="text-center">
+            <Button 
+              onClick={() => navigate('/reviews')}
+              size="lg"
+              className="gradient-primary hover-scale btn-glow"
+            >
+              Смотреть все отзывы
+            </Button>
+          </div>
+        </div>
+      </section>
 
       <BlogSection
         blogPosts={blogPosts}
