@@ -43,10 +43,12 @@ interface VehiclesUploadDialogProps {
 const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRefresh }: VehiclesUploadDialogProps) => {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadType, setUploadType] = useState<'brands' | 'models' | 'prices'>('brands');
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleFileUpload = async () => {
     if (!uploadFile) return;
 
+    setIsUploading(true);
     try {
       const data = await uploadFile.arrayBuffer();
       const workbook = XLSX.read(data);
@@ -196,12 +198,14 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
         toast.warning('Файл не содержит данных для загрузки');
       }
       
+      onRefresh();
       onClose();
       setUploadFile(null);
-      onRefresh();
     } catch (error) {
       console.error('Error uploading file:', error);
       toast.error(`Ошибка при обработке файла: ${error instanceof Error ? error.message : 'неизвестная ошибка'}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -335,11 +339,20 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleFileUpload} disabled={!uploadFile} className="flex-1">
-              <Icon name="Upload" className="mr-2" size={18} />
-              Загрузить
+            <Button onClick={handleFileUpload} disabled={!uploadFile || isUploading} className="flex-1">
+              {isUploading ? (
+                <>
+                  <Icon name="Loader2" className="mr-2 animate-spin" size={18} />
+                  Загружаю...
+                </>
+              ) : (
+                <>
+                  <Icon name="Upload" className="mr-2" size={18} />
+                  Загрузить
+                </>
+              )}
             </Button>
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isUploading}>
               Отмена
             </Button>
           </div>
