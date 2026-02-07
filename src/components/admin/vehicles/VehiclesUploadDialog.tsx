@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 
 interface Brand {
@@ -53,21 +54,48 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet);
 
+      let successCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
       if (uploadType === 'brands') {
         for (const row of jsonData as any[]) {
           if (row.name) {
-            await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: row.name }),
-            });
+            try {
+              const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: row.name }),
+              });
+              const result = await response.json();
+              if (response.ok) {
+                successCount++;
+              } else {
+                errorCount++;
+                errors.push(`Бренд "${row.name}": ${result.error || 'неизвестная ошибка'}`);
+              }
+            } catch (err) {
+              errorCount++;
+              errors.push(`Бренд "${row.name}": ошибка сети`);
+            }
           }
         }
       } else if (uploadType === 'models') {
         for (const row of jsonData as any[]) {
           const brand = brands.find(b => b.name === row.brand_name);
-          if (brand && row.model_name) {
-            await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b', {
+          if (!brand) {
+            errorCount++;
+            errors.push(`Модель "${row.model_name}": бренд "${row.brand_name}" не найден`);
+            continue;
+          }
+          if (!row.model_name) {
+            errorCount++;
+            errors.push(`Строка пропущена: отсутствует название модели`);
+            continue;
+          }
+          
+          try {
+            const response = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -77,16 +105,44 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
                 year_to: row.year_to || null,
               }),
             });
+            const result = await response.json();
+            if (response.ok) {
+              successCount++;
+            } else {
+              errorCount++;
+              errors.push(`Модель "${row.model_name}": ${result.error || 'неизвестная ошибка'}`);
+            }
+          } catch (err) {
+            errorCount++;
+            errors.push(`Модель "${row.model_name}": ошибка сети`);
           }
         }
       } else if (uploadType === 'prices') {
         for (const row of jsonData as any[]) {
           const brand = brands.find(b => b.name === row.brand_name);
+          if (!brand) {
+            errorCount++;
+            errors.push(`Цена: бренд "${row.brand_name}" не найден`);
+            continue;
+          }
+          
           const model = row.model_name ? models.find(m => m.name === row.model_name && m.brand_id === brand?.id) : null;
           const service = services.find(s => s.title === row.service_title);
           
-          if (brand && service && row.price) {
-            await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
+          if (!service) {
+            errorCount++;
+            errors.push(`Цена: услуга "${row.service_title}" не найдена`);
+            continue;
+          }
+          
+          if (!row.price) {
+            errorCount++;
+            errors.push(`Цена для "${row.service_title}": отсутствует значение`);
+            continue;
+          }
+          
+          try {
+            const response = await fetch('https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -96,17 +152,42 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
                 price: row.price,
               }),
             });
+            const result = await response.json();
+            if (response.ok) {
+              successCount++;
+            } else {
+              errorCount++;
+              errors.push(`Цена: ${result.error || 'неизвестная ошибка'}`);
+            }
+          } catch (err) {
+            errorCount++;
+            errors.push(`Цена: ошибка сети`);
           }
         }
       }
 
-      alert('Данные успешно загружены!');
+      if (successCount > 0) {
+        toast.success(`Успешно загружено записей: ${successCount}`);
+      }
+      
+      if (errorCount > 0) {
+        const errorMessage = errors.length > 0 
+          ? `Ошибок: ${errorCount}. Первые ошибки:\n${errors.slice(0, 3).join('\n')}` 
+          : `Ошибок: ${errorCount}`;
+        toast.error(errorMessage);
+        console.error('Upload errors:', errors);
+      }
+      
+      if (successCount === 0 && errorCount === 0) {
+        toast.warning('Файл не содержит данных для загрузки');
+      }
+      
       onClose();
       setUploadFile(null);
       onRefresh();
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Ошибка при загрузке файла');
+      toast.error(`Ошибка при обработке файла: ${error instanceof Error ? error.message : 'неизвестная ошибка'}`);
     }
   };
 
