@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
-import { AdminLayout, AdminPageHeader } from '@/components/admin';
+import { AdminLayout, AdminPageHeader, AdminActionButton } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { API_ENDPOINTS } from '@/utils/apiClient';
 
@@ -104,17 +104,14 @@ const AdminSettingsPage = () => {
           <AdminPageHeader
             title="Настройки"
             description="Интеграция с внешними сервисами"
+            showBackButton
             actions={
-              <>
-                <Button variant="outline" onClick={() => navigate('/admin')}>
-                  <Icon name="ArrowLeft" className="mr-2" size={18} />
-                  Назад
-                </Button>
-                <Button variant="outline" onClick={logout}>
-                  <Icon name="LogOut" className="mr-2" size={18} />
-                  Выйти
-                </Button>
-              </>
+              <AdminActionButton
+                icon="LogOut"
+                label="Выйти"
+                onClick={logout}
+                variant="outline"
+              />
             }
           />
 

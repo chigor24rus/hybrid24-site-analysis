@@ -209,6 +209,7 @@ const AdminReviewsPage = () => {
         <AdminPageHeader
           title="Управление отзывами"
           description="Отзывы клиентов и импорт из внешних источников"
+          showBackButton
           actions={
             <>
               <AdminActionButton

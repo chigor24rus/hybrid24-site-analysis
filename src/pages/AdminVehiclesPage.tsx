@@ -7,7 +7,7 @@ import VehiclesModelsTab from '@/components/admin/vehicles/VehiclesModelsTab';
 import VehiclesPricesTab from '@/components/admin/vehicles/VehiclesPricesTab';
 import VehiclesServicesTab from '@/components/admin/vehicles/VehiclesServicesTab';
 import VehiclesUploadDialog from '@/components/admin/vehicles/VehiclesUploadDialog';
-import { AdminLayout, LoadingScreen, AdminPageHeader } from '@/components/admin';
+import { AdminLayout, LoadingScreen, AdminPageHeader, AdminActionButton } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface Brand {
@@ -140,26 +140,39 @@ const AdminVehiclesPage = () => {
           <AdminPageHeader
             title="Управление автомобилями"
             description="Бренды, модели и цены на услуги"
-            onLogout={logout}
-            backLink="/admin"
+            showBackButton
             actions={
               <>
-                <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
-                  <Icon name="ExternalLink" className="mr-2" size={18} />
-                  SEO-страницы
-                </Button>
-                <Button variant="outline" onClick={handleNormalizeBrands}>
-                  <Icon name="Type" className="mr-2" size={18} />
-                  Нормализовать регистр
-                </Button>
-                <Button variant="outline" onClick={handleRemoveDuplicates}>
-                  <Icon name="Trash2" className="mr-2" size={18} />
-                  Удалить дубликаты
-                </Button>
-                <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
-                  <Icon name="Upload" className="mr-2" size={18} />
-                  Загрузить из XLS
-                </Button>
+                <AdminActionButton
+                  icon="ExternalLink"
+                  label="SEO-страницы"
+                  onClick={() => window.open('/services-index', '_blank')}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Type"
+                  label="Нормализовать регистр"
+                  onClick={handleNormalizeBrands}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Trash2"
+                  label="Удалить дубликаты"
+                  onClick={handleRemoveDuplicates}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Upload"
+                  label="Загрузить из XLS"
+                  onClick={() => setIsUploadDialogOpen(true)}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="LogOut"
+                  label="Выйти"
+                  onClick={logout}
+                  variant="outline"
+                />
               </>
             }
           />

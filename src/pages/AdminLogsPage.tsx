@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import ErrorLogger, { ErrorLog } from '@/utils/errorLogger';
-import { AdminLayout, AdminPageHeader, StatusBadge, EmptyState } from '@/components/admin';
+import { AdminLayout, AdminPageHeader, StatusBadge, EmptyState, AdminActionButton } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { formatDateTimeLocale } from '@/utils/dateFormatters';
 
@@ -64,28 +63,35 @@ const AdminLogsPage = () => {
           <AdminPageHeader
             title="Логи ошибок сайта"
             description="Мониторинг и диагностика проблем"
+            showBackButton
             actions={
               <>
-                <Button variant="outline" onClick={loadLogs}>
-                  <Icon name="RefreshCw" className="mr-2" size={18} />
-                  Обновить
-                </Button>
-                <Button variant="outline" onClick={exportLogs} disabled={logs.length === 0}>
-                  <Icon name="Download" className="mr-2" size={18} />
-                  Экспорт
-                </Button>
-                <Button variant="destructive" onClick={clearLogs} disabled={logs.length === 0}>
-                  <Icon name="Trash2" className="mr-2" size={18} />
-                  Очистить
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/admin')}>
-                  <Icon name="ArrowLeft" className="mr-2" size={18} />
-                  Назад
-                </Button>
-                <Button variant="outline" onClick={logout}>
-                  <Icon name="LogOut" className="mr-2" size={18} />
-                  Выйти
-                </Button>
+                <AdminActionButton
+                  icon="RefreshCw"
+                  label="Обновить"
+                  onClick={loadLogs}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Download"
+                  label="Экспорт"
+                  onClick={exportLogs}
+                  disabled={logs.length === 0}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="Trash2"
+                  label="Очистить"
+                  onClick={clearLogs}
+                  disabled={logs.length === 0}
+                  variant="outline"
+                />
+                <AdminActionButton
+                  icon="LogOut"
+                  label="Выйти"
+                  onClick={logout}
+                  variant="outline"
+                />
               </>
             }
           />

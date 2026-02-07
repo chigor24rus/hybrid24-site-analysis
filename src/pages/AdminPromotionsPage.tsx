@@ -215,14 +215,21 @@ const AdminPromotionsPage = () => {
           <AdminPageHeader
             title="Управление акциями"
             description="Создавайте и редактируйте акции для клиентов"
-            onLogout={logout}
-            backLink="/admin"
+            showBackButton
             actions={
-              <AdminActionButton
-                icon="Plus"
-                label="Добавить акцию"
-                onClick={() => handleOpenDialog()}
-              />
+              <>
+                <AdminActionButton
+                  icon="Plus"
+                  label="Добавить акцию"
+                  onClick={() => handleOpenDialog()}
+                />
+                <AdminActionButton
+                  icon="LogOut"
+                  label="Выйти"
+                  onClick={logout}
+                  variant="outline"
+                />
+              </>
             }
           />
 

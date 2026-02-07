@@ -164,61 +164,84 @@ const AdminPage = () => {
           <div className="container mx-auto px-4 py-8">
             <AdminPageHeader
               title="Админ-панель"
-              description="Управление заявками клиентов"
+              description="Управление заявками и контентом"
               actions={
                 <>
-                  <AdminActionButton
-                    icon="Download"
-                    label="Экспорт в Excel"
-                    onClick={() => handleExport()}
-                    disabled={exporting || bookings.length === 0}
-                    loading={exporting}
-                  />
-                  <AdminActionButton
-                    icon="Trash2"
-                    label="Удалить заявки"
-                    onClick={() => setIsDeleteDialogOpen(true)}
-                  />
-                  <AdminActionButton
-                    icon="Car"
-                    label="Автомобили"
-                    onClick={() => navigate('/admin/vehicles')}
-                  />
-                  <AdminActionButton
-                    icon="FileText"
-                    label="Блог"
-                    onClick={() => navigate('/admin/blog')}
-                  />
-                  <AdminActionButton
-                    icon="Percent"
-                    label="Акции"
-                    onClick={() => navigate('/admin/promotions')}
-                  />
-                  <AdminActionButton
-                    icon="Star"
-                    label="Отзывы"
-                    onClick={() => navigate('/admin/reviews')}
-                  />
-                  <AdminActionButton
-                    icon="Bug"
-                    label="Логи ошибок"
-                    onClick={() => navigate('/admin/logs')}
-                  />
-                  <AdminActionButton
-                    icon="Settings"
-                    label="Настройки"
-                    onClick={() => navigate('/admin/settings')}
-                  />
-                  <AdminActionButton
-                    icon="Database"
-                    label="Тест 1С"
-                    onClick={() => navigate('/admin/1c-test')}
-                  />
-                  <AdminActionButton
-                    icon="LogOut"
-                    label="Выйти"
-                    onClick={logout}
-                  />
+                  <div className="w-full mb-4">
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-2">Действия с заявками</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <AdminActionButton
+                        icon="Download"
+                        label="Экспорт в Excel"
+                        onClick={() => handleExport()}
+                        disabled={exporting || bookings.length === 0}
+                        loading={exporting}
+                        variant="outline"
+                      />
+                      <AdminActionButton
+                        icon="Trash2"
+                        label="Удалить заявки"
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                        variant="outline"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full mb-4">
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-2">Управление контентом</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <AdminActionButton
+                        icon="Car"
+                        label="Автомобили"
+                        onClick={() => navigate('/admin/vehicles')}
+                      />
+                      <AdminActionButton
+                        icon="FileText"
+                        label="Блог"
+                        onClick={() => navigate('/admin/blog')}
+                      />
+                      <AdminActionButton
+                        icon="Percent"
+                        label="Акции"
+                        onClick={() => navigate('/admin/promotions')}
+                      />
+                      <AdminActionButton
+                        icon="Star"
+                        label="Отзывы"
+                        onClick={() => navigate('/admin/reviews')}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="w-full">
+                    <h3 className="text-sm font-semibold text-muted-foreground mb-2">Система</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <AdminActionButton
+                        icon="Bug"
+                        label="Логи ошибок"
+                        onClick={() => navigate('/admin/logs')}
+                        variant="outline"
+                      />
+                      <AdminActionButton
+                        icon="Settings"
+                        label="Настройки"
+                        onClick={() => navigate('/admin/settings')}
+                        variant="outline"
+                      />
+                      <AdminActionButton
+                        icon="Database"
+                        label="Тест 1С"
+                        onClick={() => navigate('/admin/1c-test')}
+                        variant="outline"
+                      />
+                      <AdminActionButton
+                        icon="LogOut"
+                        label="Выйти"
+                        onClick={logout}
+                        variant="outline"
+                      />
+                    </div>
+                  </div>
                 </>
               }
             />

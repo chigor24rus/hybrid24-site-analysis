@@ -242,18 +242,7 @@ const AdminBlogPage = () => {
         <div className="max-w-7xl mx-auto">
           <AdminPageHeader
             title="Управление блогом"
-            actions={
-              <>
-                <Button variant="outline" onClick={() => navigate('/admin')}>
-                  <Icon name="ArrowLeft" className="mr-2" size={18} />
-                  Назад
-                </Button>
-                <Button variant="outline" onClick={logout}>
-                  <Icon name="LogOut" className="mr-2" size={18} />
-                  Выйти
-                </Button>
-              </>
-            }
+            showBackButton
           />
 
         <Card className="mb-6">
