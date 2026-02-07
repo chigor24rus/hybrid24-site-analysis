@@ -158,15 +158,17 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       <section id="reviews-live" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
-            <Badge className="mb-4 gradient-accent text-sm">Актуальные отзывы</Badge>
+            <Badge className="mb-6 gradient-accent text-sm">Актуальные отзывы</Badge>
             <Link 
               to="/reviews" 
-              className="inline-flex items-center gap-2 text-3xl md:text-4xl lg:text-5xl font-bold mb-4 hover:text-primary transition-colors group"
+              className="block text-3xl md:text-4xl lg:text-5xl font-bold mb-6 hover:text-primary transition-colors group"
             >
-              Что говорят о нас в интернете
-              <Icon name="ArrowRight" className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-1 transition-transform" />
+              <span className="inline-flex items-center gap-2">
+                Что говорят о нас в интернете
+                <Icon name="ArrowRight" className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Link>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-6 mt-4">
+            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Свежие отзывы из Яндекс.Карт, 2GIS и других площадок
             </p>
           </div>
