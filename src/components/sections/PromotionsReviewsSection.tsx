@@ -5,8 +5,6 @@ import PromotionsSection, { Promotion } from './home/PromotionsSection';
 import BlogSection, { BlogPost } from './home/BlogSection';
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 
 interface PromotionsReviewsSectionProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -108,8 +106,6 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
     }
   };
 
-  const navigate = useNavigate();
-
   return (
     <>
       <Dialog open={isPromotionDetailOpen} onOpenChange={setIsPromotionDetailOpen}>
@@ -147,18 +143,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
             </p>
           </div>
 
-          <div className="max-w-7xl mx-auto mb-8">
+          <div className="max-w-7xl mx-auto">
             <ReviewLabWidget widgetId="6986979cd4927bc247d4f508" />
-          </div>
-
-          <div className="text-center">
-            <Button 
-              onClick={() => navigate('/reviews')}
-              size="lg"
-              className="gradient-primary hover-scale btn-glow"
-            >
-              Смотреть все отзывы
-            </Button>
           </div>
         </div>
       </section>
