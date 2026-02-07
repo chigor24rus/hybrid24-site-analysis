@@ -71,6 +71,21 @@ def handler(event: dict, context) -> dict:
                     'body': json.dumps({'error': 'brand_id и name обязательны'})
                 }
             
+            # Проверка на дубликат
+            cur.execute("""
+                SELECT id FROM car_models 
+                WHERE brand_id = %s AND LOWER(name) = LOWER(%s)
+                LIMIT 1
+            """, (brand_id, name))
+            
+            existing = cur.fetchone()
+            if existing:
+                return {
+                    'statusCode': 409,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'error': 'Модель уже существует для этого бренда', 'duplicate': True})
+                }
+            
             cur.execute("""
                 INSERT INTO car_models (brand_id, name, year_from, year_to)
                 VALUES (%s, %s, %s, %s)

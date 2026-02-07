@@ -116,6 +116,9 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
             const result = await response.json();
             if (response.ok) {
               successCount++;
+            } else if (response.status === 409 && result.duplicate) {
+              // Дубликат - пропускаем без ошибки
+              console.log(`Модель "${row.model_name}" уже существует, пропускаем`);
             } else {
               errorCount++;
               const errorMsg = result.error || response.statusText || 'неизвестная ошибка';
