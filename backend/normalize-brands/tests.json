@@ -1,0 +1,12 @@
+{
+  "tests": [{
+    "name": "Normalize brand names",
+    "method": "POST",
+    "path": "/",
+    "expectedStatus": 200,
+    "expectedBody": {
+      "success": true
+    },
+    "bodyMatcher": "partial"
+  }]
+}

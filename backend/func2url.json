@@ -1,4 +1,5 @@
 {
+  "normalize-brands": "https://functions.poehali.dev/45453f6e-7337-46e0-a603-53c35ea5605f",
   "delete-review": "https://functions.poehali.dev/c627baa8-d31a-4aea-a57f-13d47053d8e8",
   "update-review": "https://functions.poehali.dev/32d0d28e-e35c-44a4-b9b2-bf9152960524",
   "get-reviews": "https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9",

@@ -108,6 +108,29 @@ const AdminVehiclesPage = () => {
     }
   };
 
+  const handleNormalizeBrands = async () => {
+    if (!confirm('Привести все названия брендов к единому формату (первая буква заглавная, остальные строчные)?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/45453f6e-7337-46e0-a603-53c35ea5605f', {
+        method: 'POST',
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(`Успешно обновлено брендов: ${result.updated} из ${result.total}`);
+        fetchData();
+      } else {
+        alert(`Ошибка при нормализации`);
+      }
+    } catch (error) {
+      console.error('Error normalizing brands:', error);
+      alert('Ошибка при нормализации брендов');
+    }
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -124,6 +147,10 @@ const AdminVehiclesPage = () => {
                 <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
                   <Icon name="ExternalLink" className="mr-2" size={18} />
                   SEO-страницы
+                </Button>
+                <Button variant="outline" onClick={handleNormalizeBrands}>
+                  <Icon name="Type" className="mr-2" size={18} />
+                  Нормализовать регистр
                 </Button>
                 <Button variant="outline" onClick={handleRemoveDuplicates}>
                   <Icon name="Trash2" className="mr-2" size={18} />
