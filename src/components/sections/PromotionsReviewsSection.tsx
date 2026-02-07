@@ -150,7 +150,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         totalCount={allPromotions.length}
       />
 
-      <ReviewsSection reviews={reviews} loading={loadingReviews} />
+      <ReviewsSection reviews={reviews} loading={loadingReviews} showViewAllButton={true} />
 
       <section id="reviews-live" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">

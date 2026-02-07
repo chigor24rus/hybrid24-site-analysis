@@ -1,8 +1,10 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Star } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 
 export interface Review {
   id: number;
@@ -18,9 +20,12 @@ export interface Review {
 interface ReviewsSectionProps {
   reviews: Review[];
   loading: boolean;
+  showViewAllButton?: boolean;
 }
 
-const ReviewsSection = ({ reviews, loading }: ReviewsSectionProps) => {
+const ReviewsSection = ({ reviews, loading, showViewAllButton = false }: ReviewsSectionProps) => {
+  const navigate = useNavigate();
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex gap-1">
@@ -81,7 +86,7 @@ const ReviewsSection = ({ reviews, loading }: ReviewsSectionProps) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto mb-8">
           {visibleReviews.map((review) => (
             <Card 
               key={review.id} 
@@ -109,6 +114,18 @@ const ReviewsSection = ({ reviews, loading }: ReviewsSectionProps) => {
             </Card>
           ))}
         </div>
+
+        {showViewAllButton && (
+          <div className="text-center">
+            <Button 
+              onClick={() => navigate('/reviews')}
+              size="lg"
+              className="gradient-primary hover-scale btn-glow"
+            >
+              Смотреть все отзывы
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );
