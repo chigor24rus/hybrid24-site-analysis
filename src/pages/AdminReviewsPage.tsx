@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
 import { 
   AdminLayout, 
   LoadingScreen, 
-  AdminPageHeader, 
+  AdminPageHeader,
+  AdminStatsGrid,
+  AdminStat,
   ReviewCard, 
   ReviewFormDialog, 
-  ImportDialog 
+  ImportDialog,
+  AdminActionButton
 } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Review } from '@/components/sections/home/ReviewsSection';
@@ -196,35 +197,67 @@ const AdminReviewsPage = () => {
     return <LoadingScreen />;
   }
 
+  const visibleReviews = reviews.filter(r => r.is_visible);
+  const hiddenReviews = reviews.filter(r => !r.is_visible);
+  const avgRating = reviews.length > 0 
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    : '0';
+
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 py-8">
         <AdminPageHeader
           title="Управление отзывами"
-          description={`Всего отзывов: ${reviews.length}`}
+          description="Отзывы клиентов и импорт из внешних источников"
           actions={
             <>
-              <Button 
+              <AdminActionButton
+                icon="Download"
+                label="Импорт из Яндекс.Карт"
                 onClick={() => setIsImportDialogOpen(true)}
                 variant="outline"
-              >
-                <Icon name="Download" className="mr-2" size={18} />
-                Импорт из Яндекс.Карт
-              </Button>
-              <Button 
+              />
+              <AdminActionButton
+                icon="Plus"
+                label="Добавить отзыв"
                 onClick={() => setIsAddDialogOpen(true)}
-                className="gradient-primary"
-              >
-                <Icon name="Plus" className="mr-2" size={18} />
-                Добавить отзыв
-              </Button>
-              <Button variant="outline" onClick={logout}>
-                <Icon name="LogOut" className="mr-2" size={18} />
-                Выйти
-              </Button>
+              />
+              <AdminActionButton
+                icon="LogOut"
+                label="Выйти"
+                onClick={logout}
+                variant="outline"
+              />
             </>
           }
         />
+
+        <AdminStatsGrid cols={4}>
+          <AdminStat
+            label="Всего отзывов"
+            value={reviews.length}
+            icon="MessageSquare"
+            color="primary"
+          />
+          <AdminStat
+            label="Видимые"
+            value={visibleReviews.length}
+            icon="Eye"
+            color="success"
+          />
+          <AdminStat
+            label="Скрытые"
+            value={hiddenReviews.length}
+            icon="EyeOff"
+            color="muted"
+          />
+          <AdminStat
+            label="Средний рейтинг"
+            value={avgRating}
+            icon="Star"
+            color="warning"
+          />
+        </AdminStatsGrid>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviews.map((review) => (

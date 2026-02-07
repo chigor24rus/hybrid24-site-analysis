@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Icon from '@/components/ui/icon';
 import { 
   AdminLayout, 
   LoadingScreen, 
-  AdminPageHeader, 
+  AdminPageHeader,
+  AdminStatsGrid,
+  AdminStat,
   PromotionCard, 
-  PromotionFormDialog 
+  PromotionFormDialog,
+  AdminActionButton
 } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { API_ENDPOINTS } from '@/utils/apiClient';
@@ -203,6 +204,10 @@ const AdminPromotionsPage = () => {
 
   if (loading) return <LoadingScreen />;
 
+  const activePromotions = promotions.filter(p => p.is_active);
+  const inactivePromotions = promotions.filter(p => !p.is_active);
+  const permanentPromotions = promotions.filter(p => p.valid_until === 'Постоянно');
+
   return (
     <AdminLayout>
       <div className="min-h-screen bg-background">
@@ -213,12 +218,40 @@ const AdminPromotionsPage = () => {
             onLogout={logout}
             backLink="/admin"
             actions={
-              <Button onClick={() => handleOpenDialog()}>
-                <Icon name="Plus" className="mr-2" size={18} />
-                Добавить акцию
-              </Button>
+              <AdminActionButton
+                icon="Plus"
+                label="Добавить акцию"
+                onClick={() => handleOpenDialog()}
+              />
             }
           />
+
+          <AdminStatsGrid cols={4}>
+            <AdminStat
+              label="Всего акций"
+              value={promotions.length}
+              icon="Tag"
+              color="primary"
+            />
+            <AdminStat
+              label="Активные"
+              value={activePromotions.length}
+              icon="CheckCircle"
+              color="success"
+            />
+            <AdminStat
+              label="Неактивные"
+              value={inactivePromotions.length}
+              icon="XCircle"
+              color="muted"
+            />
+            <AdminStat
+              label="Постоянные"
+              value={permanentPromotions.length}
+              icon="Infinity"
+              color="warning"
+            />
+          </AdminStatsGrid>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {promotions.map((promotion) => (
