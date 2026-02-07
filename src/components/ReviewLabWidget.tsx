@@ -12,20 +12,35 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   useEffect(() => {
     const globalErrorHandler = (event: ErrorEvent) => {
       const errorMsg = event.message?.toString() || '';
+      const errorStack = event.error?.stack?.toString() || '';
+      
       if (errorMsg.includes('styled-components') || 
           errorMsg.includes('reviewlab') ||
-          event.filename?.includes('reviewlab')) {
+          errorMsg.includes('See https://github.com/styled-components') ||
+          errorStack.includes('styled-components') ||
+          errorStack.includes('reviewlab') ||
+          event.filename?.includes('reviewlab') ||
+          event.filename?.includes('styled-components')) {
         event.preventDefault();
+        event.stopPropagation();
         event.stopImmediatePropagation();
+        console.warn('[ReviewLab] Suppressed styled-components error from external widget');
         return false;
       }
     };
 
     const unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
       const reason = event.reason?.toString() || '';
-      if (reason.includes('styled-components') || reason.includes('reviewlab')) {
+      const reasonStack = event.reason?.stack?.toString() || '';
+      
+      if (reason.includes('styled-components') || 
+          reason.includes('reviewlab') ||
+          reason.includes('See https://github.com/styled-components') ||
+          reasonStack.includes('styled-components') ||
+          reasonStack.includes('reviewlab')) {
         event.preventDefault();
-        event.stopImmediatePropagation();
+        event.stopPropagation();
+        console.warn('[ReviewLab] Suppressed styled-components rejection from external widget');
         return false;
       }
     };
@@ -48,10 +63,16 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
       setIsLoaded(true);
     };
     script.onerror = () => {
+      console.error('[ReviewLab] Failed to load widget script');
       setHasError(true);
     };
     
-    document.body.appendChild(script);
+    try {
+      document.body.appendChild(script);
+    } catch (err) {
+      console.error('[ReviewLab] Failed to append script:', err);
+      setHasError(true);
+    }
 
     return () => {
       window.removeEventListener('error', globalErrorHandler, true);
