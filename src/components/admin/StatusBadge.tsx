@@ -48,10 +48,10 @@ const statusConfigs: Record<StatusType, StatusConfig> = {
 
 interface StatusBadgeProps {
   status: string;
-  type: StatusType;
+  type?: StatusType;
 }
 
-export const StatusBadge = ({ status, type }: StatusBadgeProps) => {
+export const StatusBadge = ({ status, type = 'booking' }: StatusBadgeProps) => {
   const config = statusConfigs[type];
   const colorClass = config.colors[status] || 'bg-gray-100 text-gray-800 border-gray-200';
   const label = config.labels[status] || status;
