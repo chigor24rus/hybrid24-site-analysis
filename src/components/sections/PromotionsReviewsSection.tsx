@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import PromotionDetailDialog from '@/components/PromotionDetailDialog';
 import PromotionsSection, { Promotion } from './home/PromotionsSection';
 import BlogSection, { BlogPost } from './home/BlogSection';
-import ReviewsSection, { Review } from './home/ReviewsSection';
+
 import ReviewLabWidget from '@/components/ReviewLabWidget';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -26,8 +26,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
   const [loadingBlog, setLoadingBlog] = useState(true);
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
 
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [loadingReviews, setLoadingReviews] = useState(true);
+
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -95,23 +94,8 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       }
     };
 
-    const fetchReviews = async () => {
-      try {
-        const response = await fetch('https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9');
-        const data = await response.json();
-        if (response.ok && data.reviews) {
-          setReviews(data.reviews);
-        }
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-
     fetchPromotions();
     fetchBlogPosts();
-    fetchReviews();
   }, []);
 
   const refreshPromotions = () => {
@@ -152,8 +136,6 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         hasMore={allPromotions.length > 3}
         totalCount={allPromotions.length}
       />
-
-      <ReviewsSection reviews={reviews} loading={loadingReviews} showViewAllButton={true} />
 
       <section id="reviews-live" className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
         <div className="container mx-auto px-4">
