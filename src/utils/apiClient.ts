@@ -10,6 +10,8 @@ export const API_ENDPOINTS = {
     list: 'https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9',
     add: 'https://functions.poehali.dev/0916c610-058d-41be-ba74-88b82dac175e',
     import: 'https://functions.poehali.dev/e046b52b-bb1a-44dd-a9e3-989af297c485',
+    update: 'https://functions.poehali.dev/32d0d28e-e35c-44a4-b9b2-bf9152960524',
+    delete: 'https://functions.poehali.dev/c627baa8-d31a-4aea-a57f-13d47053d8e8',
   },
   brands: {
     list: 'https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f',

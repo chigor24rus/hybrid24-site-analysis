@@ -17,9 +17,11 @@ const AdminReviewsPage = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [importUrl, setImportUrl] = useState('');
   const [importing, setImporting] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
   
   const [formData, setFormData] = useState({
     customer_name: '',
@@ -82,6 +84,77 @@ const AdminReviewsPage = () => {
       console.error('Error adding review:', error);
       toast.error('Ошибка при добавлении отзыва');
     }
+  };
+
+  const handleEditReview = async () => {
+    if (!editingReview) return;
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/32d0d28e-e35c-44a4-b9b2-bf9152960524', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: editingReview.id,
+          ...formData
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Отзыв успешно обновлен!');
+        setIsEditDialogOpen(false);
+        setEditingReview(null);
+        fetchReviews();
+      } else {
+        toast.error(data.error || 'Ошибка при обновлении отзыва');
+      }
+    } catch (error) {
+      console.error('Error updating review:', error);
+      toast.error('Ошибка при обновлении отзыва');
+    }
+  };
+
+  const handleDeleteReview = async (reviewId: number) => {
+    if (!confirm('Вы уверены, что хотите удалить этот отзыв?')) return;
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/c627baa8-d31a-4aea-a57f-13d47053d8e8', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: reviewId })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Отзыв успешно удален!');
+        fetchReviews();
+      } else {
+        toast.error(data.error || 'Ошибка при удалении отзыва');
+      }
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      toast.error('Ошибка при удалении отзыва');
+    }
+  };
+
+  const openEditDialog = (review: Review) => {
+    setEditingReview(review);
+    setFormData({
+      customer_name: review.customer_name,
+      rating: review.rating,
+      review_text: review.review_text,
+      service_name: review.service_name,
+      review_date: review.review_date,
+      source: review.source,
+      is_visible: review.is_visible
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleImportReviews = async () => {
@@ -193,9 +266,29 @@ const AdminReviewsPage = () => {
                     </Badge>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground line-clamp-4">
+                <p className="text-sm text-muted-foreground line-clamp-4 mb-4">
                   {review.review_text}
                 </p>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => openEditDialog(review)}
+                    size="sm"
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Icon name="Edit" size={14} className="mr-1" />
+                    Редактировать
+                  </Button>
+                  <Button
+                    onClick={() => handleDeleteReview(review.id)}
+                    size="sm"
+                    variant="destructive"
+                    className="flex-1"
+                  >
+                    <Icon name="Trash2" size={14} className="mr-1" />
+                    Удалить
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -302,6 +395,119 @@ const AdminReviewsPage = () => {
               </Button>
               <Button 
                 onClick={() => setIsAddDialogOpen(false)} 
+                variant="outline"
+                className="flex-1"
+              >
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Редактировать отзыв</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit_customer_name">Имя клиента *</Label>
+              <Input
+                id="edit_customer_name"
+                value={formData.customer_name}
+                onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
+                placeholder="Иван Иванов"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_rating">Рейтинг *</Label>
+              <div className="flex gap-2 mt-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    type="button"
+                    variant={formData.rating >= star ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setFormData({ ...formData, rating: star })}
+                  >
+                    <Icon 
+                      name="Star" 
+                      size={16}
+                      className={formData.rating >= star ? 'fill-current' : ''}
+                    />
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="edit_review_text">Текст отзыва *</Label>
+              <Textarea
+                id="edit_review_text"
+                value={formData.review_text}
+                onChange={(e) => setFormData({ ...formData, review_text: e.target.value })}
+                placeholder="Отличный сервис..."
+                rows={5}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_service_name">Услуга *</Label>
+              <Input
+                id="edit_service_name"
+                value={formData.service_name}
+                onChange={(e) => setFormData({ ...formData, service_name: e.target.value })}
+                placeholder="Замена масла"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_review_date">Дата отзыва</Label>
+              <Input
+                id="edit_review_date"
+                type="date"
+                value={formData.review_date}
+                onChange={(e) => setFormData({ ...formData, review_date: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="edit_source">Источник</Label>
+              <select
+                id="edit_source"
+                value={formData.source}
+                onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                className="w-full px-3 py-2 border rounded-md"
+              >
+                <option value="yandex">Яндекс.Карты</option>
+                <option value="2gis">2GIS</option>
+                <option value="google">Google Maps</option>
+                <option value="manual">Вручную</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="edit_is_visible"
+                checked={formData.is_visible}
+                onChange={(e) => setFormData({ ...formData, is_visible: e.target.checked })}
+                className="w-4 h-4"
+              />
+              <Label htmlFor="edit_is_visible">Показывать на сайте</Label>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <Button onClick={handleEditReview} className="gradient-primary flex-1">
+                Сохранить изменения
+              </Button>
+              <Button 
+                onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setEditingReview(null);
+                }} 
                 variant="outline"
                 className="flex-1"
               >

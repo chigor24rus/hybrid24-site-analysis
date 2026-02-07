@@ -1,0 +1,40 @@
+{
+  "tests": [
+    {
+      "name": "Update review with valid data",
+      "method": "PUT",
+      "path": "/",
+      "body": {
+        "id": 1,
+        "customer_name": "Иван Тестовый",
+        "rating": 5,
+        "review_text": "Обновленный отзыв",
+        "service_name": "Замена масла",
+        "review_date": "2025-02-07",
+        "source": "yandex",
+        "is_visible": true
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Update review without ID",
+      "method": "PUT",
+      "path": "/",
+      "body": {
+        "customer_name": "Тест",
+        "rating": 5,
+        "review_text": "Текст",
+        "service_name": "Услуга"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

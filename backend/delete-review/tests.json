@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Delete review with valid ID",
+      "method": "DELETE",
+      "path": "/",
+      "body": {
+        "id": 999
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Delete review without ID",
+      "method": "DELETE",
+      "path": "/",
+      "body": {},
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
