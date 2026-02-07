@@ -140,7 +140,32 @@ def handler(event: dict, context) -> dict:
         elif method == 'DELETE':
             params = event.get('queryStringParameters') or {}
             model_id = params.get('id')
+            action = params.get('action')
             
+            # Удаление дубликатов
+            if action == 'remove_duplicates':
+                # Находим дубликаты (одинаковые brand_id + name)
+                cur.execute("""
+                    DELETE FROM car_models
+                    WHERE id NOT IN (
+                        SELECT MIN(id)
+                        FROM car_models
+                        GROUP BY brand_id, LOWER(name)
+                    )
+                """)
+                deleted_count = cur.rowcount
+                conn.commit()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'success': True, 'deleted': deleted_count})
+                }
+            
+            # Удаление одной модели
             if not model_id:
                 return {
                     'statusCode': 400,

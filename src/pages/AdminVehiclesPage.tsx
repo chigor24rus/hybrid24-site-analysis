@@ -85,6 +85,29 @@ const AdminVehiclesPage = () => {
     }
   };
 
+  const handleRemoveDuplicates = async () => {
+    if (!confirm('Удалить все дубликаты моделей? Останется только самая первая запись каждой модели.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b?action=remove_duplicates', {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+      
+      if (response.ok) {
+        alert(`Успешно удалено дубликатов: ${result.deleted}`);
+        fetchData();
+      } else {
+        alert(`Ошибка: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error removing duplicates:', error);
+      alert('Ошибка при удалении дубликатов');
+    }
+  };
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -101,6 +124,10 @@ const AdminVehiclesPage = () => {
                 <Button variant="outline" onClick={() => window.open('/services-index', '_blank')}>
                   <Icon name="ExternalLink" className="mr-2" size={18} />
                   SEO-страницы
+                </Button>
+                <Button variant="outline" onClick={handleRemoveDuplicates}>
+                  <Icon name="Trash2" className="mr-2" size={18} />
+                  Удалить дубликаты
                 </Button>
                 <Button variant="outline" onClick={() => setIsUploadDialogOpen(true)}>
                   <Icon name="Upload" className="mr-2" size={18} />
