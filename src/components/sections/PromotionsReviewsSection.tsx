@@ -159,15 +159,15 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
         <div className="container mx-auto px-4">
           <div className="text-center mb-12 animate-fade-in">
             <Badge className="mb-6 gradient-accent text-sm">Актуальные отзывы</Badge>
-            <Link 
-              to="/reviews" 
-              className="block text-3xl md:text-4xl lg:text-5xl font-bold mb-6 hover:text-primary transition-colors group"
-            >
-              <span className="inline-flex items-center gap-2">
+            <div className="mb-6">
+              <Link 
+                to="/reviews" 
+                className="inline-flex items-center gap-2 text-3xl md:text-4xl lg:text-5xl font-bold hover:text-primary transition-colors group"
+              >
                 Что говорят о нас в интернете
                 <Icon name="ArrowRight" className="w-8 h-8 md:w-10 md:h-10 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </Link>
+              </Link>
+            </div>
             <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
               Свежие отзывы из Яндекс.Карт, 2GIS и других площадок
             </p>
