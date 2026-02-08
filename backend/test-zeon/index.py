@@ -65,10 +65,18 @@ def handler(event: dict, context) -> dict:
         try:
             api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
             
-            # Проверяем подключение через ping
+            # Проверяем подключение через get-calls с минимальным диапазоном
+            from datetime import datetime, timedelta
+            
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=1)
+            
             params = {
                 'topic': 'base',
-                'method': 'get-calls-last-id'
+                'method': 'get-calls',
+                'start': start_date.strftime('%Y-%m-%d 00:00:00'),
+                'end': end_date.strftime('%Y-%m-%d 23:59:59'),
+                'limit': '1'
             }
             query_string = urlencode(sorted(params.items()))
             hash_string = query_string + zeon_api_key
@@ -79,10 +87,10 @@ def handler(event: dict, context) -> dict:
             if response.status_code == 200:
                 data = response.json()
                 if data.get('result') == 1:
-                    last_id = data.get('id', 0)
+                    calls_count = len(data.get('data', []))
                     results['zeon_api'] = {
                         'status': 'ok',
-                        'message': f'Подключено. Последний ID звонка: {last_id}'
+                        'message': f'Подключено. Звонков за сутки: {calls_count}'
                     }
                 else:
                     results['zeon_api'] = {
