@@ -88,22 +88,25 @@ def handler(event: dict, context) -> dict:
             else:
                 bearer_result = f'❌ HTTP {response_bearer.status_code}'
             
-            # Тест 2: MD5 hash
+            # Тест 2: MD5 hash (попробуем get-method-list)
             params_md5 = {
-                'topic': 'base',
-                'method': 'get-calls-last-id'
+                'method': 'get-method-list',
+                'topic': 'base'
             }
             query_string = urlencode(sorted(params_md5.items()))
             hash_string = query_string + zeon_api_key
-            params_md5['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+            md5_hash = hashlib.md5(hash_string.encode()).hexdigest()
+            params_md5['hash'] = md5_hash
             
             response_md5 = requests.post(api_endpoint, data=params_md5, timeout=10)
             
             md5_result = 'unknown'
+            md5_debug = f'query: {query_string}, hash: {md5_hash}'
             if response_md5.status_code == 200:
                 data = response_md5.json()
                 if data.get('result') == 1:
-                    md5_result = f'✅ OK (id: {data.get("id")})'
+                    md5_result = f'✅ OK'
+                    md5_debug = f'Methods: {len(data.get("data", []))}'
                 else:
                     md5_result = f'❌ {data.get("text", "unknown")}'
             else:
@@ -111,7 +114,8 @@ def handler(event: dict, context) -> dict:
             
             results['zeon_api'] = {
                 'status': 'ok' if '✅' in bearer_result or '✅' in md5_result else 'error',
-                'message': f'Bearer: {bearer_result} | MD5: {md5_result}'
+                'message': f'Bearer: {bearer_result} | MD5: {md5_result}',
+                'debug': md5_debug
             }
             
         except Exception as e:
