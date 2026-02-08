@@ -63,7 +63,7 @@ def handler(event: dict, context) -> dict:
     
     if zeon_api_url and zeon_api_key:
         try:
-            api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
+            api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
             
             # Проверяем подключение через get-calls с минимальным диапазоном
             from datetime import datetime, timedelta

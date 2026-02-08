@@ -110,7 +110,7 @@ def handler(event: dict, context) -> dict:
         params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
         
         # Получаем список записей
-        api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
+        api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
         recordings_response = requests.post(
             api_endpoint,
             data=params,
