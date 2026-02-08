@@ -65,43 +65,55 @@ def handler(event: dict, context) -> dict:
         try:
             api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
             
-            # Проверяем подключение через get-calls с минимальным диапазоном
-            from datetime import datetime, timedelta
-            
-            end_date = datetime.now()
-            start_date = end_date - timedelta(days=1)
-            
-            params = {
+            # Тест 1: Bearer token
+            params_bearer = {
                 'topic': 'base',
-                'method': 'get-calls',
-                'start': start_date.strftime('%Y-%m-%d 00:00:00'),
-                'end': end_date.strftime('%Y-%m-%d 23:59:59'),
-                'limit': '1'
+                'method': 'get-calls-last-id'
             }
-            query_string = urlencode(sorted(params.items()))
-            hash_string = query_string + zeon_api_key
-            params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
             
-            response = requests.post(api_endpoint, data=params, timeout=10)
+            response_bearer = requests.post(
+                api_endpoint, 
+                data=params_bearer,
+                headers={'Authorization': f'Bearer {zeon_api_key}'},
+                timeout=10
+            )
             
-            if response.status_code == 200:
-                data = response.json()
+            bearer_result = 'unknown'
+            if response_bearer.status_code == 200:
+                data = response_bearer.json()
                 if data.get('result') == 1:
-                    calls_count = len(data.get('data', []))
-                    results['zeon_api'] = {
-                        'status': 'ok',
-                        'message': f'Подключено. Звонков за сутки: {calls_count}'
-                    }
+                    bearer_result = f'✅ OK (id: {data.get("id")})'
                 else:
-                    results['zeon_api'] = {
-                        'status': 'error',
-                        'message': f'API error: {data.get("text", "unknown")}'
-                    }
+                    bearer_result = f'❌ {data.get("text", "unknown")}'
             else:
-                results['zeon_api'] = {
-                    'status': 'error',
-                    'message': f'HTTP {response.status_code}: {response.text[:200]}'
-                }
+                bearer_result = f'❌ HTTP {response_bearer.status_code}'
+            
+            # Тест 2: MD5 hash
+            params_md5 = {
+                'topic': 'base',
+                'method': 'get-calls-last-id'
+            }
+            query_string = urlencode(sorted(params_md5.items()))
+            hash_string = query_string + zeon_api_key
+            params_md5['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+            
+            response_md5 = requests.post(api_endpoint, data=params_md5, timeout=10)
+            
+            md5_result = 'unknown'
+            if response_md5.status_code == 200:
+                data = response_md5.json()
+                if data.get('result') == 1:
+                    md5_result = f'✅ OK (id: {data.get("id")})'
+                else:
+                    md5_result = f'❌ {data.get("text", "unknown")}'
+            else:
+                md5_result = f'❌ HTTP {response_md5.status_code}'
+            
+            results['zeon_api'] = {
+                'status': 'ok' if '✅' in bearer_result or '✅' in md5_result else 'error',
+                'message': f'Bearer: {bearer_result} | MD5: {md5_result}'
+            }
+            
         except Exception as e:
             results['zeon_api'] = {
                 'status': 'error',
