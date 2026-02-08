@@ -72,17 +72,24 @@ const AdminZeonSyncPage = () => {
       const response = await fetch(
         'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger'
       );
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert(`Ошибка запуска синхронизации: ${response.status}\n${errorText}`);
+        return;
+      }
+
       const data = await response.json();
 
       if (data.success) {
         alert(`Синхронизация завершена!\nПеренесено: ${data.result.synced}\nПропущено: ${data.result.skipped}`);
         fetchLogs();
       } else {
-        alert(`Ошибка: ${data.error}`);
+        alert(`Ошибка: ${data.error}\n${data.details || ''}`);
       }
     } catch (error) {
       console.error('Error triggering sync:', error);
-      alert('Ошибка при запуске синхронизации');
+      alert(`Ошибка при запуске синхронизации: ${error}`);
     } finally {
       setSyncing(false);
     }
