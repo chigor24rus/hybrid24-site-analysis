@@ -177,6 +177,46 @@ def handler(event: dict, context) -> dict:
                         'services': data.get('value', [])[:10]
                     })
                 }
+            
+            elif action == 'calls':
+                phone = query_params.get('phone', '')
+                if not phone:
+                    return {
+                        'statusCode': 400,
+                        'headers': {
+                            'Content-Type': 'application/json',
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': json.dumps({
+                            'success': False,
+                            'error': 'Не указан номер телефона (параметр phone)'
+                        })
+                    }
+                
+                # Получаем историю звонков по номеру телефона
+                filter_query = f"$filter=substringof('{phone}', НомерТелефона)"
+                response = requests.get(
+                    f"{odata_url}/InformationRegister_сфпИсторияЗвонков?{filter_query}&$orderby=Period desc&$top=50",
+                    auth=auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=30
+                )
+                
+                data = response.json()
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'success': True,
+                        'message': f'История звонков для {phone}',
+                        'count': len(data.get('value', [])),
+                        'calls': data.get('value', [])
+                    }, ensure_ascii=False)
+                }
         
         elif method == 'POST':
             body = json.loads(event.get('body', '{}'))
