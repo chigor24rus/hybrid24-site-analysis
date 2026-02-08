@@ -147,6 +147,21 @@ def handler(event: dict, context) -> dict:
                 })
             }
         
+        # Логируем что вернул ZEON
+        if recordings.get('result') != 1:
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': False,
+                    'error': f'ZEON API error: {recordings.get("text", "unknown")}',
+                    'api_response': recordings
+                }, ensure_ascii=False)
+            }
+        
         # Подключаемся к FTP
         ftp = FTP(timeout=30)
         ftp.connect(ftp_host, 21)
@@ -243,7 +258,9 @@ def handler(event: dict, context) -> dict:
                 'synced': synced_count,
                 'skipped': skipped_count,
                 'errors': errors,
-                'total_processed': len(recordings.get('data', []))
+                'total_calls': len(recordings.get('data', [])),
+                'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link')),
+                'date_range': f"{start_date.strftime('%Y-%m-%d')} — {end_date.strftime('%Y-%m-%d')}"
             }, ensure_ascii=False)
         }
     
