@@ -152,7 +152,7 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
         comment,
       };
 
-      const response = await fetch('https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05', {
+      const response = await fetch('https://functions.poehali.dev/a6d5798a-4b6c-4b15-8fd8-0264c1c51660', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

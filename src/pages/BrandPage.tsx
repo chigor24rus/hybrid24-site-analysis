@@ -58,7 +58,7 @@ export default function BrandPage() {
       
       try {
         setLoading(true);
-        const response = await fetch(`https://functions.poehali.dev/9fd8ddff-189b-4246-afc3-73d082eb8699?slug=${brandId}`);
+        const response = await fetch(`https://functions.poehali.dev/a19b0c72-97a3-4d31-978e-35840f99a22c?slug=${brandId}`);
         const data = await response.json();
         
         if (response.ok && data.brand) {

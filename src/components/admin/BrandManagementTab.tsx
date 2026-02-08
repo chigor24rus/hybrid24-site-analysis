@@ -42,7 +42,7 @@ const BrandManagementTab = ({ brands, onRefresh }: BrandManagementTabProps) => {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('https://functions.poehali.dev/2083652a-f56c-4d58-85e2-2e0af2b8a48a', {
+      const response = await fetch('https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b', {
         method: 'POST',
         body: formData,
       });

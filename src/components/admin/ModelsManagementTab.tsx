@@ -109,7 +109,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
       const base64Content = btoa(content as string);
 
       try {
-        const response = await fetch('https://functions.poehali.dev/5b2da9ae-6907-49bc-8c1b-ca3ffd20d9e7', {
+        const response = await fetch('https://functions.poehali.dev/158713b5-5bec-4512-afed-3075eb5db319', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
