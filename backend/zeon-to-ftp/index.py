@@ -80,7 +80,7 @@ def handler(event: dict, context) -> dict:
         
         # Получаем список записей (последние 100)
         recordings_response = requests.get(
-            f'{zeon_api_url}/recordings',
+            zeon_api_url,
             headers=headers,
             timeout=30
         )
@@ -133,7 +133,7 @@ def handler(event: dict, context) -> dict:
             try:
                 # Скачиваем файл записи
                 file_response = requests.get(
-                    f'{zeon_api_url}/recordings/{recording_id}/file',
+                    f'{zeon_api_url}/{recording_id}/file',
                     headers=headers,
                     timeout=120,
                     stream=True

@@ -51,7 +51,7 @@ def handler(event: dict, context) -> dict:
                 'Authorization': f'Bearer {zeon_api_key}',
                 'Accept': 'application/json'
             }
-            response = requests.get(f'{zeon_api_url}/recordings', headers=headers, timeout=10)
+            response = requests.get(zeon_api_url, headers=headers, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
