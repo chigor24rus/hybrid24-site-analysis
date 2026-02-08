@@ -24,6 +24,7 @@ def handler(event: dict, context) -> dict:
         'zeon_api': {'status': 'unchecked', 'message': ''},
         'ftp': {'status': 'unchecked', 'message': ''},
         'database': {'status': 'unchecked', 'message': ''},
+        'outbound_ip': {'status': 'unchecked', 'message': ''},
         'secrets': {}
     }
     
@@ -44,6 +45,19 @@ def handler(event: dict, context) -> dict:
         'FTP_PATH': ftp_path,
         'DATABASE_URL': 'set' if db_dsn else 'missing'
     }
+    
+    try:
+        ip_response = requests.get('https://api.ipify.org?format=json', timeout=5)
+        if ip_response.status_code == 200:
+            ip_data = ip_response.json()
+            results['outbound_ip'] = {
+                'status': 'ok',
+                'message': f'Исходящий IP: {ip_data.get("ip")}'
+            }
+        else:
+            results['outbound_ip'] = {'status': 'warning', 'message': 'Не удалось определить IP'}
+    except Exception as e:
+        results['outbound_ip'] = {'status': 'warning', 'message': f'Ошибка: {str(e)}'}
     
     if zeon_api_url and zeon_api_key:
         try:
