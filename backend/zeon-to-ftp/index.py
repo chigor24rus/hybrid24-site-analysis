@@ -36,7 +36,21 @@ def handler(event: dict, context) -> dict:
     ftp_path = os.environ.get('FTP_PATH', '/')
     db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
-    if not all([zeon_api_url, zeon_api_key, ftp_host, ftp_user, ftp_password, db_dsn]):
+    missing_secrets = []
+    if not zeon_api_url:
+        missing_secrets.append('ZEON_API_URL')
+    if not zeon_api_key:
+        missing_secrets.append('ZEON_API_KEY')
+    if not ftp_host:
+        missing_secrets.append('FTP_HOST')
+    if not ftp_user:
+        missing_secrets.append('FTP_USER')
+    if not ftp_password:
+        missing_secrets.append('FTP_PASSWORD')
+    if not db_dsn:
+        missing_secrets.append('DATABASE_URL')
+    
+    if missing_secrets:
         return {
             'statusCode': 500,
             'headers': {
@@ -45,7 +59,7 @@ def handler(event: dict, context) -> dict:
             },
             'body': json.dumps({
                 'success': False,
-                'error': 'Не настроены параметры подключения (ZEON_API_URL, ZEON_API_KEY, FTP_HOST, FTP_USER, FTP_PASSWORD, DATABASE_URL)'
+                'error': f'Не настроены секреты: {", ".join(missing_secrets)}'
             })
         }
     
