@@ -33,7 +33,7 @@ def handler(event: dict, context) -> dict:
     ftp_user = os.environ.get('FTP_USER')
     ftp_password = os.environ.get('FTP_PASSWORD')
     ftp_path = os.environ.get('FTP_PATH', '/')
-    db_dsn = os.environ.get('DATABASE_DSN')
+    db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     results['secrets'] = {
         'ZEON_API_URL': 'set' if zeon_api_url else 'missing',
@@ -42,7 +42,7 @@ def handler(event: dict, context) -> dict:
         'FTP_USER': 'set' if ftp_user else 'missing',
         'FTP_PASSWORD': 'set' if ftp_password else 'missing',
         'FTP_PATH': ftp_path,
-        'DATABASE_DSN': 'set' if db_dsn else 'missing'
+        'DATABASE_URL': 'set' if db_dsn else 'missing'
     }
     
     if zeon_api_url and zeon_api_key:

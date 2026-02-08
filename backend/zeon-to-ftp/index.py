@@ -32,7 +32,7 @@ def handler(event: dict, context) -> dict:
     ftp_user = os.environ.get('FTP_USER')
     ftp_password = os.environ.get('FTP_PASSWORD')
     ftp_path = os.environ.get('FTP_PATH', '/')
-    db_dsn = os.environ.get('DATABASE_DSN')
+    db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     if not all([zeon_api_url, zeon_api_key, ftp_host, ftp_user, ftp_password, db_dsn]):
         return {
@@ -43,7 +43,7 @@ def handler(event: dict, context) -> dict:
             },
             'body': json.dumps({
                 'success': False,
-                'error': 'Не настроены параметры подключения (ZEON_API_URL, ZEON_API_KEY, FTP_HOST, FTP_USER, FTP_PASSWORD, DATABASE_DSN)'
+                'error': 'Не настроены параметры подключения (ZEON_API_URL, ZEON_API_KEY, FTP_HOST, FTP_USER, FTP_PASSWORD, DATABASE_URL)'
             })
         }
     

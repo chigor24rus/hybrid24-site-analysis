@@ -22,7 +22,7 @@ def handler(event: dict, context) -> dict:
             'body': ''
         }
     
-    db_dsn = os.environ.get('DATABASE_DSN')
+    db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     if not db_dsn:
         return {
@@ -33,7 +33,7 @@ def handler(event: dict, context) -> dict:
             },
             'body': json.dumps({
                 'success': False,
-                'error': 'DATABASE_DSN не настроен'
+                'error': 'DATABASE_URL не настроен'
             })
         }
     
