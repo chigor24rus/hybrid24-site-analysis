@@ -2,6 +2,8 @@ import json
 import os
 import requests
 import psycopg2
+import hashlib
+from urllib.parse import urlencode
 from ftplib import FTP
 
 def handler(event: dict, context) -> dict:
@@ -61,11 +63,16 @@ def handler(event: dict, context) -> dict:
     
     if zeon_api_url and zeon_api_key:
         try:
-            headers = {
-                'Authorization': f'Bearer {zeon_api_key}',
-                'Accept': 'application/json'
+            params = {
+                'topic': 'rec',
+                'method': 'recordings'
             }
-            response = requests.get(zeon_api_url, headers=headers, timeout=10)
+            query_string = urlencode(sorted(params.items()))
+            hash_string = query_string + zeon_api_key
+            params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+            
+            api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
+            response = requests.post(api_endpoint, data=params, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()

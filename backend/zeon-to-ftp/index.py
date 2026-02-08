@@ -2,6 +2,8 @@ import json
 import os
 import requests
 import psycopg2
+import hashlib
+from urllib.parse import urlencode
 from ftplib import FTP
 from datetime import datetime
 from io import BytesIO
@@ -73,15 +75,22 @@ def handler(event: dict, context) -> dict:
         conn.commit()
         
         # Получаем список записей из ZEON API
-        headers = {
-            'Authorization': f'Bearer {zeon_api_key}',
-            'Accept': 'application/json'
+        # Формируем параметры запроса
+        params = {
+            'topic': 'rec',
+            'method': 'recordings'
         }
         
-        # Получаем список записей (последние 100)
-        recordings_response = requests.get(
-            zeon_api_url,
-            headers=headers,
+        # Создаём хеш для авторизации
+        query_string = urlencode(sorted(params.items()))
+        hash_string = query_string + zeon_api_key
+        params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+        
+        # Получаем список записей
+        api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
+        recordings_response = requests.post(
+            api_endpoint,
+            data=params,
             timeout=30
         )
         
