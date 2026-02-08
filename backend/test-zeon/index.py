@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 from ftplib import FTP
 
 def handler(event: dict, context) -> dict:
-    '''Диагностика подключений ZEON: API, FTP, БД'''
+    '''Диагностика подключений ZEON: проверка API, FTP, БД'''
     
     method = event.get('httpMethod', 'GET')
     

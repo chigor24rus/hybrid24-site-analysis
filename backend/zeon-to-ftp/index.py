@@ -11,7 +11,7 @@ from io import BytesIO
 def handler(event: dict, context) -> dict:
     '''Автоматический перенос записей звонков из ZEON API на FTP-сервер
     
-    Синхронизирует записи звонков каждые 120 секунд
+    Синхронизирует записи звонков из ZEON на FTP каждые 120 секунд
     '''
     
     method = event.get('httpMethod', 'GET')
