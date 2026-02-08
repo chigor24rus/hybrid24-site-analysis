@@ -235,6 +235,12 @@ const AdminPage = () => {
                         variant="outline"
                       />
                       <AdminActionButton
+                        icon="Phone"
+                        label="ZEON Sync"
+                        onClick={() => navigate('/admin/zeon-sync')}
+                        variant="outline"
+                      />
+                      <AdminActionButton
                         icon="LogOut"
                         label="Выйти"
                         onClick={logout}

@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get sync logs",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
