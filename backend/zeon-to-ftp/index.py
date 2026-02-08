@@ -102,8 +102,10 @@ def handler(event: dict, context) -> dict:
         recordings = recordings_response.json()
         
         # Подключаемся к FTP
-        ftp = FTP(ftp_host)
+        ftp = FTP(timeout=30)
+        ftp.connect(ftp_host, 21)
         ftp.login(ftp_user, ftp_password)
+        ftp.set_pasv(True)
         
         # Переходим в нужную директорию
         try:

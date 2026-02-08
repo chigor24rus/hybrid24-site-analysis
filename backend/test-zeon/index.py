@@ -91,8 +91,10 @@ def handler(event: dict, context) -> dict:
     
     if ftp_host and ftp_user and ftp_password:
         try:
-            ftp = FTP(ftp_host, timeout=10)
+            ftp = FTP(timeout=10)
+            ftp.connect(ftp_host, 21)
             ftp.login(ftp_user, ftp_password)
+            ftp.set_pasv(True)
             
             try:
                 ftp.cwd(ftp_path)
