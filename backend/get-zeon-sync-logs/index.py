@@ -4,7 +4,10 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 def handler(event: dict, context) -> dict:
-    '''Получение логов синхронизации ZEON → FTP'''
+    '''Получение логов синхронизации ZEON → FTP
+    
+    API для мониторинга истории синхронизации записей
+    '''
     
     method = event.get('httpMethod', 'GET')
     

@@ -3,7 +3,10 @@ import os
 import requests
 
 def handler(event: dict, context) -> dict:
-    '''Планировщик синхронизации ZEON → FTP (запускается каждые 120 секунд)'''
+    '''Планировщик синхронизации ZEON → FTP (запускается каждые 120 секунд)
+    
+    Триггер для автоматической синхронизации записей
+    '''
     
     method = event.get('httpMethod', 'GET')
     
