@@ -30,6 +30,8 @@ const AdminZeonSyncPage = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [diagnostics, setDiagnostics] = useState<Record<string, { status: string; message: string }> | null>(null);
   const [searchPhone, setSearchPhone] = useState('');
   const [page, setPage] = useState(0);
   const limit = 50;
@@ -63,6 +65,22 @@ const AdminZeonSyncPage = () => {
       console.error('Error fetching logs:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runDiagnostics = async () => {
+    setDiagnosing(true);
+    try {
+      const response = await fetch(
+        'https://functions.poehali.dev/bab0230b-9e57-4664-85c1-09f5fafa35de'
+      );
+      const data = await response.json();
+      setDiagnostics(data.results);
+    } catch (error) {
+      console.error('Error running diagnostics:', error);
+      alert(`Ошибка диагностики: ${error}`);
+    } finally {
+      setDiagnosing(false);
     }
   };
 
@@ -170,6 +188,30 @@ const AdminZeonSyncPage = () => {
             </div>
           )}
 
+          {/* Диагностика */}
+          {diagnostics && (
+            <div className="bg-card border rounded-lg p-6 mb-8">
+              <h3 className="text-lg font-semibold mb-4">Результаты диагностики</h3>
+              <div className="space-y-3">
+                {Object.entries(diagnostics).map(([key, value]) => {
+                  if (key === 'secrets') return null;
+                  const statusIcon = value.status === 'ok' ? 'CheckCircle2' : value.status === 'warning' ? 'AlertCircle' : 'XCircle';
+                  const statusColor = value.status === 'ok' ? 'text-green-600' : value.status === 'warning' ? 'text-yellow-600' : 'text-red-600';
+                  
+                  return (
+                    <div key={key} className="flex items-start gap-3 p-3 bg-muted/50 rounded">
+                      <Icon name={statusIcon} className={`mt-0.5 ${statusColor}`} size={20} />
+                      <div className="flex-1">
+                        <div className="font-medium capitalize">{key.replace('_', ' ')}</div>
+                        <div className="text-sm text-muted-foreground">{value.message}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Панель управления */}
           <div className="bg-card border rounded-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
@@ -184,14 +226,24 @@ const AdminZeonSyncPage = () => {
                   className="w-full"
                 />
               </div>
-              <Button onClick={triggerSync} disabled={syncing}>
-                <Icon
-                  name={syncing ? 'Loader2' : 'RefreshCw'}
-                  className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                  size={16}
-                />
-                {syncing ? 'Синхронизация...' : 'Запустить синхронизацию'}
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={runDiagnostics} disabled={diagnosing} variant="outline">
+                  <Icon
+                    name={diagnosing ? 'Loader2' : 'Stethoscope'}
+                    className={`mr-2 ${diagnosing ? 'animate-spin' : ''}`}
+                    size={16}
+                  />
+                  {diagnosing ? 'Проверка...' : 'Диагностика'}
+                </Button>
+                <Button onClick={triggerSync} disabled={syncing}>
+                  <Icon
+                    name={syncing ? 'Loader2' : 'RefreshCw'}
+                    className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
+                    size={16}
+                  />
+                  {syncing ? 'Синхронизация...' : 'Запустить синхронизацию'}
+                </Button>
+              </div>
             </div>
           </div>
 
