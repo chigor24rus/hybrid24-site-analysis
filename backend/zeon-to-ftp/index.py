@@ -89,31 +89,70 @@ def handler(event: dict, context) -> dict:
         conn.commit()
         
         # Получаем список звонков из ZEON API
-        # Формируем параметры запроса
         from datetime import datetime, timedelta
         
-        # Получаем звонки за последние 7 дней
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=7)
+        api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
+        
+        # Сначала получаем последний ID звонка
+        last_id_params = {
+            'topic': 'base',
+            'method': 'get-calls-last-id'
+        }
+        
+        last_id_response = requests.post(
+            api_endpoint, 
+            data=last_id_params,
+            headers={'Authorization': f'Bearer {zeon_api_key}'},
+            timeout=10
+        )
+        
+        if last_id_response.status_code != 200:
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': False,
+                    'error': f'Ошибка получения last-id: {last_id_response.status_code}',
+                    'details': last_id_response.text[:500]
+                })
+            }
+        
+        last_id_data = last_id_response.json()
+        if last_id_data.get('result') != 1:
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': False,
+                    'error': 'Ошибка получения last-id',
+                    'api_response': last_id_data
+                }, ensure_ascii=False)
+            }
+        
+        last_id = last_id_data.get('id', 0)
+        
+        # Получаем звонки, начиная с ID минус 1000 (примерно последние ~неделя)
+        start_id = max(1, last_id - 1000)
         
         params = {
             'topic': 'base',
             'method': 'get-calls',
-            'start': start_date.strftime('%Y-%m-%d 00:00:00'),
-            'end': end_date.strftime('%Y-%m-%d 23:59:59'),
-            'limit': '100'
+            'id': str(start_id),
+            'limit': '1000',
+            'disposition': 'any'
         }
         
-        # Создаём хеш для авторизации
-        query_string = urlencode(sorted(params.items()))
-        hash_string = query_string + zeon_api_key
-        params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
-        
-        # Получаем список записей
-        api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
+        # Получаем список записей с Bearer авторизацией
         recordings_response = requests.post(
             api_endpoint,
             data=params,
+            headers={'Authorization': f'Bearer {zeon_api_key}'},
             timeout=30
         )
         
@@ -204,13 +243,11 @@ def handler(event: dict, context) -> dict:
                     'method': 'get-mp3',
                     'link': link
                 }
-                file_query = urlencode(sorted(file_params.items()))
-                file_hash = file_query + zeon_api_key
-                file_params['hash'] = hashlib.md5(file_hash.encode()).hexdigest()
                 
                 file_response = requests.post(
                     api_endpoint,
                     data=file_params,
+                    headers={'Authorization': f'Bearer {zeon_api_key}'},
                     timeout=120,
                     stream=True
                 )
@@ -260,7 +297,7 @@ def handler(event: dict, context) -> dict:
                 'errors': errors,
                 'total_calls': len(recordings.get('data', [])),
                 'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link')),
-                'date_range': f"{start_date.strftime('%Y-%m-%d')} — {end_date.strftime('%Y-%m-%d')}"
+                'id_range': f"{start_id} — {last_id}"
             }, ensure_ascii=False)
         }
     
