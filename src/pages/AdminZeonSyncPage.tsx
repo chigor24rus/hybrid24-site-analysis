@@ -51,7 +51,7 @@ const AdminZeonSyncPage = () => {
       }
 
       const response = await fetch(
-        `https://functions.poehali.dev/GET_ZEON_LOGS_URL?${params}`
+        `https://functions.poehali.dev/a92e76a2-b78a-4c7c-8411-ea8764ff63be?${params}`
       );
       const data = await response.json();
 
@@ -70,7 +70,7 @@ const AdminZeonSyncPage = () => {
     setSyncing(true);
     try {
       const response = await fetch(
-        'https://functions.poehali.dev/ZEON_CRON_URL?action=trigger'
+        'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger'
       );
       const data = await response.json();
 
