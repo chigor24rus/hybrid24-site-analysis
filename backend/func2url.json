@@ -1,4 +1,8 @@
 {
+  "get-zeon-sync-logs": "https://functions.poehali.dev/a92e76a2-b78a-4c7c-8411-ea8764ff63be",
+  "test-zeon": "https://functions.poehali.dev/bab0230b-9e57-4664-85c1-09f5fafa35de",
+  "zeon-cron": "https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d",
+  "zeon-to-ftp": "https://functions.poehali.dev/55f52913-e904-4118-b752-e6a196340d10",
   "generate-brand-placeholders": "https://functions.poehali.dev/3e88b79c-cf86-412b-852e-0e3efed8a855",
   "import-logos": "https://functions.poehali.dev/68543ce4-24ca-4f4d-9ecc-7756d3540704",
   "update-promotion-admin": "https://functions.poehali.dev/be6f2324-6bd1-4660-b3ee-9c314129e4c8",
