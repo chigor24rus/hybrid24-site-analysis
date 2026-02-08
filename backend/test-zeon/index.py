@@ -63,6 +63,27 @@ def handler(event: dict, context) -> dict:
     
     if zeon_api_url and zeon_api_key:
         try:
+            api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
+            
+            # Сначала получаем список методов для топика rec
+            params_methods = {
+                'topic': 'rec',
+                'method': 'get-method-list'
+            }
+            query_string = urlencode(sorted(params_methods.items()))
+            hash_string = query_string + zeon_api_key
+            params_methods['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+            
+            methods_response = requests.post(api_endpoint, data=params_methods, timeout=10)
+            available_methods = []
+            if methods_response.status_code == 200:
+                try:
+                    methods_data = methods_response.json()
+                    available_methods = methods_data.get('data', [])
+                except:
+                    pass
+            
+            # Теперь пробуем получить записи
             params = {
                 'topic': 'rec',
                 'method': 'recordings'
@@ -71,14 +92,16 @@ def handler(event: dict, context) -> dict:
             hash_string = query_string + zeon_api_key
             params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
             
-            api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
             response = requests.post(api_endpoint, data=params, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
+                msg = f'Подключено. Найдено записей: {len(data.get("data", []))}'
+                if available_methods:
+                    msg += f' | Доступные методы: {", ".join(available_methods)}'
                 results['zeon_api'] = {
                     'status': 'ok',
-                    'message': f'Подключено. Найдено записей: {len(data.get("data", []))}'
+                    'message': msg
                 }
             else:
                 results['zeon_api'] = {
