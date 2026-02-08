@@ -88,11 +88,20 @@ def handler(event: dict, context) -> dict:
         ''')
         conn.commit()
         
-        # Получаем список записей из ZEON API
+        # Получаем список звонков из ZEON API
         # Формируем параметры запроса
+        from datetime import datetime, timedelta
+        
+        # Получаем звонки за последние 7 дней
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=7)
+        
         params = {
-            'topic': 'rec',
-            'method': 'recordings'
+            'topic': 'base',
+            'method': 'get-calls',
+            'start': start_date.strftime('%Y-%m-%d 00:00:00'),
+            'end': end_date.strftime('%Y-%m-%d 23:59:59'),
+            'limit': '100'
         }
         
         # Создаём хеш для авторизации
@@ -152,12 +161,16 @@ def handler(event: dict, context) -> dict:
             ftp.mkd(ftp_path)
             ftp.cwd(ftp_path)
         
-        # Обрабатываем каждую запись
-        for recording in recordings.get('data', []):
-            recording_id = recording.get('id')
-            call_id = recording.get('call_id')
-            phone_number = recording.get('phone_number')
-            duration = recording.get('duration', 0)
+        # Обрабатываем каждый звонок с записью
+        for call in recordings.get('data', []):
+            link = call.get('link')  # ID файла записи
+            if not link:
+                continue  # Пропускаем звонки без записи
+            
+            recording_id = str(link)
+            call_id = call.get('linkedid', '')
+            phone_number = call.get('client', '')
+            duration = int(call.get('talktime', 0))
             
             # Проверяем, не синхронизирована ли уже эта запись
             cursor.execute(
@@ -170,10 +183,19 @@ def handler(event: dict, context) -> dict:
                 continue
             
             try:
-                # Скачиваем файл записи
-                file_response = requests.get(
-                    f'{zeon_api_url}/{recording_id}/file',
-                    headers=headers,
+                # Скачиваем файл записи через get-mp3
+                file_params = {
+                    'topic': 'base',
+                    'method': 'get-mp3',
+                    'link': link
+                }
+                file_query = urlencode(sorted(file_params.items()))
+                file_hash = file_query + zeon_api_key
+                file_params['hash'] = hashlib.md5(file_hash.encode()).hexdigest()
+                
+                file_response = requests.post(
+                    api_endpoint,
+                    data=file_params,
                     timeout=120,
                     stream=True
                 )

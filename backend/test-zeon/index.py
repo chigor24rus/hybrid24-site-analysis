@@ -65,28 +65,10 @@ def handler(event: dict, context) -> dict:
         try:
             api_endpoint = zeon_api_url.rstrip('/') + '/api/v2/start.php'
             
-            # Сначала получаем список методов для топика rec
-            params_methods = {
-                'topic': 'rec',
-                'method': 'get-method-list'
-            }
-            query_string = urlencode(sorted(params_methods.items()))
-            hash_string = query_string + zeon_api_key
-            params_methods['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
-            
-            methods_response = requests.post(api_endpoint, data=params_methods, timeout=10)
-            available_methods = []
-            if methods_response.status_code == 200:
-                try:
-                    methods_data = methods_response.json()
-                    available_methods = methods_data.get('data', [])
-                except:
-                    pass
-            
-            # Теперь пробуем получить записи
+            # Проверяем подключение через ping
             params = {
-                'topic': 'rec',
-                'method': 'recordings'
+                'topic': 'base',
+                'method': 'get-calls-last-id'
             }
             query_string = urlencode(sorted(params.items()))
             hash_string = query_string + zeon_api_key
@@ -96,13 +78,17 @@ def handler(event: dict, context) -> dict:
             
             if response.status_code == 200:
                 data = response.json()
-                msg = f'Подключено. Найдено записей: {len(data.get("data", []))}'
-                if available_methods:
-                    msg += f' | Доступные методы: {", ".join(available_methods)}'
-                results['zeon_api'] = {
-                    'status': 'ok',
-                    'message': msg
-                }
+                if data.get('result') == 1:
+                    last_id = data.get('id', 0)
+                    results['zeon_api'] = {
+                        'status': 'ok',
+                        'message': f'Подключено. Последний ID звонка: {last_id}'
+                    }
+                else:
+                    results['zeon_api'] = {
+                        'status': 'error',
+                        'message': f'API error: {data.get("text", "unknown")}'
+                    }
             else:
                 results['zeon_api'] = {
                     'status': 'error',
