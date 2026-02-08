@@ -99,7 +99,21 @@ def handler(event: dict, context) -> dict:
                 })
             }
         
-        recordings = recordings_response.json()
+        try:
+            recordings = recordings_response.json()
+        except json.JSONDecodeError as e:
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({
+                    'success': False,
+                    'error': 'ZEON API вернул не JSON',
+                    'details': f'Ответ: {recordings_response.text[:500]}'
+                })
+            }
         
         # Подключаемся к FTP
         ftp = FTP(timeout=30)
