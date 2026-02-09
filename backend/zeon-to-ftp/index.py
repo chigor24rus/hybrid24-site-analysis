@@ -93,66 +93,43 @@ def handler(event: dict, context) -> dict:
         
         api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
         
-        # Сначала получаем последний ID звонка
-        last_id_params = {
+        # Сначала получаем список доступных методов для диагностики
+        methods_params = {
             'topic': 'base',
-            'method': 'get-calls-last-id'
+            'method': 'get-method-list'
         }
+        query_string = urlencode(sorted(methods_params.items()))
+        hash_string = query_string + zeon_api_key
+        methods_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
         
-        last_id_response = requests.post(
-            api_endpoint, 
-            data=last_id_params,
-            headers={'Authorization': f'Bearer {zeon_api_key}'},
-            timeout=10
-        )
+        methods_response = requests.post(api_endpoint, data=methods_params, timeout=10)
+        available_methods = []
+        if methods_response.status_code == 200:
+            methods_data = methods_response.json()
+            if methods_data.get('result') == 1:
+                available_methods = methods_data.get('data', [])
         
-        if last_id_response.status_code != 200:
-            return {
-                'statusCode': 500,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({
-                    'success': False,
-                    'error': f'Ошибка получения last-id: {last_id_response.status_code}',
-                    'details': last_id_response.text[:500]
-                })
-            }
-        
-        last_id_data = last_id_response.json()
-        if last_id_data.get('result') != 1:
-            return {
-                'statusCode': 500,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({
-                    'success': False,
-                    'error': 'Ошибка получения last-id',
-                    'api_response': last_id_data
-                }, ensure_ascii=False)
-            }
-        
-        last_id = last_id_data.get('id', 0)
-        
-        # Получаем звонки, начиная с ID минус 1000 (примерно последние ~неделя)
-        start_id = max(1, last_id - 1000)
+        # Получаем звонки за последние 7 дней по дате
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=7)
         
         params = {
             'topic': 'base',
             'method': 'get-calls',
-            'id': str(start_id),
+            'start': start_date.strftime('%Y-%m-%d 00:00:00'),
+            'end': end_date.strftime('%Y-%m-%d 23:59:59'),
             'limit': '1000',
             'disposition': 'any'
         }
         
-        # Получаем список записей с Bearer авторизацией
+        # MD5 авторизация
+        query_string = urlencode(sorted(params.items()))
+        hash_string = query_string + zeon_api_key
+        params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+        
         recordings_response = requests.post(
             api_endpoint,
             data=params,
-            headers={'Authorization': f'Bearer {zeon_api_key}'},
             timeout=30
         )
         
@@ -197,7 +174,8 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({
                     'success': False,
                     'error': f'ZEON API error: {recordings.get("text", "unknown")}',
-                    'api_response': recordings
+                    'api_response': recordings,
+                    'available_methods': available_methods
                 }, ensure_ascii=False)
             }
         
@@ -244,10 +222,14 @@ def handler(event: dict, context) -> dict:
                     'link': link
                 }
                 
+                # MD5 авторизация
+                query_string = urlencode(sorted(file_params.items()))
+                hash_string = query_string + zeon_api_key
+                file_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+                
                 file_response = requests.post(
                     api_endpoint,
                     data=file_params,
-                    headers={'Authorization': f'Bearer {zeon_api_key}'},
                     timeout=120,
                     stream=True
                 )
@@ -297,7 +279,7 @@ def handler(event: dict, context) -> dict:
                 'errors': errors,
                 'total_calls': len(recordings.get('data', [])),
                 'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link')),
-                'id_range': f"{start_id} — {last_id}"
+                'date_range': f"{start_date.strftime('%Y-%m-%d')} — {end_date.strftime('%Y-%m-%d')}"
             }, ensure_ascii=False)
         }
     
