@@ -88,34 +88,43 @@ def handler(event: dict, context) -> dict:
             else:
                 bearer_result = f'❌ HTTP {response_bearer.status_code}'
             
-            # Тест 2: MD5 hash (попробуем get-method-list)
-            params_md5 = {
-                'method': 'get-method-list',
-                'topic': 'base'
-            }
-            query_string = urlencode(sorted(params_md5.items()))
-            hash_string = query_string + zeon_api_key
-            md5_hash = hashlib.md5(hash_string.encode()).hexdigest()
-            params_md5['hash'] = md5_hash
+            # Тест 2: MD5 hash - проверяем разные топики
+            topics_to_test = ['base', 'rec', 'call', '']
+            methods_by_topic = {}
             
-            response_md5 = requests.post(api_endpoint, data=params_md5, timeout=10)
+            for topic in topics_to_test:
+                params_md5 = {
+                    'method': 'get-method-list'
+                }
+                if topic:
+                    params_md5['topic'] = topic
+                    
+                query_string = urlencode(sorted(params_md5.items()))
+                hash_string = query_string + zeon_api_key
+                md5_hash = hashlib.md5(hash_string.encode()).hexdigest()
+                params_md5['hash'] = md5_hash
+                
+                response_md5 = requests.post(api_endpoint, data=params_md5, timeout=10)
+                
+                if response_md5.status_code == 200:
+                    data = response_md5.json()
+                    if data.get('result') == 1:
+                        methods = data.get('data', [])
+                        if methods:
+                            methods_by_topic[topic or 'no_topic'] = methods
             
-            md5_result = 'unknown'
-            md5_debug = f'query: {query_string}, hash: {md5_hash}'
-            if response_md5.status_code == 200:
-                data = response_md5.json()
-                if data.get('result') == 1:
-                    md5_result = f'✅ OK'
-                    md5_debug = f'Methods: {len(data.get("data", []))}'
-                else:
-                    md5_result = f'❌ {data.get("text", "unknown")}'
+            if methods_by_topic:
+                md5_result = f'✅ OK'
+                md5_debug = ', '.join([f'{t}: {len(m)}' for t, m in methods_by_topic.items()])
             else:
-                md5_result = f'❌ HTTP {response_md5.status_code}'
+                md5_result = f'❌ No methods'
+                md5_debug = 'API key has no permissions'
             
             results['zeon_api'] = {
                 'status': 'ok' if '✅' in bearer_result or '✅' in md5_result else 'error',
                 'message': f'Bearer: {bearer_result} | MD5: {md5_result}',
-                'debug': md5_debug
+                'debug': md5_debug,
+                'methods_by_topic': methods_by_topic
             }
             
         except Exception as e:
