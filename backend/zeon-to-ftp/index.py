@@ -108,11 +108,15 @@ def handler(event: dict, context) -> dict:
             if list_data.get('result') == 1:
                 available_methods = list_data.get('data', [])
         
-        # Получаем звонки начиная с ID 1, последние 1000 записей
+        # Получаем звонки за последние 7 дней
+        from datetime import datetime, timedelta
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=7)
+        
         params = {
             'method': 'get-calls',
-            'id': '1',
-            'limit': '1000'
+            'start': start_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'end': end_date.strftime('%Y-%m-%d %H:%M:%S')
         }
         
         # MD5 авторизация
