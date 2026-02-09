@@ -114,9 +114,10 @@ def handler(event: dict, context) -> dict:
         start_date = end_date - timedelta(days=7)
         
         params = {
+            'end': end_date.strftime('%Y-%m-%d %H:%M:%S'),
             'method': 'get-calls',
             'start': start_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'end': end_date.strftime('%Y-%m-%d %H:%M:%S')
+            'topic': 'base'
         }
         
         # MD5 авторизация
