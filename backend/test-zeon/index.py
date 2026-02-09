@@ -88,10 +88,9 @@ def handler(event: dict, context) -> dict:
             else:
                 bearer_result = f'❌ HTTP {response_bearer.status_code}'
             
-            # Тест 2: MD5 hash - пробуем прямой вызов get-calls
+            # Тест 2: MD5 hash - пробуем ping (без параметров)
             params_md5 = {
-                'method': 'get-calls-last-id',
-                'topic': 'base'
+                'method': 'ping'
             }
             
             query_string = urlencode(sorted(params_md5.items()))
@@ -110,8 +109,8 @@ def handler(event: dict, context) -> dict:
                     data = response_md5.json()
                     raw_response = str(data)
                     if data.get('result') == 1:
-                        md5_result = f'✅ OK (last_id: {data.get("id", "?")})'
-                        md5_debug = f'API working!'
+                        md5_result = f'✅ OK'
+                        md5_debug = f'API working! Response: {raw_response}'
                     else:
                         md5_result = f'❌ {data.get("text", "unknown")}'
                         md5_debug = f'Response: {raw_response}'

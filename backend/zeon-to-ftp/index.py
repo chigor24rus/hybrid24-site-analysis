@@ -93,33 +93,11 @@ def handler(event: dict, context) -> dict:
         
         api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
         
-        # Сначала получаем список доступных методов для диагностики
-        methods_params = {
-            'topic': 'base',
-            'method': 'get-method-list'
-        }
-        query_string = urlencode(sorted(methods_params.items()))
-        hash_string = query_string + zeon_api_key
-        methods_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
-        
-        methods_response = requests.post(api_endpoint, data=methods_params, timeout=10)
-        available_methods = []
-        if methods_response.status_code == 200:
-            methods_data = methods_response.json()
-            if methods_data.get('result') == 1:
-                available_methods = methods_data.get('data', [])
-        
-        # Получаем звонки за последние 7 дней по дате
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=7)
-        
+        # Получаем звонки начиная с ID 1, последние 1000 записей
         params = {
-            'topic': 'base',
             'method': 'get-calls',
-            'start': start_date.strftime('%Y-%m-%d 00:00:00'),
-            'end': end_date.strftime('%Y-%m-%d 23:59:59'),
-            'limit': '1000',
-            'disposition': 'any'
+            'id': '1',
+            'limit': '1000'
         }
         
         # MD5 авторизация
@@ -174,8 +152,7 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({
                     'success': False,
                     'error': f'ZEON API error: {recordings.get("text", "unknown")}',
-                    'api_response': recordings,
-                    'available_methods': available_methods
+                    'api_response': recordings
                 }, ensure_ascii=False)
             }
         
@@ -278,8 +255,7 @@ def handler(event: dict, context) -> dict:
                 'skipped': skipped_count,
                 'errors': errors,
                 'total_calls': len(recordings.get('data', [])),
-                'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link')),
-                'date_range': f"{start_date.strftime('%Y-%m-%d')} — {end_date.strftime('%Y-%m-%d')}"
+                'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link'))
             }, ensure_ascii=False)
         }
     
