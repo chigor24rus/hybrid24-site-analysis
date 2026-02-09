@@ -93,6 +93,21 @@ def handler(event: dict, context) -> dict:
         
         api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
         
+        # Сначала узнаем какие методы доступны
+        list_params = {
+            'method': 'get-method-list'
+        }
+        query_string = urlencode(sorted(list_params.items()))
+        hash_string = query_string + zeon_api_key
+        list_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+        
+        list_response = requests.post(api_endpoint, data=list_params, timeout=10)
+        available_methods = []
+        if list_response.status_code == 200:
+            list_data = list_response.json()
+            if list_data.get('result') == 1:
+                available_methods = list_data.get('data', [])
+        
         # Получаем звонки начиная с ID 1, последние 1000 записей
         params = {
             'method': 'get-calls',
@@ -152,7 +167,8 @@ def handler(event: dict, context) -> dict:
                 'body': json.dumps({
                     'success': False,
                     'error': f'ZEON API error: {recordings.get("text", "unknown")}',
-                    'api_response': recordings
+                    'api_response': recordings,
+                    'available_methods': available_methods
                 }, ensure_ascii=False)
             }
         
