@@ -41,7 +41,7 @@ def handler(event: dict, context) -> dict:
     sftp_port = int(os.environ.get('SFTP_PORT', '22'))
     sftp_user = os.environ.get('SFTP_USER')
     sftp_password = os.environ.get('SFTP_PASSWORD')
-    sftp_path = '/Zeon/rec'
+    sftp_path = '/home/u524567/Zeon/rec'
     
     if not db_dsn:
         return {
