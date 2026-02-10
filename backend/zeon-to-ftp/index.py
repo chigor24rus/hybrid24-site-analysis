@@ -4,7 +4,7 @@ import requests
 import psycopg2
 import hashlib
 from urllib.parse import urlencode
-from ftplib import FTP
+import paramiko
 from datetime import datetime
 from io import BytesIO
 
@@ -33,10 +33,11 @@ def handler(event: dict, context) -> dict:
     # Получаем параметры из секретов
     zeon_api_url = os.environ.get('ZEON_API_URL')
     zeon_api_key = os.environ.get('ZEON_API_KEY')
-    ftp_host = os.environ.get('FTP_HOST')
-    ftp_user = os.environ.get('FTP_USER')
-    ftp_password = os.environ.get('FTP_PASSWORD')
-    ftp_path = os.environ.get('FTP_PATH', '/')
+    sftp_host = os.environ.get('SFTP_HOST')
+    sftp_port = int(os.environ.get('SFTP_PORT', '22'))
+    sftp_user = os.environ.get('SFTP_USER')
+    sftp_password = os.environ.get('SFTP_PASSWORD')
+    sftp_path = os.environ.get('SFTP_PATH', '/records')
     db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     missing_secrets = []
@@ -44,12 +45,12 @@ def handler(event: dict, context) -> dict:
         missing_secrets.append('ZEON_API_URL')
     if not zeon_api_key:
         missing_secrets.append('ZEON_API_KEY')
-    if not ftp_host:
-        missing_secrets.append('FTP_HOST')
-    if not ftp_user:
-        missing_secrets.append('FTP_USER')
-    if not ftp_password:
-        missing_secrets.append('FTP_PASSWORD')
+    if not sftp_host:
+        missing_secrets.append('SFTP_HOST')
+    if not sftp_user:
+        missing_secrets.append('SFTP_USER')
+    if not sftp_password:
+        missing_secrets.append('SFTP_PASSWORD')
     if not db_dsn:
         missing_secrets.append('DATABASE_URL')
     
@@ -203,37 +204,43 @@ def handler(event: dict, context) -> dict:
                 }, ensure_ascii=False)
             }
         
-        # Подключаемся к FTP (только если не dry_run и не skip_ftp)
-        ftp = None
-        ftp_error = None
+        # Подключаемся к SFTP (только если не dry_run и не skip_ftp)
+        sftp = None
+        ssh = None
+        sftp_error = None
         if not dry_run and not skip_ftp:
             try:
-                ftp = FTP(timeout=10)
-                ftp.connect(ftp_host, 21)
-                ftp.login(ftp_user, ftp_password)
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(
+                    hostname=sftp_host,
+                    port=sftp_port,
+                    username=sftp_user,
+                    password=sftp_password,
+                    timeout=10
+                )
+                sftp = ssh.open_sftp()
                 
-                # Пробуем активный режим вместо пассивного (fix для firewall)
-                ftp.set_pasv(False)
-                
-                # Получаем текущую директорию (вместо cwd)
-                current_dir = ftp.pwd()
-                
-                # Если нужна другая директория
-                if ftp_path and ftp_path != '/' and ftp_path != current_dir:
-                    try:
-                        ftp.cwd(ftp_path)
-                    except:
-                        # Создаём директорию если не существует
+                # Создаём директорию если не существует
+                try:
+                    sftp.stat(sftp_path)
+                except FileNotFoundError:
+                    # Создаём все промежуточные директории
+                    parts = sftp_path.strip('/').split('/')
+                    current = ''
+                    for part in parts:
+                        current += f'/{part}'
                         try:
-                            ftp.mkd(ftp_path)
-                            ftp.cwd(ftp_path)
-                        except:
-                            pass  # Продолжаем в текущей директории
+                            sftp.stat(current)
+                        except FileNotFoundError:
+                            sftp.mkdir(current)
             except Exception as e:
-                ftp_error = f'FTP connection failed: {str(e)}'
-                ftp = None  # Продолжаем без FTP
+                sftp_error = f'SFTP connection failed: {str(e)}'
+                sftp = None
+                if ssh:
+                    ssh.close()
         elif skip_ftp:
-            ftp_error = 'FTP skipped (skip_ftp=true)'
+            sftp_error = 'SFTP skipped (skip_ftp=true)'
         
         # Обрабатываем каждый звонок с записью (с лимитом)
         for call in recordings.get('data', []):
@@ -274,8 +281,8 @@ def handler(event: dict, context) -> dict:
                 file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
                 file_size = 0
                 
-                # Скачиваем и загружаем только если не dry_run и FTP доступен
-                if not dry_run and ftp:
+                # Скачиваем и загружаем только если не dry_run и SFTP доступен
+                if not dry_run and sftp:
                     # Скачиваем файл записи через get-mp3
                     # ВНИМАНИЕ: Порядок параметров ВАЖЕН для hash!
                     from collections import OrderedDict
@@ -303,18 +310,19 @@ def handler(event: dict, context) -> dict:
                         errors.append(f'Ошибка скачивания {recording_id}: {file_response.status_code}')
                         continue
                     
-                    # Загружаем на FTP
+                    # Загружаем на SFTP
                     file_content = file_response.content
                     file_size = len(file_content)
                     
-                    ftp.storbinary(f'STOR {file_name}', BytesIO(file_content))
+                    remote_path = f'{sftp_path}/{file_name}'
+                    sftp.putfo(BytesIO(file_content), remote_path)
                 
                 # Сохраняем информацию о синхронизации в БД
                 cursor.execute('''
                     INSERT INTO zeon_recordings_sync 
                     (recording_id, call_id, phone_number, duration, file_name, file_size, ftp_path)
                     VALUES (%s, %s, %s, %s, %s, %s, %s)
-                ''', (recording_id, call_id, phone_number, duration, file_name, file_size, f'{ftp_path}/{file_name}'))
+                ''', (recording_id, call_id, phone_number, duration, file_name, file_size, f'{sftp_path}/{file_name}'))
                 conn.commit()
                 
                 synced_count += 1
@@ -323,8 +331,10 @@ def handler(event: dict, context) -> dict:
                 errors.append(f'Ошибка обработки {recording_id}: {str(e)}')
                 continue
         
-        if ftp:
-            ftp.quit()
+        if sftp:
+            sftp.close()
+        if ssh:
+            ssh.close()
         cursor.close()
         conn.close()
         
@@ -342,8 +352,8 @@ def handler(event: dict, context) -> dict:
             'message': f'Обработано {synced_count} из {calls_with_recordings} записей. Пропущено: {skipped_count} (уже синхронизированы), {no_recording_count} (без записи)'
         }
         
-        if ftp_error:
-            result['ftp_warning'] = ftp_error
+        if sftp_error:
+            result['sftp_warning'] = sftp_error
         
         return {
             'statusCode': 200,

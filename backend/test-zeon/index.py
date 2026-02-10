@@ -4,7 +4,7 @@ import requests
 import psycopg2
 import hashlib
 from urllib.parse import urlencode
-from ftplib import FTP
+import paramiko
 
 def handler(event: dict, context) -> dict:
     '''Диагностика подключений ZEON: проверка API, FTP, БД'''
@@ -32,19 +32,21 @@ def handler(event: dict, context) -> dict:
     
     zeon_api_url = os.environ.get('ZEON_API_URL')
     zeon_api_key = os.environ.get('ZEON_API_KEY')
-    ftp_host = os.environ.get('FTP_HOST')
-    ftp_user = os.environ.get('FTP_USER')
-    ftp_password = os.environ.get('FTP_PASSWORD')
-    ftp_path = os.environ.get('FTP_PATH', '/')
+    sftp_host = os.environ.get('SFTP_HOST')
+    sftp_port = int(os.environ.get('SFTP_PORT', '22'))
+    sftp_user = os.environ.get('SFTP_USER')
+    sftp_password = os.environ.get('SFTP_PASSWORD')
+    sftp_path = os.environ.get('SFTP_PATH', '/records')
     db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     results['secrets'] = {
         'ZEON_API_URL': 'set' if zeon_api_url else 'missing',
         'ZEON_API_KEY': 'set' if zeon_api_key else 'missing',
-        'FTP_HOST': 'set' if ftp_host else 'missing',
-        'FTP_USER': 'set' if ftp_user else 'missing',
-        'FTP_PASSWORD': 'set' if ftp_password else 'missing',
-        'FTP_PATH': ftp_path,
+        'SFTP_HOST': 'set' if sftp_host else 'missing',
+        'SFTP_PORT': str(sftp_port),
+        'SFTP_USER': 'set' if sftp_user else 'missing',
+        'SFTP_PASSWORD': 'set' if sftp_password else 'missing',
+        'SFTP_PATH': sftp_path,
         'DATABASE_URL': 'set' if db_dsn else 'missing'
     }
     
@@ -141,75 +143,71 @@ def handler(event: dict, context) -> dict:
             'message': 'ZEON_API_URL или ZEON_API_KEY не настроены'
         }
     
-    if ftp_host and ftp_user and ftp_password:
-        ftp_debug = {}
+    if sftp_host and sftp_user and sftp_password:
+        sftp_debug = {}
         try:
             import socket
             # Проверяем DNS резолвинг
             try:
-                ip = socket.gethostbyname(ftp_host)
-                ftp_debug['dns'] = f'OK ({ip})'
+                ip = socket.gethostbyname(sftp_host)
+                sftp_debug['dns'] = f'OK ({ip})'
             except Exception as e:
-                ftp_debug['dns'] = f'FAILED: {str(e)}'
-                raise Exception(f'DNS resolution failed for {ftp_host}')
+                sftp_debug['dns'] = f'FAILED: {str(e)}'
+                raise Exception(f'DNS resolution failed for {sftp_host}')
             
-            # Проверяем TCP подключение к FTP (21) и SSH/SFTP (22)
+            # Проверяем TCP подключение к SFTP
             try:
-                sock = socket.create_connection((ftp_host, 21), timeout=5)
-                ftp_debug['tcp_21'] = 'OK (FTP port accessible)'
+                sock = socket.create_connection((sftp_host, sftp_port), timeout=5)
+                sftp_debug['tcp'] = f'OK (port {sftp_port} accessible)'
                 sock.close()
             except Exception as e:
-                ftp_debug['tcp_21'] = f'FAILED: {str(e)}'
+                sftp_debug['tcp'] = f'FAILED: {str(e)}'
+                raise Exception(f'Cannot connect to {sftp_host}:{sftp_port}')
+            
+            # Пробуем SFTP подключение
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(
+                hostname=sftp_host,
+                port=sftp_port,
+                username=sftp_user,
+                password=sftp_password,
+                timeout=10
+            )
+            sftp_debug['connect'] = 'OK'
+            sftp_debug['login'] = 'OK'
+            
+            sftp = ssh.open_sftp()
+            sftp_debug['sftp'] = 'OK'
             
             try:
-                sock = socket.create_connection((ftp_host, 22), timeout=5)
-                ftp_debug['tcp_22'] = 'OK (SSH/SFTP port accessible)'
-                sock.close()
-            except Exception as e:
-                ftp_debug['tcp_22'] = f'FAILED: {str(e)}'
-            
-            if 'FAILED' in ftp_debug.get('tcp_21', ''):
-                raise Exception(f'Cannot connect to {ftp_host}:21')
-            
-            # Пробуем FTP подключение
-            ftp = FTP(timeout=5)
-            ftp.connect(ftp_host, 21)
-            ftp_debug['connect'] = 'OK'
-            
-            ftp.login(ftp_user, ftp_password)
-            ftp_debug['login'] = 'OK'
-            
-            ftp.set_pasv(True)
-            ftp_debug['pasv'] = 'OK'
-            
-            try:
-                ftp.cwd(ftp_path)
-                files = ftp.nlst()
-                ftp_debug['cwd'] = f'OK ({len(files)} files)'
+                files = sftp.listdir(sftp_path)
+                sftp_debug['listdir'] = f'OK ({len(files)} files)'
                 results['ftp'] = {
                     'status': 'ok',
-                    'message': f'Подключено. Файлов в {ftp_path}: {len(files)}',
-                    'debug': ftp_debug
+                    'message': f'SFTP подключен. Файлов в {sftp_path}: {len(files)}',
+                    'debug': sftp_debug
                 }
-            except Exception as e:
-                ftp_debug['cwd'] = f'FAILED: {str(e)}'
+            except FileNotFoundError:
+                sftp_debug['listdir'] = f'Directory {sftp_path} not found (will be created)'
                 results['ftp'] = {
                     'status': 'warning',
-                    'message': f'Подключено, но директория {ftp_path} недоступна',
-                    'debug': ftp_debug
+                    'message': f'SFTP подключен, директория {sftp_path} будет создана при синхронизации',
+                    'debug': sftp_debug
                 }
             
-            ftp.quit()
+            sftp.close()
+            ssh.close()
         except Exception as e:
             results['ftp'] = {
                 'status': 'error',
                 'message': str(e),
-                'debug': ftp_debug
+                'debug': sftp_debug
             }
     else:
         results['ftp'] = {
             'status': 'error',
-            'message': 'FTP_HOST, FTP_USER или FTP_PASSWORD не настроены'
+            'message': 'SFTP_HOST, SFTP_USER или SFTP_PASSWORD не настроены'
         }
     
     if db_dsn:
