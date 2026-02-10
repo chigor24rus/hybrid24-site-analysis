@@ -8,9 +8,9 @@
       "bodyMatcher": "none"
     },
     {
-      "name": "Sync recordings",
+      "name": "Sync recordings (dry run)",
       "method": "GET",
-      "path": "/",
+      "path": "/?dry_run=true",
       "expectedStatus": 200,
       "expectedBody": {
         "success": true

@@ -15,6 +15,8 @@ def handler(event: dict, context) -> dict:
     '''
     
     method = event.get('httpMethod', 'GET')
+    query_params = event.get('queryStringParameters', {}) or {}
+    dry_run = query_params.get('dry_run') == 'true'
     
     if method == 'OPTIONS':
         return {
@@ -94,10 +96,13 @@ def handler(event: dict, context) -> dict:
         api_endpoint = zeon_api_url.rstrip('/') + '/zeon/api/v2/start.php'
         
         # Сначала узнаем какие методы доступны
+        from urllib.parse import quote
         list_params = {
             'method': 'get-method-list'
         }
-        query_string = urlencode(sorted(list_params.items()))
+        # MD5 авторизация от URL-encoded строки (RFC3986)
+        sorted_list_params = sorted(list_params.items())
+        query_string = urlencode(sorted_list_params, quote_via=quote)
         hash_string = query_string + zeon_api_key
         list_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
         
@@ -108,22 +113,39 @@ def handler(event: dict, context) -> dict:
             if list_data.get('result') == 1:
                 available_methods = list_data.get('data', [])
         
-        # Получаем звонки за последние 7 дней
+        # Получаем звонки за последние 1 день (7 дней в production)
         from datetime import datetime, timedelta
         end_date = datetime.now()
-        start_date = end_date - timedelta(days=7)
+        days_back = 1 if dry_run else 7
+        start_date = end_date - timedelta(days=days_back)
         
-        params = {
-            'end': end_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'method': 'get-calls',
-            'start': start_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'topic': 'base'
-        }
+        # ВНИМАНИЕ: Порядок параметров ВАЖЕН для hash!
+        # Используем OrderedDict и точно такой же порядок, как в примере поддержки
+        from collections import OrderedDict
         
-        # MD5 авторизация
-        query_string = urlencode(sorted(params.items()))
+        params = OrderedDict([
+            ('topic', 'base'),
+            ('method', 'get-calls'),
+            ('start', start_date.strftime('%Y-%m-%d %H:%M:%S')),
+            ('end', end_date.strftime('%Y-%m-%d %H:%M:%S'))
+        ])
+        
+        # MD5 авторизация от URL-encoded строки (RFC3986)
+        # urlencode с quote_via=quote кодирует пробелы как %20 (не +)
+        from urllib.parse import quote
+        query_string = urlencode(params, quote_via=quote)
+        # Hash считается от URL-encoded строки + API key
         hash_string = query_string + zeon_api_key
-        params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
+        hash_value = hashlib.md5(hash_string.encode()).hexdigest()
+        params['hash'] = hash_value
+        
+        # DEBUG: Логируем параметры для отладки
+        debug_info = {
+            'query_string': query_string,
+            'hash': hash_value,
+            'start': params['start'],
+            'end': params['end']
+        }
         
         recordings_response = requests.post(
             api_endpoint,
@@ -173,23 +195,26 @@ def handler(event: dict, context) -> dict:
                     'success': False,
                     'error': f'ZEON API error: {recordings.get("text", "unknown")}',
                     'api_response': recordings,
-                    'available_methods': available_methods
+                    'available_methods': available_methods,
+                    'debug': debug_info
                 }, ensure_ascii=False)
             }
         
-        # Подключаемся к FTP
-        ftp = FTP(timeout=30)
-        ftp.connect(ftp_host, 21)
-        ftp.login(ftp_user, ftp_password)
-        ftp.set_pasv(True)
-        
-        # Переходим в нужную директорию
-        try:
-            ftp.cwd(ftp_path)
-        except:
-            # Создаём директорию если не существует
-            ftp.mkd(ftp_path)
-            ftp.cwd(ftp_path)
+        # Подключаемся к FTP (только если не dry_run)
+        ftp = None
+        if not dry_run:
+            ftp = FTP(timeout=60)
+            ftp.connect(ftp_host, 21)
+            ftp.login(ftp_user, ftp_password)
+            ftp.set_pasv(True)
+            
+            # Переходим в нужную директорию
+            try:
+                ftp.cwd(ftp_path)
+            except:
+                # Создаём директорию если не существует
+                ftp.mkd(ftp_path)
+                ftp.cwd(ftp_path)
         
         # Обрабатываем каждый звонок с записью
         for call in recordings.get('data', []):
@@ -200,7 +225,14 @@ def handler(event: dict, context) -> dict:
             recording_id = str(link)
             call_id = call.get('linkedid', '')
             phone_number = call.get('client', '')
-            duration = int(call.get('talktime', 0))
+            # talktime может быть строкой "00:00:05" или числом
+            talktime_raw = call.get('talktime', '0')
+            if isinstance(talktime_raw, str) and ':' in talktime_raw:
+                # Формат HH:MM:SS → секунды
+                parts = talktime_raw.split(':')
+                duration = int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+            else:
+                duration = int(talktime_raw)
             
             # Проверяем, не синхронизирована ли уже эта запись
             cursor.execute(
@@ -213,38 +245,45 @@ def handler(event: dict, context) -> dict:
                 continue
             
             try:
-                # Скачиваем файл записи через get-mp3
-                file_params = {
-                    'topic': 'base',
-                    'method': 'get-mp3',
-                    'link': link
-                }
-                
-                # MD5 авторизация
-                query_string = urlencode(sorted(file_params.items()))
-                hash_string = query_string + zeon_api_key
-                file_params['hash'] = hashlib.md5(hash_string.encode()).hexdigest()
-                
-                file_response = requests.post(
-                    api_endpoint,
-                    data=file_params,
-                    timeout=120,
-                    stream=True
-                )
-                
-                if file_response.status_code != 200:
-                    errors.append(f'Ошибка скачивания {recording_id}: {file_response.status_code}')
-                    continue
-                
                 # Формируем имя файла
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
+                file_size = 0
                 
-                # Загружаем на FTP
-                file_content = file_response.content
-                file_size = len(file_content)
-                
-                ftp.storbinary(f'STOR {file_name}', BytesIO(file_content))
+                # Скачиваем и загружаем только если не dry_run
+                if not dry_run:
+                    # Скачиваем файл записи через get-mp3
+                    # ВНИМАНИЕ: Порядок параметров ВАЖЕН для hash!
+                    from collections import OrderedDict
+                    file_params = OrderedDict([
+                        ('link', link),
+                        ('method', 'get-mp3'),
+                        ('topic', 'base')
+                    ])
+                    
+                    # MD5 авторизация от URL-encoded строки (RFC3986)
+                    from urllib.parse import quote
+                    query_string = urlencode(file_params, quote_via=quote)
+                    hash_string = query_string + zeon_api_key
+                    hash_value = hashlib.md5(hash_string.encode()).hexdigest()
+                    file_params['hash'] = hash_value
+                    
+                    file_response = requests.post(
+                        api_endpoint,
+                        data=file_params,
+                        timeout=120,
+                        stream=True
+                    )
+                    
+                    if file_response.status_code != 200:
+                        errors.append(f'Ошибка скачивания {recording_id}: {file_response.status_code}')
+                        continue
+                    
+                    # Загружаем на FTP
+                    file_content = file_response.content
+                    file_size = len(file_content)
+                    
+                    ftp.storbinary(f'STOR {file_name}', BytesIO(file_content))
                 
                 # Сохраняем информацию о синхронизации в БД
                 cursor.execute('''
@@ -260,7 +299,8 @@ def handler(event: dict, context) -> dict:
                 errors.append(f'Ошибка обработки {recording_id}: {str(e)}')
                 continue
         
-        ftp.quit()
+        if ftp:
+            ftp.quit()
         cursor.close()
         conn.close()
         

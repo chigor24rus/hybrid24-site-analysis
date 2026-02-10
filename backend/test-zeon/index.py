@@ -88,12 +88,15 @@ def handler(event: dict, context) -> dict:
             else:
                 bearer_result = f'❌ HTTP {response_bearer.status_code}'
             
-            # Тест 2: MD5 hash - пробуем ping (без параметров)
+            # Тест 2: MD5 hash от URL-encoded строки (RFC3986)
             params_md5 = {
                 'method': 'ping'
             }
             
-            query_string = urlencode(sorted(params_md5.items()))
+            # Сортируем параметры и делаем URL-encode
+            sorted_params = sorted(params_md5.items())
+            query_string = urlencode(sorted_params)
+            # Hash считается от URL-encoded строки + API key
             hash_string = query_string + zeon_api_key
             md5_hash = hashlib.md5(hash_string.encode()).hexdigest()
             params_md5['hash'] = md5_hash
