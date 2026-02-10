@@ -41,7 +41,7 @@ def handler(event: dict, context) -> dict:
     sftp_port = int(os.environ.get('SFTP_PORT', '22'))
     sftp_user = os.environ.get('SFTP_USER')
     sftp_password = os.environ.get('SFTP_PASSWORD')
-    sftp_path = os.environ.get('SFTP_PATH', '/records')
+    sftp_path = '/Zeon/rec'
     
     if not db_dsn:
         return {
@@ -58,15 +58,17 @@ def handler(event: dict, context) -> dict:
     
     try:
         # Парсим body
-        body_str = event.get('body', '{}')
-        if isinstance(body_str, str):
-            body = json.loads(body_str)
+        body_data = event.get('body', '{}')
+        if isinstance(body_data, dict):
+            body = body_data
+        elif isinstance(body_data, str):
+            body = json.loads(body_data) if body_data.strip() else {}
         else:
-            body = body_str
+            body = {}
         
-        date_from = body.get('date_from')
-        date_to = body.get('date_to')
-        delete_from_sftp = body.get('delete_from_sftp', False)
+        date_from = body.get('date_from') if isinstance(body, dict) else None
+        date_to = body.get('date_to') if isinstance(body, dict) else None
+        delete_from_sftp = body.get('delete_from_sftp', False) if isinstance(body, dict) else False
         
         if not date_from or not date_to:
             return {
