@@ -294,126 +294,145 @@ const AdminZeonSyncPage = () => {
 
           {/* Панель управления */}
           <div className="bg-card border rounded-lg p-6 mb-8">
-            <div className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                  <Input
-                    placeholder="Поиск по номеру телефона..."
-                    value={searchPhone}
-                    onChange={(e) => {
-                      setSearchPhone(e.target.value);
-                      setPage(0);
-                    }}
-                    className="w-full"
-                  />
+            <div className="flex flex-col gap-6">
+              {/* Фильтры */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Фильтры просмотра</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Телефон</label>
+                    <Input
+                      placeholder="Поиск по номеру..."
+                      value={searchPhone}
+                      onChange={(e) => {
+                        setSearchPhone(e.target.value);
+                        setPage(0);
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">С даты</label>
+                    <Input
+                      type="date"
+                      value={filterDateFrom}
+                      onChange={(e) => {
+                        setFilterDateFrom(e.target.value);
+                        setPage(0);
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1.5 block">По дату</label>
+                    <Input
+                      type="date"
+                      value={filterDateTo}
+                      onChange={(e) => {
+                        setFilterDateTo(e.target.value);
+                        setPage(0);
+                      }}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Input
-                    type="date"
-                    placeholder="Фильтр: с даты"
-                    value={filterDateFrom}
-                    onChange={(e) => {
-                      setFilterDateFrom(e.target.value);
-                      setPage(0);
-                    }}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="date"
-                    placeholder="Фильтр: по дату"
-                    value={filterDateTo}
-                    onChange={(e) => {
-                      setFilterDateTo(e.target.value);
-                      setPage(0);
-                    }}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="date"
-                    placeholder="Дата для синхронизации"
-                    value={syncDate}
-                    onChange={(e) => setSyncDate(e.target.value)}
-                    className="w-full"
-                  />
+              </div>
+              
+              {/* Синхронизация */}
+              <div className="border-t pt-6">
+                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Синхронизация из ZEON</h3>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">Дата для синхронизации (необязательно)</label>
+                    <Input
+                      type="date"
+                      placeholder="Оставьте пустым для последних 7 дней"
+                      value={syncDate}
+                      onChange={(e) => setSyncDate(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <Button onClick={() => triggerSync(true)} disabled={syncing} variant="outline">
+                      <Icon
+                        name={syncing ? 'Loader2' : 'Database'}
+                        className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
+                        size={16}
+                      />
+                      Только БД
+                    </Button>
+                    <Button onClick={() => triggerSync(false)} disabled={syncing}>
+                      <Icon
+                        name={syncing ? 'Loader2' : 'RefreshCw'}
+                        className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
+                        size={16}
+                      />
+                      БД + FTP
+                    </Button>
+                  </div>
                 </div>
               </div>
               
               {/* Удаление записей */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
-                <div>
-                  <Input
-                    type="date"
-                    placeholder="Удалить: с даты"
-                    value={deleteFrom}
-                    onChange={(e) => setDeleteFrom(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <Input
-                    type="date"
-                    placeholder="Удалить: по дату"
-                    value={deleteTo}
-                    onChange={(e) => setDeleteTo(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-                <div className="col-span-2 flex gap-2">
-                  <Button 
-                    onClick={() => deleteRecordings(false)} 
-                    disabled={deleting || !deleteFrom || !deleteTo} 
-                    variant="destructive"
-                  >
-                    <Icon
-                      name={deleting ? 'Loader2' : 'Trash2'}
-                      className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
-                      size={16}
+              <div className="border-t pt-6">
+                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Удаление записей за период</h3>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">С даты</label>
+                    <Input
+                      type="date"
+                      value={deleteFrom}
+                      onChange={(e) => setDeleteFrom(e.target.value)}
+                      className="w-full"
                     />
-                    Удалить из БД
-                  </Button>
-                  <Button 
-                    onClick={() => deleteRecordings(true)} 
-                    disabled={deleting || !deleteFrom || !deleteTo} 
-                    variant="destructive"
-                  >
-                    <Icon
-                      name={deleting ? 'Loader2' : 'Trash2'}
-                      className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
-                      size={16}
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-xs text-muted-foreground mb-1.5 block">По дату</label>
+                    <Input
+                      type="date"
+                      value={deleteTo}
+                      onChange={(e) => setDeleteTo(e.target.value)}
+                      className="w-full"
                     />
-                    Удалить из БД + SFTP
-                  </Button>
+                  </div>
+                  <div className="flex items-end gap-2">
+                    <Button 
+                      onClick={() => deleteRecordings(false)} 
+                      disabled={deleting || !deleteFrom || !deleteTo} 
+                      variant="destructive"
+                    >
+                      <Icon
+                        name={deleting ? 'Loader2' : 'Trash2'}
+                        className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
+                        size={16}
+                      />
+                      Удалить из БД
+                    </Button>
+                    <Button 
+                      onClick={() => deleteRecordings(true)} 
+                      disabled={deleting || !deleteFrom || !deleteTo} 
+                      variant="destructive"
+                    >
+                      <Icon
+                        name={deleting ? 'Loader2' : 'Trash2'}
+                        className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
+                        size={16}
+                      />
+                      Удалить из БД + SFTP
+                    </Button>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex gap-2 pt-4 border-t">
+              {/* Диагностика */}
+              <div className="border-t pt-6">
                 <Button onClick={runDiagnostics} disabled={diagnosing} variant="outline">
                   <Icon
                     name={diagnosing ? 'Loader2' : 'Stethoscope'}
                     className={`mr-2 ${diagnosing ? 'animate-spin' : ''}`}
                     size={16}
                   />
-                  {diagnosing ? 'Проверка...' : 'Диагностика'}
-                </Button>
-                <Button onClick={() => triggerSync(true)} disabled={syncing} variant="outline">
-                  <Icon
-                    name={syncing ? 'Loader2' : 'Database'}
-                    className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                    size={16}
-                  />
-                  {syncing ? 'Синхронизация...' : 'Только БД'}
-                </Button>
-                <Button onClick={() => triggerSync(false)} disabled={syncing}>
-                  <Icon
-                    name={syncing ? 'Loader2' : 'RefreshCw'}
-                    className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                    size={16}
-                  />
-                  {syncing ? 'Синхронизация...' : 'БД + FTP'}
+                  {diagnosing ? 'Проверка...' : 'Диагностика подключения'}
                 </Button>
               </div>
             </div>
