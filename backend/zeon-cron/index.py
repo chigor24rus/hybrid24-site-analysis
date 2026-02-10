@@ -41,8 +41,10 @@ def handler(event: dict, context) -> dict:
     
     if action == 'trigger':
         try:
-            # Запускаем синхронизацию
-            response = requests.get(zeon_function_url, timeout=300)
+            # Запускаем синхронизацию с параметром skip_ftp если передан
+            skip_ftp = query_params.get('skip_ftp', 'false')
+            url = f'{zeon_function_url}?skip_ftp={skip_ftp}'
+            response = requests.get(url, timeout=300)
             
             if response.status_code == 200:
                 result = response.json()

@@ -84,12 +84,13 @@ const AdminZeonSyncPage = () => {
     }
   };
 
-  const triggerSync = async () => {
+  const triggerSync = async (skipFtp = false) => {
     setSyncing(true);
     try {
-      const response = await fetch(
-        'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger'
-      );
+      const url = skipFtp 
+        ? 'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger&skip_ftp=true'
+        : 'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger';
+      const response = await fetch(url);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -235,7 +236,7 @@ const AdminZeonSyncPage = () => {
                   />
                   {diagnosing ? 'Проверка...' : 'Диагностика'}
                 </Button>
-                <Button onClick={triggerSync} disabled={syncing}>
+                <Button onClick={() => triggerSync(true)} disabled={syncing}>
                   <Icon
                     name={syncing ? 'Loader2' : 'RefreshCw'}
                     className={`mr-2 ${syncing ? 'animate-spin' : ''}`}

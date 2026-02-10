@@ -17,6 +17,7 @@ def handler(event: dict, context) -> dict:
     method = event.get('httpMethod', 'GET')
     query_params = event.get('queryStringParameters', {}) or {}
     dry_run = query_params.get('dry_run') == 'true'
+    skip_ftp = query_params.get('skip_ftp') == 'true'  # Пропустить FTP загрузку
     
     if method == 'OPTIONS':
         return {
@@ -202,12 +203,12 @@ def handler(event: dict, context) -> dict:
                 }, ensure_ascii=False)
             }
         
-        # Подключаемся к FTP (только если не dry_run)
+        # Подключаемся к FTP (только если не dry_run и не skip_ftp)
         ftp = None
         ftp_error = None
-        if not dry_run:
+        if not dry_run and not skip_ftp:
             try:
-                ftp = FTP(timeout=10)
+                ftp = FTP(timeout=5)
                 ftp.connect(ftp_host, 21)
                 ftp.login(ftp_user, ftp_password)
                 ftp.set_pasv(True)
@@ -222,6 +223,8 @@ def handler(event: dict, context) -> dict:
             except Exception as e:
                 ftp_error = f'FTP connection failed: {str(e)}'
                 ftp = None  # Продолжаем без FTP
+        elif skip_ftp:
+            ftp_error = 'FTP skipped (skip_ftp=true)'
         
         # Обрабатываем каждый звонок с записью (с лимитом)
         for call in recordings.get('data', []):
