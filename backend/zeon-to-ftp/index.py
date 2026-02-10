@@ -67,7 +67,9 @@ def handler(event: dict, context) -> dict:
     
     synced_count = 0
     skipped_count = 0
+    no_recording_count = 0
     errors = []
+    max_per_run = 10  # Максимум файлов за один запуск
     
     try:
         # Подключаемся к БД
@@ -216,10 +218,15 @@ def handler(event: dict, context) -> dict:
                 ftp.mkd(ftp_path)
                 ftp.cwd(ftp_path)
         
-        # Обрабатываем каждый звонок с записью
+        # Обрабатываем каждый звонок с записью (с лимитом)
         for call in recordings.get('data', []):
+            # Останавливаемся если достигли лимита
+            if synced_count >= max_per_run:
+                break
+            
             link = call.get('link')  # ID файла записи
             if not link:
+                no_recording_count += 1
                 continue  # Пропускаем звонки без записи
             
             recording_id = str(link)
@@ -304,6 +311,9 @@ def handler(event: dict, context) -> dict:
         cursor.close()
         conn.close()
         
+        total_calls = len(recordings.get('data', []))
+        calls_with_recordings = sum(1 for call in recordings.get('data', []) if call.get('link'))
+        
         return {
             'statusCode': 200,
             'headers': {
@@ -314,9 +324,11 @@ def handler(event: dict, context) -> dict:
                 'success': True,
                 'synced': synced_count,
                 'skipped': skipped_count,
+                'no_recording': no_recording_count,
                 'errors': errors,
-                'total_calls': len(recordings.get('data', [])),
-                'calls_with_recordings': sum(1 for call in recordings.get('data', []) if call.get('link'))
+                'total_calls': total_calls,
+                'calls_with_recordings': calls_with_recordings,
+                'message': f'Обработано {synced_count} из {calls_with_recordings} записей. Пропущено: {skipped_count} (уже синхронизированы), {no_recording_count} (без записи)'
             }, ensure_ascii=False)
         }
     
