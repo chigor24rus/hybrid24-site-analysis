@@ -142,30 +142,60 @@ def handler(event: dict, context) -> dict:
         }
     
     if ftp_host and ftp_user and ftp_password:
+        ftp_debug = {}
         try:
-            ftp = FTP(timeout=10)
+            import socket
+            # Проверяем DNS резолвинг
+            try:
+                ip = socket.gethostbyname(ftp_host)
+                ftp_debug['dns'] = f'OK ({ip})'
+            except Exception as e:
+                ftp_debug['dns'] = f'FAILED: {str(e)}'
+                raise Exception(f'DNS resolution failed for {ftp_host}')
+            
+            # Проверяем TCP подключение
+            try:
+                sock = socket.create_connection((ftp_host, 21), timeout=5)
+                ftp_debug['tcp'] = 'OK (port 21 accessible)'
+                sock.close()
+            except Exception as e:
+                ftp_debug['tcp'] = f'FAILED: {str(e)}'
+                raise Exception(f'Cannot connect to {ftp_host}:21')
+            
+            # Пробуем FTP подключение
+            ftp = FTP(timeout=5)
             ftp.connect(ftp_host, 21)
+            ftp_debug['connect'] = 'OK'
+            
             ftp.login(ftp_user, ftp_password)
+            ftp_debug['login'] = 'OK'
+            
             ftp.set_pasv(True)
+            ftp_debug['pasv'] = 'OK'
             
             try:
                 ftp.cwd(ftp_path)
                 files = ftp.nlst()
+                ftp_debug['cwd'] = f'OK ({len(files)} files)'
                 results['ftp'] = {
                     'status': 'ok',
-                    'message': f'Подключено. Файлов в {ftp_path}: {len(files)}'
+                    'message': f'Подключено. Файлов в {ftp_path}: {len(files)}',
+                    'debug': ftp_debug
                 }
-            except:
+            except Exception as e:
+                ftp_debug['cwd'] = f'FAILED: {str(e)}'
                 results['ftp'] = {
                     'status': 'warning',
-                    'message': f'Подключено, но директория {ftp_path} не найдена (будет создана)'
+                    'message': f'Подключено, но директория {ftp_path} недоступна',
+                    'debug': ftp_debug
                 }
             
             ftp.quit()
         except Exception as e:
             results['ftp'] = {
                 'status': 'error',
-                'message': str(e)
+                'message': str(e),
+                'debug': ftp_debug
             }
     else:
         results['ftp'] = {

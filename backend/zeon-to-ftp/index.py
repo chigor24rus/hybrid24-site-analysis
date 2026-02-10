@@ -208,18 +208,27 @@ def handler(event: dict, context) -> dict:
         ftp_error = None
         if not dry_run and not skip_ftp:
             try:
-                ftp = FTP(timeout=5)
+                ftp = FTP(timeout=10)
                 ftp.connect(ftp_host, 21)
                 ftp.login(ftp_user, ftp_password)
-                ftp.set_pasv(True)
                 
-                # Переходим в нужную директорию
-                try:
-                    ftp.cwd(ftp_path)
-                except:
-                    # Создаём директорию если не существует
-                    ftp.mkd(ftp_path)
-                    ftp.cwd(ftp_path)
+                # Пробуем активный режим вместо пассивного (fix для firewall)
+                ftp.set_pasv(False)
+                
+                # Получаем текущую директорию (вместо cwd)
+                current_dir = ftp.pwd()
+                
+                # Если нужна другая директория
+                if ftp_path and ftp_path != '/' and ftp_path != current_dir:
+                    try:
+                        ftp.cwd(ftp_path)
+                    except:
+                        # Создаём директорию если не существует
+                        try:
+                            ftp.mkd(ftp_path)
+                            ftp.cwd(ftp_path)
+                        except:
+                            pass  # Продолжаем в текущей директории
             except Exception as e:
                 ftp_error = f'FTP connection failed: {str(e)}'
                 ftp = None  # Продолжаем без FTP

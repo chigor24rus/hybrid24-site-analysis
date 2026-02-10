@@ -236,13 +236,21 @@ const AdminZeonSyncPage = () => {
                   />
                   {diagnosing ? 'Проверка...' : 'Диагностика'}
                 </Button>
-                <Button onClick={() => triggerSync(true)} disabled={syncing}>
+                <Button onClick={() => triggerSync(true)} disabled={syncing} variant="outline">
+                  <Icon
+                    name={syncing ? 'Loader2' : 'Database'}
+                    className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
+                    size={16}
+                  />
+                  {syncing ? 'Синхронизация...' : 'Только БД'}
+                </Button>
+                <Button onClick={() => triggerSync(false)} disabled={syncing}>
                   <Icon
                     name={syncing ? 'Loader2' : 'RefreshCw'}
                     className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
                     size={16}
                   />
-                  {syncing ? 'Синхронизация...' : 'Запустить синхронизацию'}
+                  {syncing ? 'Синхронизация...' : 'БД + FTP'}
                 </Button>
               </div>
             </div>
