@@ -38,6 +38,7 @@ const AdminZeonSyncPage = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [syncingAmi, setSyncingAmi] = useState(false);
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnostics, setDiagnostics] = useState<Record<string, { status: string; message: string }> | null>(null);
   const [searchPhone, setSearchPhone] = useState('');
@@ -190,6 +191,39 @@ const AdminZeonSyncPage = () => {
     }
   };
 
+  const triggerAmiSync = async (skipFtp = false) => {
+    setSyncingAmi(true);
+    try {
+      const params = new URLSearchParams();
+      if (skipFtp) params.append('skip_ftp', 'true');
+      if (syncDate) params.append('date', syncDate);
+      params.append('limit', '50');
+      
+      const url = `https://functions.poehali.dev/86e16b48-8b61-4edb-989a-385cfae159f6?${params}`;
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert(`Ошибка запуска AMI синхронизации: ${response.status}\n${errorText}`);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(`AMI синхронизация завершена!\nПеренесено: ${data.synced}\nПропущено: ${data.skipped}\nНайдено файлов: ${data.total_found}`);
+        fetchLogs();
+      } else {
+        alert(`Ошибка: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error triggering AMI sync:', error);
+      alert(`Ошибка при запуске AMI синхронизации: ${error}`);
+    } finally {
+      setSyncingAmi(false);
+    }
+  };
+
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
@@ -256,6 +290,8 @@ const AdminZeonSyncPage = () => {
             setSyncDate={setSyncDate}
             syncing={syncing}
             triggerSync={triggerSync}
+            syncingAmi={syncingAmi}
+            triggerAmiSync={triggerAmiSync}
             deleteFrom={deleteFrom}
             setDeleteFrom={setDeleteFrom}
             deleteTo={deleteTo}

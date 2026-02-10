@@ -13,6 +13,8 @@ interface ZeonSyncControlsProps {
   setSyncDate: (value: string) => void;
   syncing: boolean;
   triggerSync: (skipFtp: boolean) => void;
+  syncingAmi: boolean;
+  triggerAmiSync: (skipFtp: boolean) => void;
   deleteFrom: string;
   setDeleteFrom: (value: string) => void;
   deleteTo: string;
@@ -35,6 +37,8 @@ export const ZeonSyncControls = ({
   setSyncDate,
   syncing,
   triggerSync,
+  syncingAmi,
+  triggerAmiSync,
   deleteFrom,
   setDeleteFrom,
   deleteTo,
@@ -91,7 +95,7 @@ export const ZeonSyncControls = ({
         </div>
         
         <div className="border-t pt-6">
-          <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Синхронизация из ZEON</h3>
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Синхронизация через REST API</h3>
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
               <label className="text-xs text-muted-foreground mb-1.5 block">Дата для синхронизации (необязательно)</label>
@@ -119,6 +123,40 @@ export const ZeonSyncControls = ({
                   size={16}
                 />
                 БД + FTP
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        <div className="border-t pt-6">
+          <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Синхронизация через AMI (с оригинальными именами)</h3>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <label className="text-xs text-muted-foreground mb-1.5 block">Дата для синхронизации (необязательно)</label>
+              <Input
+                type="date"
+                placeholder="Оставьте пустым для всех файлов"
+                value={syncDate}
+                onChange={(e) => setSyncDate(e.target.value)}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-end gap-2">
+              <Button onClick={() => triggerAmiSync(true)} disabled={syncingAmi} variant="outline">
+                <Icon
+                  name={syncingAmi ? 'Loader2' : 'Database'}
+                  className={`mr-2 ${syncingAmi ? 'animate-spin' : ''}`}
+                  size={16}
+                />
+                AMI: Только БД
+              </Button>
+              <Button onClick={() => triggerAmiSync(false)} disabled={syncingAmi}>
+                <Icon
+                  name={syncingAmi ? 'Loader2' : 'Server'}
+                  className={`mr-2 ${syncingAmi ? 'animate-spin' : ''}`}
+                  size={16}
+                />
+                AMI: БД + FTP
               </Button>
             </div>
           </div>

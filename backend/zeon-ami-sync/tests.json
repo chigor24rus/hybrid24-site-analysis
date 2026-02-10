@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Test AMI sync endpoint availability",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test dry run mode",
+      "method": "GET",
+      "path": "/?dry_run=true",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean",
+        "dry_run": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
