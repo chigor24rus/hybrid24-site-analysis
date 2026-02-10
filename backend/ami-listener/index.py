@@ -75,14 +75,23 @@ def handler(event: dict, context) -> dict:
             
             sock.close()
             
+            # Проверяем успех авторизации
+            is_success = 'Response: Success' in response
+            
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                 'body': json.dumps({
-                    'success': True,
-                    'message': 'AMI connection successful',
+                    'success': is_success,
+                    'message': 'AMI login successful' if is_success else 'AMI login failed',
                     'greeting': greeting[:200],
-                    'login_response': response[:500]
+                    'login_response': response[:500],
+                    'debug_info': {
+                        'ami_host': ami_host,
+                        'ami_port': ami_port,
+                        'ami_user': ami_user,
+                        'ami_secret_length': len(ami_secret) if ami_secret else 0
+                    }
                 })
             }
             
