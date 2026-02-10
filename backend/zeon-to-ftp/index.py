@@ -204,19 +204,24 @@ def handler(event: dict, context) -> dict:
         
         # Подключаемся к FTP (только если не dry_run)
         ftp = None
+        ftp_error = None
         if not dry_run:
-            ftp = FTP(timeout=60)
-            ftp.connect(ftp_host, 21)
-            ftp.login(ftp_user, ftp_password)
-            ftp.set_pasv(True)
-            
-            # Переходим в нужную директорию
             try:
-                ftp.cwd(ftp_path)
-            except:
-                # Создаём директорию если не существует
-                ftp.mkd(ftp_path)
-                ftp.cwd(ftp_path)
+                ftp = FTP(timeout=10)
+                ftp.connect(ftp_host, 21)
+                ftp.login(ftp_user, ftp_password)
+                ftp.set_pasv(True)
+                
+                # Переходим в нужную директорию
+                try:
+                    ftp.cwd(ftp_path)
+                except:
+                    # Создаём директорию если не существует
+                    ftp.mkd(ftp_path)
+                    ftp.cwd(ftp_path)
+            except Exception as e:
+                ftp_error = f'FTP connection failed: {str(e)}'
+                ftp = None  # Продолжаем без FTP
         
         # Обрабатываем каждый звонок с записью (с лимитом)
         for call in recordings.get('data', []):
@@ -257,8 +262,8 @@ def handler(event: dict, context) -> dict:
                 file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
                 file_size = 0
                 
-                # Скачиваем и загружаем только если не dry_run
-                if not dry_run:
+                # Скачиваем и загружаем только если не dry_run и FTP доступен
+                if not dry_run and ftp:
                     # Скачиваем файл записи через get-mp3
                     # ВНИМАНИЕ: Порядок параметров ВАЖЕН для hash!
                     from collections import OrderedDict
@@ -314,22 +319,27 @@ def handler(event: dict, context) -> dict:
         total_calls = len(recordings.get('data', []))
         calls_with_recordings = sum(1 for call in recordings.get('data', []) if call.get('link'))
         
+        result = {
+            'success': True,
+            'synced': synced_count,
+            'skipped': skipped_count,
+            'no_recording': no_recording_count,
+            'errors': errors,
+            'total_calls': total_calls,
+            'calls_with_recordings': calls_with_recordings,
+            'message': f'Обработано {synced_count} из {calls_with_recordings} записей. Пропущено: {skipped_count} (уже синхронизированы), {no_recording_count} (без записи)'
+        }
+        
+        if ftp_error:
+            result['ftp_warning'] = ftp_error
+        
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({
-                'success': True,
-                'synced': synced_count,
-                'skipped': skipped_count,
-                'no_recording': no_recording_count,
-                'errors': errors,
-                'total_calls': total_calls,
-                'calls_with_recordings': calls_with_recordings,
-                'message': f'Обработано {synced_count} из {calls_with_recordings} записей. Пропущено: {skipped_count} (уже синхронизированы), {no_recording_count} (без записи)'
-            }, ensure_ascii=False)
+            'body': json.dumps(result, ensure_ascii=False)
         }
     
     except Exception as e:
