@@ -89,7 +89,8 @@ def handler(event: dict, context) -> dict:
                 file_name VARCHAR(500),
                 file_size INTEGER,
                 synced_at TIMESTAMP DEFAULT NOW(),
-                ftp_path TEXT
+                ftp_path TEXT,
+                call_date TIMESTAMP
             )
         ''')
         conn.commit()
@@ -352,12 +353,20 @@ def handler(event: dict, context) -> dict:
                     remote_path = f'{sftp_path}/{file_name}'
                     sftp.putfo(BytesIO(file_content), remote_path)
                 
-                # Сохраняем информацию о синхронизации в БД
+                # Сохраняем информацию о синхронизации в БД с датой звонка
+                # Преобразуем call_date_str в datetime объект для БД
+                call_datetime_obj = None
+                if call_date_str:
+                    try:
+                        call_datetime_obj = datetime.strptime(call_date_str, '%Y-%m-%d %H:%M:%S')
+                    except ValueError:
+                        pass
+                
                 cursor.execute('''
                     INSERT INTO zeon_recordings_sync 
-                    (recording_id, call_id, phone_number, duration, file_name, file_size, ftp_path)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                ''', (recording_id, call_id, phone_number, duration, file_name, file_size, f'{sftp_path}/{file_name}'))
+                    (recording_id, call_id, phone_number, duration, file_name, file_size, ftp_path, call_date)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                ''', (recording_id, call_id, phone_number, duration, file_name, file_size, f'{sftp_path}/{file_name}', call_datetime_obj))
                 conn.commit()
                 
                 synced_count += 1

@@ -15,6 +15,7 @@ interface SyncRecord {
   file_size: number;
   synced_at: string;
   ftp_path: string;
+  call_date?: string;
 }
 
 interface Stats {
@@ -307,7 +308,7 @@ const AdminZeonSyncPage = () => {
                   {recordings.map((record) => (
                     <tr key={record.id} className="hover:bg-muted/50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {formatDate(record.synced_at)}
+                        {record.call_date ? formatDate(record.call_date) : formatDate(record.synced_at)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         {record.phone_number}

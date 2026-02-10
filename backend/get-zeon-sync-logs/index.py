@@ -57,7 +57,8 @@ def handler(event: dict, context) -> dict:
                 file_name VARCHAR(500),
                 file_size INTEGER,
                 synced_at TIMESTAMP DEFAULT NOW(),
-                ftp_path TEXT
+                ftp_path TEXT,
+                call_date TIMESTAMP
             )
         ''')
         conn.commit()
@@ -91,10 +92,11 @@ def handler(event: dict, context) -> dict:
                 file_name,
                 file_size,
                 synced_at,
-                ftp_path
+                ftp_path,
+                call_date
             FROM zeon_recordings_sync
             {where_clause}
-            ORDER BY synced_at DESC
+            ORDER BY call_date DESC
             LIMIT %s OFFSET %s
         '''
         params.extend([limit, offset])
@@ -106,6 +108,8 @@ def handler(event: dict, context) -> dict:
         for rec in recordings:
             if rec['synced_at']:
                 rec['synced_at'] = rec['synced_at'].isoformat()
+            if rec.get('call_date'):
+                rec['call_date'] = rec['call_date'].isoformat()
         
         if stats['last_sync']:
             stats['last_sync'] = stats['last_sync'].isoformat()
