@@ -279,6 +279,8 @@ def handler(event: dict, context) -> dict:
             recording_id = str(link)
             call_id = call.get('linkedid', '')
             phone_number = call.get('client', '')
+            call_date_str = call.get('calldate', '')  # Дата звонка из ZEON
+            
             # talktime может быть строкой "00:00:05" или числом
             talktime_raw = call.get('talktime', '0')
             if isinstance(talktime_raw, str) and ':' in talktime_raw:
@@ -299,8 +301,18 @@ def handler(event: dict, context) -> dict:
                 continue
             
             try:
-                # Формируем имя файла
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                # Формируем имя файла с датой звонка из ZEON
+                if call_date_str:
+                    try:
+                        # calldate в формате "YYYY-MM-DD HH:MM:SS"
+                        call_datetime = datetime.strptime(call_date_str, '%Y-%m-%d %H:%M:%S')
+                        timestamp = call_datetime.strftime('%Y%m%d_%H%M%S')
+                    except ValueError:
+                        # Если формат неожиданный, используем текущее время
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                else:
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                
                 file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
                 file_size = 0
                 
