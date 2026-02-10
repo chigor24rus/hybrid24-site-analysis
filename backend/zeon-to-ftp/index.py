@@ -37,7 +37,7 @@ def handler(event: dict, context) -> dict:
     sftp_port = int(os.environ.get('SFTP_PORT', '22'))
     sftp_user = os.environ.get('SFTP_USER')
     sftp_password = os.environ.get('SFTP_PASSWORD')
-    sftp_path = os.environ.get('SFTP_PATH', '/records')
+    sftp_path = '/Zeon/rec'
     db_dsn = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_DSN')
     
     missing_secrets = []
