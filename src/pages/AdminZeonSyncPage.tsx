@@ -33,6 +33,7 @@ const AdminZeonSyncPage = () => {
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnostics, setDiagnostics] = useState<Record<string, { status: string; message: string }> | null>(null);
   const [searchPhone, setSearchPhone] = useState('');
+  const [syncDate, setSyncDate] = useState('');
   const [page, setPage] = useState(0);
   const limit = 50;
 
@@ -87,9 +88,12 @@ const AdminZeonSyncPage = () => {
   const triggerSync = async (skipFtp = false) => {
     setSyncing(true);
     try {
-      const url = skipFtp 
-        ? 'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger&skip_ftp=true'
-        : 'https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?action=trigger';
+      const params = new URLSearchParams();
+      params.append('action', 'trigger');
+      if (skipFtp) params.append('skip_ftp', 'true');
+      if (syncDate) params.append('date', syncDate);
+      
+      const url = `https://functions.poehali.dev/9935542d-697a-4927-baa4-878149ece77d?${params}`;
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -215,17 +219,28 @@ const AdminZeonSyncPage = () => {
 
           {/* Панель управления */}
           <div className="bg-card border rounded-lg p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <Input
-                  placeholder="Поиск по номеру телефона..."
-                  value={searchPhone}
-                  onChange={(e) => {
-                    setSearchPhone(e.target.value);
-                    setPage(0);
-                  }}
-                  className="w-full"
-                />
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <Input
+                    placeholder="Поиск по номеру телефона..."
+                    value={searchPhone}
+                    onChange={(e) => {
+                      setSearchPhone(e.target.value);
+                      setPage(0);
+                    }}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    type="date"
+                    placeholder="Дата для синхронизации"
+                    value={syncDate}
+                    onChange={(e) => setSyncDate(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
               </div>
               <div className="flex gap-2">
                 <Button onClick={runDiagnostics} disabled={diagnosing} variant="outline">
@@ -254,6 +269,12 @@ const AdminZeonSyncPage = () => {
                 </Button>
               </div>
             </div>
+            {syncDate && (
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded text-sm text-blue-800 dark:text-blue-200">
+                <Icon name="Info" size={16} className="inline mr-2" />
+                Будут синхронизированы записи за {new Date(syncDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+            )}
           </div>
 
           {/* Таблица записей */}

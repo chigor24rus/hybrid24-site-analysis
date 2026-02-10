@@ -117,11 +117,34 @@ def handler(event: dict, context) -> dict:
             if list_data.get('result') == 1:
                 available_methods = list_data.get('data', [])
         
-        # Получаем звонки за последние 1 день (7 дней в production)
+        # Получаем звонки за определенный период
         from datetime import datetime, timedelta
-        end_date = datetime.now()
-        days_back = 1 if dry_run else 7
-        start_date = end_date - timedelta(days=days_back)
+        
+        # Если передана дата, синхронизируем записи за эту дату
+        sync_date = query_params.get('date')
+        if sync_date:
+            try:
+                # Парсим дату в формате YYYY-MM-DD
+                target_date = datetime.strptime(sync_date, '%Y-%m-%d')
+                start_date = target_date.replace(hour=0, minute=0, second=0)
+                end_date = target_date.replace(hour=23, minute=59, second=59)
+            except ValueError:
+                return {
+                    'statusCode': 400,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({
+                        'success': False,
+                        'error': 'Неверный формат даты. Используйте YYYY-MM-DD'
+                    })
+                }
+        else:
+            # По умолчанию за последние 1 день (7 дней в production)
+            end_date = datetime.now()
+            days_back = 1 if dry_run else 7
+            start_date = end_date - timedelta(days=days_back)
         
         # ВНИМАНИЕ: Порядок параметров ВАЖЕН для hash!
         # Используем OrderedDict и точно такой же порядок, как в примере поддержки
