@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Test AMI connection",
+      "method": "GET",
+      "path": "/?action=test",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Test listen mode with short timeout",
+      "method": "GET",
+      "path": "/?action=listen&timeout=5",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean",
+        "listen_duration": 5
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 {
+  "ami-listener": "https://functions.poehali.dev/0dfb073d-29de-49a6-814d-5f1cec43838f",
   "zeon-ami-sync": "https://functions.poehali.dev/86e16b48-8b61-4edb-989a-385cfae159f6",
   "delete-zeon-recordings": "https://functions.poehali.dev/0a0417d3-fbc0-4371-a24b-57eff0046ca1",
   "get-zeon-sync-logs": "https://functions.poehali.dev/a92e76a2-b78a-4c7c-8411-ea8764ff63be",

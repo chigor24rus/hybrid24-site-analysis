@@ -302,19 +302,32 @@ def handler(event: dict, context) -> dict:
                 continue
             
             try:
-                # Формируем имя файла с датой звонка из ZEON
-                if call_date_str:
-                    try:
-                        # calldate в формате "YYYY-MM-DD HH:MM:SS"
-                        call_datetime = datetime.strptime(call_date_str, '%Y-%m-%d %H:%M:%S')
-                        timestamp = call_datetime.strftime('%Y%m%d_%H%M%S')
-                    except ValueError:
-                        # Если формат неожиданный, используем текущее время
-                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                else:
-                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                # Пытаемся получить оригинальное имя файла из БД по linkedid
+                cursor.execute(
+                    'SELECT original_filename FROM call_recordings_mapping WHERE linkedid = %s',
+                    (call_id,)
+                )
+                mapping_result = cursor.fetchone()
                 
-                file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
+                if mapping_result:
+                    # Используем оригинальное имя из AMI listener
+                    file_name = mapping_result[0]
+                    # Меняем расширение на .mp3 если нужно (ZEON отдает mp3)
+                    if file_name.endswith('.wav'):
+                        file_name = file_name.replace('.wav', '.mp3')
+                else:
+                    # Fallback: генерируем имя как раньше
+                    if call_date_str:
+                        try:
+                            call_datetime = datetime.strptime(call_date_str, '%Y-%m-%d %H:%M:%S')
+                            timestamp = call_datetime.strftime('%Y%m%d_%H%M%S')
+                        except ValueError:
+                            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    else:
+                        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    
+                    file_name = f'{timestamp}_{call_id}_{phone_number}.mp3'
+                
                 file_size = 0
                 
                 # Скачиваем и загружаем только если не dry_run и SFTP доступен
