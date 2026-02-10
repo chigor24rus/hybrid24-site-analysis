@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
-import { AdminLayout, LoadingScreen, AdminPageHeader } from '@/components/admin';
+import { 
+  AdminLayout, 
+  LoadingScreen, 
+  AdminPageHeader,
+  ZeonSyncStats,
+  ZeonSyncDiagnostics,
+  ZeonSyncControls,
+  ZeonSyncTable
+} from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 interface SyncRecord {
@@ -196,7 +203,6 @@ const AdminZeonSyncPage = () => {
   };
 
   const formatDate = (dateStr: string) => {
-    // Конвертируем в часовой пояс Красноярска (UTC+7)
     const date = new Date(dateStr);
     return date.toLocaleString('ru-RU', { 
       timeZone: 'Asia/Krasnoyarsk',
@@ -227,307 +233,50 @@ const AdminZeonSyncPage = () => {
             }
           />
 
-          {/* Статистика */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-card border rounded-lg p-6">
-                <div className="text-muted-foreground text-sm mb-1">
-                  Всего записей
-                </div>
-                <div className="text-3xl font-bold">
-                  {stats.total_recordings.toLocaleString()}
-                </div>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <div className="text-muted-foreground text-sm mb-1">
-                  Общий размер
-                </div>
-                <div className="text-3xl font-bold">
-                  {formatFileSize(stats.total_size || 0)}
-                </div>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <div className="text-muted-foreground text-sm mb-1">
-                  Последняя синхронизация
-                </div>
-                <div className="text-sm font-medium">
-                  {stats.last_sync ? formatDate(stats.last_sync) : 'Нет данных'}
-                </div>
-              </div>
-
-              <div className="bg-card border rounded-lg p-6">
-                <div className="text-muted-foreground text-sm mb-1">
-                  Первая синхронизация
-                </div>
-                <div className="text-sm font-medium">
-                  {stats.first_sync ? formatDate(stats.first_sync) : 'Нет данных'}
-                </div>
-              </div>
-            </div>
+            <ZeonSyncStats 
+              stats={stats} 
+              formatFileSize={formatFileSize} 
+              formatDate={formatDate} 
+            />
           )}
 
-          {/* Диагностика */}
           {diagnostics && (
-            <div className="bg-card border rounded-lg p-6 mb-8">
-              <h3 className="text-lg font-semibold mb-4">Результаты диагностики</h3>
-              <div className="space-y-3">
-                {Object.entries(diagnostics).map(([key, value]) => {
-                  if (key === 'secrets') return null;
-                  const statusIcon = value.status === 'ok' ? 'CheckCircle2' : value.status === 'warning' ? 'AlertCircle' : 'XCircle';
-                  const statusColor = value.status === 'ok' ? 'text-green-600' : value.status === 'warning' ? 'text-yellow-600' : 'text-red-600';
-                  
-                  return (
-                    <div key={key} className="flex items-start gap-3 p-3 bg-muted/50 rounded">
-                      <Icon name={statusIcon} className={`mt-0.5 ${statusColor}`} size={20} />
-                      <div className="flex-1">
-                        <div className="font-medium capitalize">{key.replace('_', ' ')}</div>
-                        <div className="text-sm text-muted-foreground">{value.message}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <ZeonSyncDiagnostics diagnostics={diagnostics} />
           )}
 
-          {/* Панель управления */}
-          <div className="bg-card border rounded-lg p-6 mb-8">
-            <div className="flex flex-col gap-6">
-              {/* Фильтры */}
-              <div>
-                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Фильтры просмотра</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1.5 block">Телефон</label>
-                    <Input
-                      placeholder="Поиск по номеру..."
-                      value={searchPhone}
-                      onChange={(e) => {
-                        setSearchPhone(e.target.value);
-                        setPage(0);
-                      }}
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1.5 block">С даты</label>
-                    <Input
-                      type="date"
-                      value={filterDateFrom}
-                      onChange={(e) => {
-                        setFilterDateFrom(e.target.value);
-                        setPage(0);
-                      }}
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground mb-1.5 block">По дату</label>
-                    <Input
-                      type="date"
-                      value={filterDateTo}
-                      onChange={(e) => {
-                        setFilterDateTo(e.target.value);
-                        setPage(0);
-                      }}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Синхронизация */}
-              <div className="border-t pt-6">
-                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Синхронизация из ZEON</h3>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1.5 block">Дата для синхронизации (необязательно)</label>
-                    <Input
-                      type="date"
-                      placeholder="Оставьте пустым для последних 7 дней"
-                      value={syncDate}
-                      onChange={(e) => setSyncDate(e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <Button onClick={() => triggerSync(true)} disabled={syncing} variant="outline">
-                      <Icon
-                        name={syncing ? 'Loader2' : 'Database'}
-                        className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                        size={16}
-                      />
-                      Только БД
-                    </Button>
-                    <Button onClick={() => triggerSync(false)} disabled={syncing}>
-                      <Icon
-                        name={syncing ? 'Loader2' : 'RefreshCw'}
-                        className={`mr-2 ${syncing ? 'animate-spin' : ''}`}
-                        size={16}
-                      />
-                      БД + FTP
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Удаление записей */}
-              <div className="border-t pt-6">
-                <h3 className="text-sm font-semibold mb-3 text-muted-foreground">Удаление записей за период</h3>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1.5 block">С даты</label>
-                    <Input
-                      type="date"
-                      value={deleteFrom}
-                      onChange={(e) => setDeleteFrom(e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="text-xs text-muted-foreground mb-1.5 block">По дату</label>
-                    <Input
-                      type="date"
-                      value={deleteTo}
-                      onChange={(e) => setDeleteTo(e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <Button 
-                      onClick={() => deleteRecordings(false)} 
-                      disabled={deleting || !deleteFrom || !deleteTo} 
-                      variant="destructive"
-                    >
-                      <Icon
-                        name={deleting ? 'Loader2' : 'Trash2'}
-                        className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
-                        size={16}
-                      />
-                      Удалить из БД
-                    </Button>
-                    <Button 
-                      onClick={() => deleteRecordings(true)} 
-                      disabled={deleting || !deleteFrom || !deleteTo} 
-                      variant="destructive"
-                    >
-                      <Icon
-                        name={deleting ? 'Loader2' : 'Trash2'}
-                        className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
-                        size={16}
-                      />
-                      Удалить из БД + SFTP
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Диагностика */}
-              <div className="border-t pt-6">
-                <Button onClick={runDiagnostics} disabled={diagnosing} variant="outline">
-                  <Icon
-                    name={diagnosing ? 'Loader2' : 'Stethoscope'}
-                    className={`mr-2 ${diagnosing ? 'animate-spin' : ''}`}
-                    size={16}
-                  />
-                  {diagnosing ? 'Проверка...' : 'Диагностика подключения'}
-                </Button>
-              </div>
-            </div>
-            {syncDate && (
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded text-sm text-blue-800 dark:text-blue-200">
-                <Icon name="Info" size={16} className="inline mr-2" />
-                Будут синхронизированы записи за {new Date(syncDate).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </div>
-            )}
-          </div>
+          <ZeonSyncControls
+            searchPhone={searchPhone}
+            setSearchPhone={setSearchPhone}
+            filterDateFrom={filterDateFrom}
+            setFilterDateFrom={setFilterDateFrom}
+            filterDateTo={filterDateTo}
+            setFilterDateTo={setFilterDateTo}
+            syncDate={syncDate}
+            setSyncDate={setSyncDate}
+            syncing={syncing}
+            triggerSync={triggerSync}
+            deleteFrom={deleteFrom}
+            setDeleteFrom={setDeleteFrom}
+            deleteTo={deleteTo}
+            setDeleteTo={setDeleteTo}
+            deleting={deleting}
+            deleteRecordings={deleteRecordings}
+            diagnosing={diagnosing}
+            runDiagnostics={runDiagnostics}
+            setPage={setPage}
+          />
 
-          {/* Таблица записей */}
-          <div className="bg-card border rounded-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Дата/Время
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Телефон
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      ID звонка
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Длительность
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Размер
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Файл
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {recordings.map((record) => (
-                    <tr key={record.id} className="hover:bg-muted/50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {record.call_date ? formatDate(record.call_date) : formatDate(record.synced_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        {record.phone_number}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                        {record.call_id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {formatDuration(record.duration)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        {formatFileSize(record.file_size)}
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <div className="max-w-xs truncate" title={record.file_name}>
-                          {record.file_name}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Пагинация */}
-            {stats && stats.total_recordings > limit && (
-              <div className="px-6 py-4 border-t flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                  Показано {page * limit + 1}-
-                  {Math.min((page + 1) * limit, stats.total_recordings)} из{' '}
-                  {stats.total_recordings}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(Math.max(0, page - 1))}
-                    disabled={page === 0}
-                  >
-                    <Icon name="ChevronLeft" size={16} />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage(page + 1)}
-                    disabled={(page + 1) * limit >= stats.total_recordings}
-                  >
-                    <Icon name="ChevronRight" size={16} />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
+          <ZeonSyncTable
+            recordings={recordings}
+            stats={stats}
+            page={page}
+            limit={limit}
+            setPage={setPage}
+            formatDate={formatDate}
+            formatDuration={formatDuration}
+            formatFileSize={formatFileSize}
+          />
         </div>
       </div>
     </AdminLayout>

@@ -12,3 +12,7 @@ export { AdminCard, AdminCardItem, AdminCardActions } from './AdminCard';
 export { AdminStat, AdminStatsGrid } from './AdminStats';
 export { AdminTable, AdminTableCell } from './AdminTable';
 export { AdminActionButton, AdminIconButton } from './AdminActionButton';
+export { ZeonSyncStats } from './ZeonSyncStats';
+export { ZeonSyncDiagnostics } from './ZeonSyncDiagnostics';
+export { ZeonSyncControls } from './ZeonSyncControls';
+export { ZeonSyncTable } from './ZeonSyncTable';
