@@ -45,6 +45,8 @@ def handler(event: dict, context) -> dict:
         limit = int(query_params.get('limit', 100))
         offset = int(query_params.get('offset', 0))
         phone = query_params.get('phone', '')
+        date_from = query_params.get('date_from', '')
+        date_to = query_params.get('date_to', '')
         
         # Создаём таблицу если не существует
         cursor.execute('''
@@ -75,12 +77,22 @@ def handler(event: dict, context) -> dict:
         stats = cursor.fetchone()
         
         # Получаем записи
-        where_clause = ''
+        where_clauses = []
         params = []
         
         if phone:
-            where_clause = 'WHERE phone_number LIKE %s'
+            where_clauses.append('phone_number LIKE %s')
             params.append(f'%{phone}%')
+        
+        if date_from:
+            where_clauses.append('call_date >= %s')
+            params.append(f'{date_from} 00:00:00')
+        
+        if date_to:
+            where_clauses.append('call_date <= %s')
+            params.append(f'{date_to} 23:59:59')
+        
+        where_clause = 'WHERE ' + ' AND '.join(where_clauses) if where_clauses else ''
         
         query = f'''
             SELECT 

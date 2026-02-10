@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "CORS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200,
+      "bodyMatcher": "none"
+    },
+    {
+      "name": "Missing parameters",
+      "method": "POST",
+      "path": "/",
+      "body": "{}",
+      "expectedStatus": 400,
+      "expectedBody": {
+        "success": false
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

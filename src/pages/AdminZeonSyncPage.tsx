@@ -35,12 +35,17 @@ const AdminZeonSyncPage = () => {
   const [diagnostics, setDiagnostics] = useState<Record<string, { status: string; message: string }> | null>(null);
   const [searchPhone, setSearchPhone] = useState('');
   const [syncDate, setSyncDate] = useState('');
+  const [filterDateFrom, setFilterDateFrom] = useState('');
+  const [filterDateTo, setFilterDateTo] = useState('');
+  const [deleteFrom, setDeleteFrom] = useState('');
+  const [deleteTo, setDeleteTo] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const [page, setPage] = useState(0);
   const limit = 50;
 
   useEffect(() => {
     fetchLogs();
-  }, [page, searchPhone]);
+  }, [page, searchPhone, filterDateFrom, filterDateTo]);
 
   const fetchLogs = async () => {
     setLoading(true);
@@ -52,6 +57,14 @@ const AdminZeonSyncPage = () => {
 
       if (searchPhone) {
         params.append('phone', searchPhone);
+      }
+
+      if (filterDateFrom) {
+        params.append('date_from', filterDateFrom);
+      }
+
+      if (filterDateTo) {
+        params.append('date_to', filterDateTo);
       }
 
       const response = await fetch(
@@ -83,6 +96,57 @@ const AdminZeonSyncPage = () => {
       alert(`Ошибка диагностики: ${error}`);
     } finally {
       setDiagnosing(false);
+    }
+  };
+
+  const deleteRecordings = async (deleteFromSftp = false) => {
+    if (!deleteFrom || !deleteTo) {
+      alert('Укажите период для удаления');
+      return;
+    }
+
+    const confirmMsg = deleteFromSftp 
+      ? `Удалить записи за период ${deleteFrom} - ${deleteTo} из БД И SFTP сервера?`
+      : `Удалить записи за период ${deleteFrom} - ${deleteTo} только из БД?`;
+
+    if (!confirm(confirmMsg)) return;
+
+    setDeleting(true);
+    try {
+      const response = await fetch(
+        'https://functions.poehali.dev/0a0417d3-fbc0-4371-a24b-57eff0046ca1',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date_from: deleteFrom,
+            date_to: deleteTo,
+            delete_from_sftp: deleteFromSftp
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert(`Ошибка удаления: ${response.status}\n${errorText}`);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(data.message);
+        setDeleteFrom('');
+        setDeleteTo('');
+        fetchLogs();
+      } else {
+        alert(`Ошибка: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error deleting recordings:', error);
+      alert(`Ошибка при удалении: ${error}`);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -132,7 +196,17 @@ const AdminZeonSyncPage = () => {
   };
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleString('ru-RU');
+    // Конвертируем в часовой пояс Красноярска (UTC+7)
+    const date = new Date(dateStr);
+    return date.toLocaleString('ru-RU', { 
+      timeZone: 'Asia/Krasnoyarsk',
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
   };
 
   if (loading && recordings.length === 0) return <LoadingScreen />;
@@ -221,8 +295,8 @@ const AdminZeonSyncPage = () => {
           {/* Панель управления */}
           <div className="bg-card border rounded-lg p-6 mb-8">
             <div className="flex flex-col gap-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
                   <Input
                     placeholder="Поиск по номеру телефона..."
                     value={searchPhone}
@@ -233,7 +307,31 @@ const AdminZeonSyncPage = () => {
                     className="w-full"
                   />
                 </div>
-                <div className="flex-1">
+                <div>
+                  <Input
+                    type="date"
+                    placeholder="Фильтр: с даты"
+                    value={filterDateFrom}
+                    onChange={(e) => {
+                      setFilterDateFrom(e.target.value);
+                      setPage(0);
+                    }}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="date"
+                    placeholder="Фильтр: по дату"
+                    value={filterDateTo}
+                    onChange={(e) => {
+                      setFilterDateTo(e.target.value);
+                      setPage(0);
+                    }}
+                    className="w-full"
+                  />
+                </div>
+                <div>
                   <Input
                     type="date"
                     placeholder="Дата для синхронизации"
@@ -243,7 +341,56 @@ const AdminZeonSyncPage = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
+              
+              {/* Удаление записей */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4 border-t">
+                <div>
+                  <Input
+                    type="date"
+                    placeholder="Удалить: с даты"
+                    value={deleteFrom}
+                    onChange={(e) => setDeleteFrom(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div>
+                  <Input
+                    type="date"
+                    placeholder="Удалить: по дату"
+                    value={deleteTo}
+                    onChange={(e) => setDeleteTo(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="col-span-2 flex gap-2">
+                  <Button 
+                    onClick={() => deleteRecordings(false)} 
+                    disabled={deleting || !deleteFrom || !deleteTo} 
+                    variant="destructive"
+                  >
+                    <Icon
+                      name={deleting ? 'Loader2' : 'Trash2'}
+                      className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
+                      size={16}
+                    />
+                    Удалить из БД
+                  </Button>
+                  <Button 
+                    onClick={() => deleteRecordings(true)} 
+                    disabled={deleting || !deleteFrom || !deleteTo} 
+                    variant="destructive"
+                  >
+                    <Icon
+                      name={deleting ? 'Loader2' : 'Trash2'}
+                      className={`mr-2 ${deleting ? 'animate-spin' : ''}`}
+                      size={16}
+                    />
+                    Удалить из БД + SFTP
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex gap-2 pt-4 border-t">
                 <Button onClick={runDiagnostics} disabled={diagnosing} variant="outline">
                   <Icon
                     name={diagnosing ? 'Loader2' : 'Stethoscope'}
