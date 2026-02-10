@@ -153,13 +153,22 @@ def handler(event: dict, context) -> dict:
                 ftp_debug['dns'] = f'FAILED: {str(e)}'
                 raise Exception(f'DNS resolution failed for {ftp_host}')
             
-            # Проверяем TCP подключение
+            # Проверяем TCP подключение к FTP (21) и SSH/SFTP (22)
             try:
                 sock = socket.create_connection((ftp_host, 21), timeout=5)
-                ftp_debug['tcp'] = 'OK (port 21 accessible)'
+                ftp_debug['tcp_21'] = 'OK (FTP port accessible)'
                 sock.close()
             except Exception as e:
-                ftp_debug['tcp'] = f'FAILED: {str(e)}'
+                ftp_debug['tcp_21'] = f'FAILED: {str(e)}'
+            
+            try:
+                sock = socket.create_connection((ftp_host, 22), timeout=5)
+                ftp_debug['tcp_22'] = 'OK (SSH/SFTP port accessible)'
+                sock.close()
+            except Exception as e:
+                ftp_debug['tcp_22'] = f'FAILED: {str(e)}'
+            
+            if 'FAILED' in ftp_debug.get('tcp_21', ''):
                 raise Exception(f'Cannot connect to {ftp_host}:21')
             
             # Пробуем FTP подключение
