@@ -241,6 +241,12 @@ const AdminPage = () => {
                         variant="outline"
                       />
                       <AdminActionButton
+                        icon="FileText"
+                        label="SEO Инструкция"
+                        onClick={() => navigate('/admin/seo-guide')}
+                        variant="outline"
+                      />
+                      <AdminActionButton
                         icon="LogOut"
                         label="Выйти"
                         onClick={logout}
