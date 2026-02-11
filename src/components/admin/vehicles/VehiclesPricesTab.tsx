@@ -156,22 +156,21 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
 
     try {
       const updates = affectedPrices.map(async (price) => {
-        let newPrice = price.price;
+        // Extract numeric value from price string
+        const currentValue = parseFloat(price.price.replace(/[^\d.]/g, ''));
+        let newBasePrice = currentValue;
         
         if (bulkForm.operation === 'set') {
-          newPrice = bulkForm.value;
+          newBasePrice = parseFloat(bulkForm.value.replace(/[^\d.]/g, ''));
         } else if (bulkForm.operation === 'increase') {
-          const currentValue = parseInt(price.price.replace(/[^\d]/g, ''));
-          const increaseValue = parseInt(bulkForm.value.replace(/[^\d]/g, ''));
-          newPrice = `${currentValue + increaseValue} ₽`;
+          const increaseValue = parseFloat(bulkForm.value.replace(/[^\d.]/g, ''));
+          newBasePrice = currentValue + increaseValue;
         } else if (bulkForm.operation === 'decrease') {
-          const currentValue = parseInt(price.price.replace(/[^\d]/g, ''));
-          const decreaseValue = parseInt(bulkForm.value.replace(/[^\d]/g, ''));
-          newPrice = `${Math.max(0, currentValue - decreaseValue)} ₽`;
+          const decreaseValue = parseFloat(bulkForm.value.replace(/[^\d.]/g, ''));
+          newBasePrice = Math.max(0, currentValue - decreaseValue);
         } else if (bulkForm.operation === 'multiply') {
-          const currentValue = parseInt(price.price.replace(/[^\d]/g, ''));
           const multiplier = parseFloat(bulkForm.value);
-          newPrice = `${Math.round(currentValue * multiplier)} ₽`;
+          newBasePrice = Math.round(currentValue * multiplier);
         }
 
         return fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
@@ -182,7 +181,8 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
             brand_id: price.brand_id,
             model_id: price.model_id,
             service_id: price.service_id,
-            price: newPrice,
+            base_price: newBasePrice,
+            currency: '₽',
           }),
         });
       });
