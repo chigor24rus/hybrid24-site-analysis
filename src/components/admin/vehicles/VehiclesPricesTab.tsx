@@ -47,7 +47,7 @@ interface VehiclesPricesTabProps {
   models: Model[];
   services: Service[];
   prices: Price[];
-  onRefresh: () => void;
+  onRefresh: () => Promise<void>;
 }
 
 const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: VehiclesPricesTabProps) => {
@@ -375,6 +375,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         services={services}
         prices={prices}
         onSave={handleSavePrice}
+        onRefresh={onRefresh}
       />
 
       <BulkUpdateDialog

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,6 +55,7 @@ interface PriceDialogProps {
   services: Service[];
   prices: Price[];
   onSave: () => Promise<void>;
+  onRefresh: () => Promise<void>;
 }
 
 const PriceDialog = ({ 
@@ -66,7 +67,8 @@ const PriceDialog = ({
   models, 
   services,
   prices,
-  onSave 
+  onSave,
+  onRefresh
 }: PriceDialogProps) => {
   const [searchBrand, setSearchBrand] = useState('');
   const [searchService, setSearchService] = useState('');
@@ -76,9 +78,11 @@ const PriceDialog = ({
   const [servicePrices, setServicePrices] = useState<Record<string, string>>({});
   const [bulkMode, setBulkMode] = useState(false);
 
-  const priceSet = new Set(
-    prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
-  );
+  const priceSet = useMemo(() => {
+    return new Set(
+      prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
+    );
+  }, [prices]);
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
@@ -250,8 +254,9 @@ const PriceDialog = ({
         await Promise.all(batchPromises);
       }
 
+      // Refresh data first, then close dialog
+      await onRefresh();
       handleOpenChange(false);
-      onSave();
       
       if (errorCount > 0) {
         alert(`Создано цен: ${successCount}\nОшибок: ${errorCount}\n\nНекоторые цены не удалось сохранить.`);
