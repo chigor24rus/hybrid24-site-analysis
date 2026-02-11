@@ -70,9 +70,9 @@ const PriceDialog = ({
   const [searchBrand, setSearchBrand] = useState('');
   const [searchModel, setSearchModel] = useState('');
   const [searchService, setSearchService] = useState('');
-  const [brandSelectSize, setBrandSelectSize] = useState(1);
-  const [modelSelectSize, setModelSelectSize] = useState(1);
-  const [serviceSelectSize, setServiceSelectSize] = useState(1);
+  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
+  const [showModelDropdown, setShowModelDropdown] = useState(false);
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [onlyNoPrices, setOnlyNoPrices] = useState(false);
 
   const priceSet = new Set(
@@ -85,9 +85,9 @@ const PriceDialog = ({
       setSearchBrand('');
       setSearchModel('');
       setSearchService('');
-      setBrandSelectSize(1);
-      setModelSelectSize(1);
-      setServiceSelectSize(1);
+      setShowBrandDropdown(false);
+      setShowModelDropdown(false);
+      setShowServiceDropdown(false);
       setOnlyNoPrices(false);
     }
   };
@@ -144,97 +144,115 @@ const PriceDialog = ({
               Только без цен
             </Label>
           </div>
-          <div>
+          <div className="relative">
             <Label>Бренд *</Label>
             <Input
               placeholder="Поиск бренда..."
-              value={searchBrand}
+              value={searchBrand || (priceForm.brand_id ? brands.find(b => b.id.toString() === priceForm.brand_id)?.name : '')}
               onChange={(e) => {
                 setSearchBrand(e.target.value);
-                setBrandSelectSize(8);
+                setShowBrandDropdown(true);
               }}
-              onFocus={() => setBrandSelectSize(8)}
-              className="mb-2"
+              onFocus={() => setShowBrandDropdown(true)}
             />
-            <select 
-              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={priceForm.brand_id} 
-              onChange={(e) => {
-                setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' });
-                setSearchBrand('');
-                setBrandSelectSize(1);
-              }}
-              size={brandSelectSize}
-            >
-              <option value="">Выберите бренд</option>
-              {filteredBrands.map((brand) => (
-                <option key={brand.id} value={brand.id.toString()}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
+            {showBrandDropdown && (
+              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
+                {filteredBrands.length > 0 ? (
+                  filteredBrands.map((brand) => (
+                    <div
+                      key={brand.id}
+                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
+                      onClick={() => {
+                        setPriceForm({ ...priceForm, brand_id: brand.id.toString(), model_id: '' });
+                        setSearchBrand('');
+                        setShowBrandDropdown(false);
+                      }}
+                    >
+                      {brand.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
+                )}
+              </div>
+            )}
           </div>
-          <div>
+          <div className="relative">
             <Label>Модель (опционально)</Label>
             <Input
-              placeholder="Поиск модели..."
-              value={searchModel}
+              placeholder="Все модели"
+              value={searchModel || (priceForm.model_id ? models.find(m => m.id.toString() === priceForm.model_id)?.name : '')}
               onChange={(e) => {
                 setSearchModel(e.target.value);
-                setModelSelectSize(8);
+                setShowModelDropdown(true);
               }}
-              onFocus={() => setModelSelectSize(8)}
-              className="mb-2"
+              onFocus={() => setShowModelDropdown(true)}
               disabled={!priceForm.brand_id}
             />
-            <select 
-              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={priceForm.model_id} 
-              onChange={(e) => {
-                setPriceForm({ ...priceForm, model_id: e.target.value });
-                setSearchModel('');
-                setModelSelectSize(1);
-              }}
-              disabled={!priceForm.brand_id}
-              size={modelSelectSize}
-            >
-              <option value="">Все модели</option>
-              {filteredModels.map((model) => (
-                <option key={model.id} value={model.id.toString()}>
-                  {model.name}
-                </option>
-              ))}
-            </select>
+            {showModelDropdown && priceForm.brand_id && (
+              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
+                <div
+                  className="px-3 py-2 text-sm hover:bg-accent cursor-pointer font-medium"
+                  onClick={() => {
+                    setPriceForm({ ...priceForm, model_id: '' });
+                    setSearchModel('');
+                    setShowModelDropdown(false);
+                  }}
+                >
+                  Все модели
+                </div>
+                {filteredModels.length > 0 ? (
+                  filteredModels.map((model) => (
+                    <div
+                      key={model.id}
+                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
+                      onClick={() => {
+                        setPriceForm({ ...priceForm, model_id: model.id.toString() });
+                        setSearchModel('');
+                        setShowModelDropdown(false);
+                      }}
+                    >
+                      {model.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
+                )}
+              </div>
+            )}
           </div>
-          <div>
+          <div className="relative">
             <Label>Услуга *</Label>
             <Input
               placeholder="Поиск услуги..."
-              value={searchService}
+              value={searchService || (priceForm.service_id ? services.find(s => s.id.toString() === priceForm.service_id)?.title : '')}
               onChange={(e) => {
                 setSearchService(e.target.value);
-                setServiceSelectSize(8);
+                setShowServiceDropdown(true);
               }}
-              onFocus={() => setServiceSelectSize(8)}
-              className="mb-2"
+              onFocus={() => setShowServiceDropdown(true)}
             />
-            <select 
-              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
-              value={priceForm.service_id} 
-              onChange={(e) => {
-                setPriceForm({ ...priceForm, service_id: e.target.value });
-                setSearchService('');
-                setServiceSelectSize(1);
-              }}
-              size={serviceSelectSize}
-            >
-              <option value="">Выберите услугу</option>
-              {filteredServices.map((service) => (
-                <option key={service.id} value={service.id.toString()}>
-                  {service.title}
-                </option>
-              ))}
-            </select>
+            {showServiceDropdown && (
+              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
+                {filteredServices.length > 0 ? (
+                  filteredServices.map((service) => (
+                    <div
+                      key={service.id}
+                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
+                      onClick={() => {
+                        setPriceForm({ ...priceForm, service_id: service.id.toString() });
+                        setSearchService('');
+                        setShowServiceDropdown(false);
+                      }}
+                    >
+                      {service.title}
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
+                )}
+              </div>
+            )}
           </div>
           <div>
             <Label>Цена *</Label>
