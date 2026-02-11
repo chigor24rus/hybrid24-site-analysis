@@ -64,10 +64,53 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   const [filterBrand, setFilterBrand] = useState<string>('all');
   const [filterModel, setFilterModel] = useState<string>('all');
   const [filterService, setFilterService] = useState<string>('all');
+  const [filterNoPrice, setFilterNoPrice] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
 
-  const filteredPrices = prices.filter(p => {
+  // Create set of combinations that have prices
+  const priceSet = new Set(
+    prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
+  );
+
+  // Generate all possible combinations
+  const allCombinations = brands.flatMap(brand => 
+    services.flatMap(service => {
+      // For each brand-service, create entries for "no model" and each model
+      const combinations = [{
+        brand_id: brand.id,
+        brand_name: brand.name,
+        model_id: null,
+        model_name: null,
+        service_id: service.id,
+        service_title: service.title,
+        price: '0 ₽',
+        id: 0,
+        hasPrice: priceSet.has(`${brand.id}-null-${service.id}`)
+      }];
+      
+      const brandModels = models.filter(m => m.brand_id === brand.id);
+      brandModels.forEach(model => {
+        combinations.push({
+          brand_id: brand.id,
+          brand_name: brand.name,
+          model_id: model.id,
+          model_name: model.name,
+          service_id: service.id,
+          service_title: service.title,
+          price: '0 ₽',
+          id: 0,
+          hasPrice: priceSet.has(`${brand.id}-${model.id}-${service.id}`)
+        });
+      });
+      
+      return combinations;
+    })
+  );
+
+  const displayPrices = filterNoPrice ? allCombinations.filter(c => !c.hasPrice) : prices;
+
+  const filteredPrices = displayPrices.filter(p => {
     if (filterBrand !== 'all' && p.brand_id.toString() !== filterBrand) return false;
     if (filterModel !== 'all' && (p.model_id?.toString() || 'null') !== filterModel) return false;
     if (filterService !== 'all' && p.service_id.toString() !== filterService) return false;
@@ -274,6 +317,16 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                variant={filterNoPrice ? "default" : "outline"}
+                onClick={() => {
+                  setFilterNoPrice(!filterNoPrice);
+                  setCurrentPage(1);
+                }}
+              >
+                <Icon name={filterNoPrice ? "Check" : "AlertCircle"} className="mr-2 h-4 w-4" />
+                Нет цен
+              </Button>
               <Button 
                 variant="outline"
                 onClick={() => {
@@ -295,7 +348,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
             </div>
           </div>
           <CardDescription>
-            Цены на услуги для брендов и моделей ({filteredPrices.length})
+            {filterNoPrice ? `Комбинаций без цен: ${filteredPrices.length}` : `Цены на услуги для брендов и моделей (${filteredPrices.length})`}
             {totalPages > 1 && ` • Страница ${currentPage} из ${totalPages}`}
           </CardDescription>
         </CardHeader>
