@@ -141,7 +141,11 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
 
     const affectedPrices = prices.filter(p => {
       const brandMatch = bulkForm.brand_ids.includes(p.brand_id.toString());
-      const modelMatch = bulkForm.model_ids.length === 0 || bulkForm.model_ids.includes(p.model_id?.toString() || '');
+      
+      const modelMatch = bulkForm.model_ids.length === 0 || 
+                        bulkForm.model_ids.includes(p.model_id?.toString() || 'null') ||
+                        (bulkForm.model_ids.includes('null') && p.model_id === null);
+      
       const serviceMatch = bulkForm.service_ids.length === 0 || bulkForm.service_ids.includes(p.service_id.toString());
       return brandMatch && modelMatch && serviceMatch;
     });
