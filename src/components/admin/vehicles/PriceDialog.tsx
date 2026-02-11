@@ -101,19 +101,31 @@ const PriceDialog = ({
   const filteredBrands = brands.filter(brand => {
     if (!onlyNoPrices) return brand.name.toLowerCase().includes(searchBrand.toLowerCase());
     const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
-    const hasNoPriceForAnyService = services.some(service => 
+    
+    // If no services selected yet, check against all services
+    const servicesToCheck = selectedServices.length > 0 
+      ? services.filter(s => selectedServices.includes(s.id.toString()))
+      : services;
+    
+    const hasNoPriceForSelectedServices = servicesToCheck.some(service => 
       !hasPrice(brand.id.toString(), '', service.id.toString())
     );
-    return matchesSearch && hasNoPriceForAnyService;
+    return matchesSearch && hasNoPriceForSelectedServices;
   });
 
   const filteredServices = services.filter(service => {
     if (!onlyNoPrices) return service.title.toLowerCase().includes(searchService.toLowerCase());
     const matchesSearch = service.title.toLowerCase().includes(searchService.toLowerCase());
-    const hasNoPriceForAnyBrand = brands.some(brand =>
+    
+    // If no brands selected yet, check against all brands
+    const brandsToCheck = selectedBrands.length > 0
+      ? brands.filter(b => selectedBrands.includes(b.id.toString()))
+      : brands;
+    
+    const hasNoPriceForSelectedBrands = brandsToCheck.some(brand =>
       !hasPrice(brand.id.toString(), '', service.id.toString())
     );
-    return matchesSearch && hasNoPriceForAnyBrand;
+    return matchesSearch && hasNoPriceForSelectedBrands;
   });
 
   const toggleBrand = (brandId: string) => {
