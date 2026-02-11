@@ -13,18 +13,20 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
     const globalErrorHandler = (event: ErrorEvent) => {
       const errorMsg = event.message?.toString() || '';
       const errorStack = event.error?.stack?.toString() || '';
+      const errorFilename = event.filename?.toString() || '';
       
       if (errorMsg.includes('styled-components') || 
           errorMsg.includes('reviewlab') ||
           errorMsg.includes('See https://github.com/styled-components') ||
+          errorMsg.includes('errors.md#17') ||
           errorStack.includes('styled-components') ||
           errorStack.includes('reviewlab') ||
-          event.filename?.includes('reviewlab') ||
-          event.filename?.includes('styled-components')) {
+          errorFilename.includes('reviewlab') ||
+          errorFilename.includes('styled-components') ||
+          errorFilename.includes('index-es2015.js')) {
         event.preventDefault();
         event.stopPropagation();
-        event.stopImmediatePropagation();
-        console.warn('[ReviewLab] Suppressed styled-components error from external widget');
+        console.warn('[ReviewLab] Suppressed styled-components error from external widget:', errorMsg);
         return false;
       }
     };
@@ -36,18 +38,18 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
       if (reason.includes('styled-components') || 
           reason.includes('reviewlab') ||
           reason.includes('See https://github.com/styled-components') ||
+          reason.includes('errors.md#17') ||
           reasonStack.includes('styled-components') ||
           reasonStack.includes('reviewlab')) {
         event.preventDefault();
-        event.stopPropagation();
-        console.warn('[ReviewLab] Suppressed styled-components rejection from external widget');
+        console.warn('[ReviewLab] Suppressed styled-components rejection from external widget:', reason);
         return false;
       }
     };
 
     errorHandlerRef.current = globalErrorHandler;
-    window.addEventListener('error', globalErrorHandler, true);
-    window.addEventListener('unhandledrejection', unhandledRejectionHandler, true);
+    window.addEventListener('error', globalErrorHandler, { capture: true, passive: false });
+    window.addEventListener('unhandledrejection', unhandledRejectionHandler, { capture: true });
 
     const existingScript = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
     
@@ -76,7 +78,7 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
 
     return () => {
       window.removeEventListener('error', globalErrorHandler, true);
-      window.removeEventListener('unhandledrejection', unhandledRejectionHandler, true);
+      window.removeEventListener('unhandledrejection', unhandledRejectionHandler);
       const scriptToRemove = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
       if (scriptToRemove && scriptToRemove.parentNode) {
         scriptToRemove.parentNode.removeChild(scriptToRemove);
