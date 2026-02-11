@@ -73,6 +73,7 @@ const PriceDialog = ({
   const [onlyNoPrices, setOnlyNoPrices] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [servicePrices, setServicePrices] = useState<Record<string, string>>({});
   const [bulkMode, setBulkMode] = useState(false);
 
   const priceSet = new Set(
@@ -87,6 +88,7 @@ const PriceDialog = ({
       setOnlyNoPrices(false);
       setSelectedBrands([]);
       setSelectedServices([]);
+      setServicePrices({});
       setBulkMode(false);
     }
   };
@@ -123,25 +125,50 @@ const PriceDialog = ({
   };
 
   const toggleService = (serviceId: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceId) 
+    setSelectedServices(prev => {
+      const newServices = prev.includes(serviceId) 
         ? prev.filter(id => id !== serviceId)
-        : [...prev, serviceId]
-    );
+        : [...prev, serviceId];
+      
+      // Remove price if service is deselected
+      if (prev.includes(serviceId)) {
+        const newPrices = { ...servicePrices };
+        delete newPrices[serviceId];
+        setServicePrices(newPrices);
+      }
+      
+      return newServices;
+    });
+  };
+
+  const updateServicePrice = (serviceId: string, price: string) => {
+    setServicePrices(prev => ({
+      ...prev,
+      [serviceId]: price
+    }));
   };
 
   const handleBulkSave = async () => {
-    if (selectedBrands.length === 0 || selectedServices.length === 0 || !priceForm.price) {
-      alert('Выберите хотя бы один бренд, одну услугу и укажите цену');
+    if (selectedBrands.length === 0 || selectedServices.length === 0) {
+      alert('Выберите хотя бы один бренд и одну услугу');
+      return;
+    }
+
+    // Check if all selected services have prices
+    const missingPrices = selectedServices.filter(serviceId => !servicePrices[serviceId]?.trim());
+    if (missingPrices.length > 0) {
+      alert('Укажите цены для всех выбранных услуг');
       return;
     }
 
     try {
-      const numericPrice = parseFloat(priceForm.price.replace(/[^\d.]/g, ''));
       const updates = [];
 
       for (const brandId of selectedBrands) {
         for (const serviceId of selectedServices) {
+          const priceValue = servicePrices[serviceId];
+          const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
+          
           updates.push(
             fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
               method: 'POST',
@@ -178,11 +205,11 @@ const PriceDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-2xl">
+      <DialogContent className="max-h-[90vh] max-w-3xl">
         <DialogHeader>
           <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
           <DialogDescription>
-            {bulkMode ? 'Выберите несколько брендов и услуг для массового добавления' : 'Укажите бренд, услугу и цену'}
+            {bulkMode ? 'Выберите бренды и услуги, укажите цену для каждой услуги' : 'Укажите бренд, услугу и цену'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -206,6 +233,7 @@ const PriceDialog = ({
                   if (checked) {
                     setSelectedBrands([]);
                     setSelectedServices([]);
+                    setServicePrices({});
                   }
                 }}
               />
@@ -247,7 +275,7 @@ const PriceDialog = ({
               </div>
 
               <div>
-                <Label>Услуги *</Label>
+                <Label>Услуги и цены *</Label>
                 <Input
                   placeholder="Поиск услуги..."
                   value={searchService}
@@ -255,17 +283,27 @@ const PriceDialog = ({
                   className="mb-2"
                 />
                 <ScrollArea className="h-64 rounded-md border p-2">
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {filteredServices.map((service) => (
-                      <div key={service.id} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`service-${service.id}`}
-                          checked={selectedServices.includes(service.id.toString())}
-                          onCheckedChange={() => toggleService(service.id.toString())}
-                        />
-                        <Label htmlFor={`service-${service.id}`} className="cursor-pointer flex-1">
-                          {service.title}
-                        </Label>
+                      <div key={service.id} className="space-y-1">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`service-${service.id}`}
+                            checked={selectedServices.includes(service.id.toString())}
+                            onCheckedChange={() => toggleService(service.id.toString())}
+                          />
+                          <Label htmlFor={`service-${service.id}`} className="cursor-pointer flex-1 font-medium">
+                            {service.title}
+                          </Label>
+                        </div>
+                        {selectedServices.includes(service.id.toString()) && (
+                          <Input
+                            placeholder="Цена, ₽"
+                            value={servicePrices[service.id.toString()] || ''}
+                            onChange={(e) => updateServicePrice(service.id.toString(), e.target.value)}
+                            className="ml-6 h-8"
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -326,22 +364,28 @@ const PriceDialog = ({
                   ))}
                 </select>
               </div>
+
+              <div>
+                <Label>Цена *</Label>
+                <Input
+                  value={priceForm.price}
+                  onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
+                  placeholder="5 000 ₽"
+                />
+              </div>
             </>
           )}
 
-          <div>
-            <Label>Цена *</Label>
-            <Input
-              value={priceForm.price}
-              onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
-              placeholder="5 000 ₽"
-            />
-            {bulkMode && selectedBrands.length > 0 && selectedServices.length > 0 && (
-              <p className="text-sm text-muted-foreground mt-1">
+          {bulkMode && selectedBrands.length > 0 && selectedServices.length > 0 && (
+            <div className="rounded-md bg-muted p-3">
+              <p className="text-sm font-medium">
                 Будет создано {selectedBrands.length * selectedServices.length} цен
               </p>
-            )}
-          </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {selectedBrands.length} {selectedBrands.length === 1 ? 'бренд' : 'брендов'} × {selectedServices.length} {selectedServices.length === 1 ? 'услуга' : 'услуг'}
+              </p>
+            </div>
+          )}
 
           <div className="flex gap-2">
             <Button onClick={bulkMode ? handleBulkSave : handleSingleSave} className="flex-1">
