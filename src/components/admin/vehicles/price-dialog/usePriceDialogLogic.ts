@@ -16,6 +16,15 @@ export const usePriceDialogLogic = (
   const [servicePrices, setServicePrices] = useState<Record<string, string>>({});
   const [bulkMode, setBulkMode] = useState(false);
 
+  const priceMap = useMemo(() => {
+    const map = new Map<string, Price>();
+    prices.forEach(p => {
+      const key = `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`;
+      map.set(key, p);
+    });
+    return map;
+  }, [prices]);
+
   const priceSet = useMemo(() => {
     return new Set(
       prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
@@ -119,47 +128,54 @@ export const usePriceDialogLogic = (
     }
 
     try {
-      const combinations = [];
+      const combinations: Array<{ brandId: string; serviceId: string; existingId?: number; isUpdate: boolean }> = [];
       
       for (const brandId of selectedBrands) {
         for (const serviceId of selectedServices) {
           const key = `${brandId}-null-${serviceId}`;
-          if (!priceSet.has(key)) {
-            combinations.push({ brandId, serviceId });
+          const existingPrice = priceMap.get(key);
+          
+          if (!existingPrice) {
+            combinations.push({ brandId, serviceId, isUpdate: false });
+          } else if (existingPrice.base_price === 0) {
+            combinations.push({ brandId, serviceId, existingId: existingPrice.id, isUpdate: true });
           }
         }
       }
 
       if (combinations.length === 0) {
-        alert('Все выбранные комбинации уже имеют цены');
+        alert('Все выбранные комбинации уже имеют ненулевые цены');
         return;
       }
 
-      const totalCombinations = combinations.length;
-      const skippedCount = (selectedBrands.length * selectedServices.length) - totalCombinations;
+      const newCount = combinations.filter(c => !c.isUpdate).length;
+      const updateCount = combinations.filter(c => c.isUpdate).length;
+      const skippedCount = (selectedBrands.length * selectedServices.length) - combinations.length;
       
-      if (skippedCount > 0) {
-        const confirmed = confirm(
-          `Будет создано ${totalCombinations} цен.\n` +
-          `${skippedCount} комбинаций пропущено (цены уже существуют).\n\n` +
-          `Продолжить?`
-        );
-        if (!confirmed) return;
-      }
+      let confirmMessage = '';
+      if (newCount > 0) confirmMessage += `Создано новых: ${newCount}\n`;
+      if (updateCount > 0) confirmMessage += `Обновлено (было 0₽): ${updateCount}\n`;
+      if (skippedCount > 0) confirmMessage += `Пропущено (уже есть ненулевые): ${skippedCount}\n`;
+      confirmMessage += '\nПродолжить?';
+      
+      if (!confirm(confirmMessage)) return;
 
-      const fetchWithRetry = async (brandId: string, serviceId: string, retries = 2) => {
-        const priceValue = servicePrices[serviceId];
+      const fetchWithRetry = async (combo: { brandId: string; serviceId: string; existingId?: number; isUpdate: boolean }, retries = 2) => {
+        const priceValue = servicePrices[combo.serviceId];
         const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
         
         for (let attempt = 0; attempt <= retries; attempt++) {
           try {
             const res = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
-              method: 'POST',
+              method: combo.isUpdate ? 'PUT' : 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                brand_id: parseInt(brandId),
+              body: JSON.stringify(combo.isUpdate ? {
+                id: combo.existingId,
+                base_price: numericPrice,
+              } : {
+                brand_id: parseInt(combo.brandId),
                 model_id: null,
-                service_id: parseInt(serviceId),
+                service_id: parseInt(combo.serviceId),
                 base_price: numericPrice,
                 currency: '₽',
               }),
@@ -193,8 +209,8 @@ export const usePriceDialogLogic = (
       for (let i = 0; i < combinations.length; i += batchSize) {
         const batch = combinations.slice(i, i + batchSize);
         
-        const batchPromises = batch.map(({ brandId, serviceId }) => 
-          fetchWithRetry(brandId, serviceId).then(result => {
+        const batchPromises = batch.map((combo) => 
+          fetchWithRetry(combo).then(result => {
             if (result.success) {
               successCount++;
             } else {
