@@ -129,11 +129,19 @@ const PriceDialog = ({
   });
 
   const toggleBrand = (brandId: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brandId) 
-        ? prev.filter(id => id !== brandId)
-        : [...prev, brandId]
-    );
+    setSelectedBrands(prev => {
+      if (prev.includes(brandId)) {
+        return prev.filter(id => id !== brandId);
+      }
+      
+      // Limit to 10 brands when "Only no prices" filter is enabled
+      if (onlyNoPrices && prev.length >= 10) {
+        alert('Максимум 10 брендов при фильтре "Только без цен"');
+        return prev;
+      }
+      
+      return [...prev, brandId];
+    });
   };
 
   const toggleService = (serviceId: string) => {
