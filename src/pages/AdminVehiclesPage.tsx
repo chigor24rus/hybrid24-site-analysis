@@ -83,7 +83,7 @@ const AdminVehiclesPage = () => {
       // Convert base_price to price format for display
       const convertedPrices = (pricesData.prices || []).map((p: Price) => ({
         ...p,
-        price: p.base_price ? `${p.base_price} ${p.currency || '₽'}` : '0 ₽'
+        price: p.base_price !== undefined && p.base_price !== null ? `${p.base_price} ${p.currency || '₽'}` : '0 ₽'
       }));
       setPrices(convertedPrices);
     } catch (error) {
