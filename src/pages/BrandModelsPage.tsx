@@ -121,7 +121,28 @@ export default function BrandModelsPage() {
             </p>
           </div>
 
-          <h2 className="text-3xl font-bold text-center mb-8">Доступные модели</h2>
+          <div className="max-w-3xl mx-auto mb-12 text-center">
+            <Link to={`/brands/${brandSlug}/services`}>
+              <Card className="cursor-pointer hover:border-primary hover:shadow-lg transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
+                      <Icon name="Wrench" size={24} className="text-white" />
+                    </div>
+                    <div className="flex-1 text-left">
+                      <h3 className="text-lg font-bold mb-1">Все услуги для {brand.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Полный список услуг с ценами для всех моделей
+                      </p>
+                    </div>
+                    <Icon name="ArrowRight" size={20} className="text-primary" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
+
+          <h2 className="text-3xl font-bold text-center mb-8">Выберите модель</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {models.map((model, index) => (

@@ -126,23 +126,20 @@ const ServicesPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => {
-              const articleId = SERVICE_ARTICLE_MAP[service.title];
-              const CardWrapper = articleId ? Link : 'div';
-              const wrapperProps = articleId ? { to: `/blog/${articleId}` } : {};
+              const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
               
               return (
-                <CardWrapper key={service.id} {...wrapperProps}>
+                <Link key={service.id} to={`/services/${serviceSlug}`}>
                   <Card
                     className="hover-scale cursor-pointer hover:border-primary/50 transition-all animate-fade-in h-full"
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     <CardHeader>
                       <div className="w-14 h-14 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                        <Icon name={service.icon as any} size={28} className="text-white" />
+                        <Icon name={service.icon} size={28} className="text-white" />
                       </div>
                       <CardTitle className="text-xl flex items-center justify-between">
                         {service.title}
-                        {articleId && <Icon name="ExternalLink" size={16} className="text-muted-foreground" />}
                       </CardTitle>
                       <CardDescription className="text-base">{service.description}</CardDescription>
                     </CardHeader>
@@ -169,7 +166,7 @@ const ServicesPage = () => {
                       </div>
                     </CardContent>
                   </Card>
-                </CardWrapper>
+                </Link>
               );
             })}
           </div>

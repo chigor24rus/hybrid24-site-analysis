@@ -20,6 +20,8 @@ import BrandModelsPage from "./pages/BrandModelsPage";
 import ModelServicesPage from "./pages/ModelServicesPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import ServiceModelPage from "./pages/ServiceModelPage";
+import ServiceDetailPage from "./pages/ServiceDetailPage";
+import BrandServicesPage from "./pages/BrandServicesPage";
 import SeoIndexPage from "./pages/SeoIndexPage";
 import AdminPage from "./pages/AdminPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
@@ -104,6 +106,8 @@ const App = () => (
             <Route path="/blog/:id" element={<BlogPostPage />} />
             <Route path="/brands" element={<BrandsPage />} />
             <Route path="/brand/:brandId" element={<BrandPage />} />
+            <Route path="/services/:serviceSlug" element={<ServiceDetailPage />} />
+            <Route path="/brands/:brandSlug/services" element={<BrandServicesPage />} />
             <Route path="/services-index" element={<SeoIndexPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage />} />
