@@ -373,6 +373,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         brands={brands}
         models={models}
         services={services}
+        prices={prices}
         onSave={handleSavePrice}
       />
 

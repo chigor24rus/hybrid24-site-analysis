@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface Brand {
@@ -35,6 +36,14 @@ interface PriceForm {
   price: string;
 }
 
+interface Price {
+  id: number;
+  brand_id: number;
+  model_id: number | null;
+  service_id: number;
+  price: string;
+}
+
 interface PriceDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -43,6 +52,7 @@ interface PriceDialogProps {
   brands: Brand[];
   models: Model[];
   services: Service[];
+  prices: Price[];
   onSave: () => Promise<void>;
 }
 
@@ -54,6 +64,7 @@ const PriceDialog = ({
   brands, 
   models, 
   services,
+  prices,
   onSave 
 }: PriceDialogProps) => {
   const [searchBrand, setSearchBrand] = useState('');
@@ -62,6 +73,11 @@ const PriceDialog = ({
   const [brandSelectSize, setBrandSelectSize] = useState(1);
   const [modelSelectSize, setModelSelectSize] = useState(1);
   const [serviceSelectSize, setServiceSelectSize] = useState(1);
+  const [onlyNoPrices, setOnlyNoPrices] = useState(false);
+
+  const priceSet = new Set(
+    prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
+  );
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
@@ -72,8 +88,43 @@ const PriceDialog = ({
       setBrandSelectSize(1);
       setModelSelectSize(1);
       setServiceSelectSize(1);
+      setOnlyNoPrices(false);
     }
   };
+
+  const hasPrice = (brandId: string, modelId: string, serviceId: string) => {
+    const key = `${brandId}-${modelId || 'null'}-${serviceId}`;
+    return priceSet.has(key);
+  };
+
+  const filteredBrands = brands.filter(brand => {
+    if (!onlyNoPrices) return brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+    const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+    const hasNoPriceForAnyService = services.some(service => 
+      !hasPrice(brand.id.toString(), '', service.id.toString())
+    );
+    return matchesSearch && hasNoPriceForAnyService;
+  });
+
+  const filteredModels = models.filter(m => {
+    if (m.brand_id.toString() !== priceForm.brand_id) return false;
+    if (!onlyNoPrices) return m.name.toLowerCase().includes(searchModel.toLowerCase());
+    const matchesSearch = m.name.toLowerCase().includes(searchModel.toLowerCase());
+    const serviceId = priceForm.service_id || services[0]?.id.toString() || '';
+    const hasNoPriceForService = serviceId && !hasPrice(priceForm.brand_id, m.id.toString(), serviceId);
+    return matchesSearch && hasNoPriceForService;
+  });
+
+  const filteredServices = services.filter(service => {
+    if (!onlyNoPrices) return service.title.toLowerCase().includes(searchService.toLowerCase());
+    const matchesSearch = service.title.toLowerCase().includes(searchService.toLowerCase());
+    const hasNoPriceForCurrent = !hasPrice(
+      priceForm.brand_id || brands[0]?.id.toString() || '',
+      priceForm.model_id,
+      service.id.toString()
+    );
+    return matchesSearch && hasNoPriceForCurrent;
+  });
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -83,6 +134,16 @@ const PriceDialog = ({
           <DialogDescription>Укажите бренд, модель (опционально), услугу и цену</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox 
+              id="only-no-prices" 
+              checked={onlyNoPrices}
+              onCheckedChange={(checked) => setOnlyNoPrices(checked as boolean)}
+            />
+            <Label htmlFor="only-no-prices" className="cursor-pointer">
+              Только без цен
+            </Label>
+          </div>
           <div>
             <Label>Бренд *</Label>
             <Input
@@ -106,13 +167,11 @@ const PriceDialog = ({
               size={brandSelectSize}
             >
               <option value="">Выберите бренд</option>
-              {brands
-                .filter(brand => brand.name.toLowerCase().includes(searchBrand.toLowerCase()))
-                .map((brand) => (
-                  <option key={brand.id} value={brand.id.toString()}>
-                    {brand.name}
-                  </option>
-                ))}
+              {filteredBrands.map((brand) => (
+                <option key={brand.id} value={brand.id.toString()}>
+                  {brand.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -140,13 +199,11 @@ const PriceDialog = ({
               size={modelSelectSize}
             >
               <option value="">Все модели</option>
-              {models
-                .filter(m => m.brand_id.toString() === priceForm.brand_id && m.name.toLowerCase().includes(searchModel.toLowerCase()))
-                .map((model) => (
-                  <option key={model.id} value={model.id.toString()}>
-                    {model.name}
-                  </option>
-                ))}
+              {filteredModels.map((model) => (
+                <option key={model.id} value={model.id.toString()}>
+                  {model.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -172,13 +229,11 @@ const PriceDialog = ({
               size={serviceSelectSize}
             >
               <option value="">Выберите услугу</option>
-              {services
-                .filter(service => service.title.toLowerCase().includes(searchService.toLowerCase()))
-                .map((service) => (
-                  <option key={service.id} value={service.id.toString()}>
-                    {service.title}
-                  </option>
-                ))}
+              {filteredServices.map((service) => (
+                <option key={service.id} value={service.id.toString()}>
+                  {service.title}
+                </option>
+              ))}
             </select>
           </div>
           <div>
