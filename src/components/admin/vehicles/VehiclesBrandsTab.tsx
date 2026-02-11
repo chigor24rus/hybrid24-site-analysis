@@ -50,13 +50,22 @@ const VehiclesBrandsTab = ({ brands, onRefresh }: VehiclesBrandsTabProps) => {
     if (!confirm('Удалить этот бренд? Будут удалены все связанные модели и цены.')) return;
 
     try {
-      const response = await fetch(`https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f?id=${id}`, {
+      const response = await fetch('https://functions.poehali.dev/6e998d6c-035e-480a-b85e-9b690fa6733a', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
       });
 
-      if (response.ok) onRefresh();
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        onRefresh();
+      } else {
+        alert(data.error || 'Ошибка при удалении бренда');
+      }
     } catch (error) {
       console.error('Error deleting brand:', error);
+      alert('Ошибка при удалении бренда');
     }
   };
 
