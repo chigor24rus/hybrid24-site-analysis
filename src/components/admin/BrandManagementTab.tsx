@@ -59,7 +59,7 @@ const BrandManagementTab = ({ brands, onRefresh }: BrandManagementTabProps) => {
           const data = await response.json();
           
           if (response.ok && data.url) {
-            setBrandForm({ ...brandForm, logo_url: data.url });
+            setBrandForm((prev) => ({ ...prev, logo_url: data.url }));
           } else {
             alert(data.error || 'Ошибка при загрузке файла');
           }
