@@ -215,6 +215,48 @@ const PriceDialog = ({
         if (!confirmed) return;
       }
 
+      // Helper function to retry failed requests
+      const fetchWithRetry = async (brandId: string, serviceId: string, retries = 2) => {
+        const priceValue = servicePrices[serviceId];
+        const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
+        
+        for (let attempt = 0; attempt <= retries; attempt++) {
+          try {
+            const res = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                brand_id: parseInt(brandId),
+                model_id: null,
+                service_id: parseInt(serviceId),
+                base_price: numericPrice,
+                currency: '₽',
+              }),
+            });
+
+            if (res.ok) {
+              return { success: true };
+            }
+
+            // If 500 error and not last attempt, wait and retry
+            if (res.status === 500 && attempt < retries) {
+              await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1))); // 1s, 2s delay
+              continue;
+            }
+
+            // If 409 (conflict) or other error, don't retry
+            return { success: false, status: res.status };
+          } catch (error) {
+            if (attempt < retries) {
+              await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+              continue;
+            }
+            return { success: false };
+          }
+        }
+        return { success: false };
+      };
+
       // Process in batches of 10 to avoid overloading the server
       const batchSize = 10;
       let successCount = 0;
@@ -223,33 +265,16 @@ const PriceDialog = ({
       for (let i = 0; i < combinations.length; i += batchSize) {
         const batch = combinations.slice(i, i + batchSize);
         
-        const batchPromises = batch.map(({ brandId, serviceId }) => {
-          const priceValue = servicePrices[serviceId];
-          const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
-          
-          return fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              brand_id: parseInt(brandId),
-              model_id: null,
-              service_id: parseInt(serviceId),
-              base_price: numericPrice,
-              currency: '₽',
-            }),
-          }).then(res => {
-            if (res.ok) {
+        const batchPromises = batch.map(({ brandId, serviceId }) => 
+          fetchWithRetry(brandId, serviceId).then(result => {
+            if (result.success) {
               successCount++;
-              return { success: true };
             } else {
               errorCount++;
-              return { success: false };
             }
-          }).catch(() => {
-            errorCount++;
-            return { success: false };
-          });
-        });
+            return result;
+          })
+        );
 
         await Promise.all(batchPromises);
       }
