@@ -42,6 +42,9 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold mb-4">Информация</h3>
             <nav className="flex flex-col gap-2">
+              <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                О нас
+              </Link>
               <Link to="/bonus-program" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Бонусная программа
               </Link>
