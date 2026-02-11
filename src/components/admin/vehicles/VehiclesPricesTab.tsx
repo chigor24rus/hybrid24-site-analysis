@@ -32,7 +32,7 @@ interface Service {
 }
 
 interface Price {
-  id: number;
+  id: number | string;
   brand_id: number;
   model_id: number | null;
   service_id: number;
@@ -85,7 +85,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         service_id: service.id,
         service_title: service.title,
         price: '0 ₽',
-        id: 0,
+        id: `${brand.id}-null-${service.id}`,
         hasPrice: priceSet.has(`${brand.id}-null-${service.id}`)
       }];
       
@@ -99,7 +99,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
           service_id: service.id,
           service_title: service.title,
           price: '0 ₽',
-          id: 0,
+          id: `${brand.id}-${model.id}-${service.id}`,
           hasPrice: priceSet.has(`${brand.id}-${model.id}-${service.id}`)
         });
       });
@@ -151,7 +151,8 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
       if (response.ok) {
         setIsPriceDialogOpen(false);
         setPriceForm({ id: 0, brand_id: '', model_id: '', service_id: '', price: '' });
-        onRefresh();
+        setFilterNoPrice(false);
+        await onRefresh();
       } else {
         const errorData = await response.json();
         alert(`Ошибка: ${errorData.error || 'Не удалось сохранить цену'}`);
@@ -162,7 +163,11 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     }
   };
 
-  const handleDeletePrice = async (id: number) => {
+  const handleDeletePrice = async (id: number | string) => {
+    if (typeof id === 'string') {
+      alert('Невозможно удалить несуществующую цену');
+      return;
+    }
     if (!confirm('Удалить эту цену?')) return;
 
     try {
@@ -246,6 +251,10 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   };
 
   const handleEditPrice = (price: Price) => {
+    if (typeof price.id === 'string') {
+      alert('Сначала создайте эту цену');
+      return;
+    }
     setPriceForm({
       id: price.id,
       brand_id: price.brand_id.toString(),
@@ -375,7 +384,10 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         services={services}
         prices={prices}
         onSave={handleSavePrice}
-        onRefresh={onRefresh}
+        onRefresh={async () => {
+          setFilterNoPrice(false);
+          await onRefresh();
+        }}
       />
 
       <BulkUpdateDialog

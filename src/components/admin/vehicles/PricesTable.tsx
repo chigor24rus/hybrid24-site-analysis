@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import Icon from '@/components/ui/icon';
 
 interface Price {
-  id: number;
+  id: number | string;
   brand_id: number;
   model_id: number | null;
   service_id: number;
@@ -20,7 +20,7 @@ interface PricesTableProps {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onEdit: (price: Price) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number | string) => void;
 }
 
 const PricesTable = ({ 
