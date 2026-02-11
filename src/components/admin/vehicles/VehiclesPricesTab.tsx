@@ -86,12 +86,17 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     try {
       const url = 'https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791';
       const method = priceForm.id ? 'PUT' : 'POST';
+      
+      // Extract numeric value from price string
+      const numericPrice = parseFloat(priceForm.price.replace(/[^\d.]/g, ''));
+      
       const body = {
         ...(priceForm.id && { id: priceForm.id }),
         brand_id: parseInt(priceForm.brand_id),
         model_id: priceForm.model_id ? parseInt(priceForm.model_id) : null,
         service_id: parseInt(priceForm.service_id),
-        price: priceForm.price,
+        base_price: numericPrice,
+        currency: '₽',
       };
 
       const response = await fetch(url, {
@@ -104,9 +109,13 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         setIsPriceDialogOpen(false);
         setPriceForm({ id: 0, brand_id: '', model_id: '', service_id: '', price: '' });
         onRefresh();
+      } else {
+        const errorData = await response.json();
+        alert(`Ошибка: ${errorData.error || 'Не удалось сохранить цену'}`);
       }
     } catch (error) {
       console.error('Error saving price:', error);
+      alert('Ошибка при сохранении цены');
     }
   };
 

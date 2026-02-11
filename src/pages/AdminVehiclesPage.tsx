@@ -39,6 +39,8 @@ interface Price {
   model_id: number | null;
   service_id: number;
   price: string;
+  base_price?: number;
+  currency?: string;
   brand_name?: string;
   model_name?: string;
   service_title?: string;
@@ -77,7 +79,13 @@ const AdminVehiclesPage = () => {
       setBrands(brandsData.brands || []);
       setModels(modelsData.models || []);
       setServices(servicesData.services || []);
-      setPrices(pricesData.prices || []);
+      
+      // Convert base_price to price format for display
+      const convertedPrices = (pricesData.prices || []).map((p: Price) => ({
+        ...p,
+        price: p.base_price ? `${p.base_price} ${p.currency || '₽'}` : '0 ₽'
+      }));
+      setPrices(convertedPrices);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
