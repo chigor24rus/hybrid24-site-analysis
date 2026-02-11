@@ -59,6 +59,9 @@ const PriceDialog = ({
   const [searchBrand, setSearchBrand] = useState('');
   const [searchModel, setSearchModel] = useState('');
   const [searchService, setSearchService] = useState('');
+  const [brandSelectSize, setBrandSelectSize] = useState(1);
+  const [modelSelectSize, setModelSelectSize] = useState(1);
+  const [serviceSelectSize, setServiceSelectSize] = useState(1);
 
   const handleOpenChange = (open: boolean) => {
     onOpenChange(open);
@@ -66,6 +69,9 @@ const PriceDialog = ({
       setSearchBrand('');
       setSearchModel('');
       setSearchService('');
+      setBrandSelectSize(1);
+      setModelSelectSize(1);
+      setServiceSelectSize(1);
     }
   };
 
@@ -82,7 +88,11 @@ const PriceDialog = ({
             <Input
               placeholder="Поиск бренда..."
               value={searchBrand}
-              onChange={(e) => setSearchBrand(e.target.value)}
+              onChange={(e) => {
+                setSearchBrand(e.target.value);
+                setBrandSelectSize(8);
+              }}
+              onFocus={() => setBrandSelectSize(8)}
               className="mb-2"
             />
             <select 
@@ -91,8 +101,9 @@ const PriceDialog = ({
               onChange={(e) => {
                 setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' });
                 setSearchBrand('');
+                setBrandSelectSize(1);
               }}
-              size={Math.min(brands.filter(b => b.name.toLowerCase().includes(searchBrand.toLowerCase())).length + 1, 8)}
+              size={brandSelectSize}
             >
               <option value="">Выберите бренд</option>
               {brands
@@ -109,7 +120,11 @@ const PriceDialog = ({
             <Input
               placeholder="Поиск модели..."
               value={searchModel}
-              onChange={(e) => setSearchModel(e.target.value)}
+              onChange={(e) => {
+                setSearchModel(e.target.value);
+                setModelSelectSize(8);
+              }}
+              onFocus={() => setModelSelectSize(8)}
               className="mb-2"
               disabled={!priceForm.brand_id}
             />
@@ -119,9 +134,10 @@ const PriceDialog = ({
               onChange={(e) => {
                 setPriceForm({ ...priceForm, model_id: e.target.value });
                 setSearchModel('');
+                setModelSelectSize(1);
               }}
               disabled={!priceForm.brand_id}
-              size={priceForm.brand_id ? Math.min(models.filter(m => m.brand_id.toString() === priceForm.brand_id && m.name.toLowerCase().includes(searchModel.toLowerCase())).length + 1, 8) : 2}
+              size={modelSelectSize}
             >
               <option value="">Все модели</option>
               {models
@@ -138,7 +154,11 @@ const PriceDialog = ({
             <Input
               placeholder="Поиск услуги..."
               value={searchService}
-              onChange={(e) => setSearchService(e.target.value)}
+              onChange={(e) => {
+                setSearchService(e.target.value);
+                setServiceSelectSize(8);
+              }}
+              onFocus={() => setServiceSelectSize(8)}
               className="mb-2"
             />
             <select 
@@ -147,8 +167,9 @@ const PriceDialog = ({
               onChange={(e) => {
                 setPriceForm({ ...priceForm, service_id: e.target.value });
                 setSearchService('');
+                setServiceSelectSize(1);
               }}
-              size={Math.min(services.filter(s => s.title.toLowerCase().includes(searchService.toLowerCase())).length + 1, 8)}
+              size={serviceSelectSize}
             >
               <option value="">Выберите услугу</option>
               {services
