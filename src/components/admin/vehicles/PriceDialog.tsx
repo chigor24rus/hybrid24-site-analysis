@@ -162,33 +162,82 @@ const PriceDialog = ({
     }
 
     try {
-      const updates = [];
-
+      const combinations = [];
+      
+      // Generate all combinations and skip existing ones
       for (const brandId of selectedBrands) {
         for (const serviceId of selectedServices) {
-          const priceValue = servicePrices[serviceId];
-          const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
-          
-          updates.push(
-            fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                brand_id: parseInt(brandId),
-                model_id: null,
-                service_id: parseInt(serviceId),
-                base_price: numericPrice,
-                currency: '₽',
-              }),
-            })
-          );
+          const key = `${brandId}-null-${serviceId}`;
+          if (!priceSet.has(key)) {
+            combinations.push({ brandId, serviceId });
+          }
         }
       }
 
-      await Promise.all(updates);
+      if (combinations.length === 0) {
+        alert('Все выбранные комбинации уже имеют цены');
+        return;
+      }
+
+      const totalCombinations = combinations.length;
+      const skippedCount = (selectedBrands.length * selectedServices.length) - totalCombinations;
+      
+      if (skippedCount > 0) {
+        const confirmed = confirm(
+          `Будет создано ${totalCombinations} цен.\n` +
+          `${skippedCount} комбинаций пропущено (цены уже существуют).\n\n` +
+          `Продолжить?`
+        );
+        if (!confirmed) return;
+      }
+
+      // Process in batches of 10 to avoid overloading the server
+      const batchSize = 10;
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (let i = 0; i < combinations.length; i += batchSize) {
+        const batch = combinations.slice(i, i + batchSize);
+        
+        const batchPromises = batch.map(({ brandId, serviceId }) => {
+          const priceValue = servicePrices[serviceId];
+          const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
+          
+          return fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              brand_id: parseInt(brandId),
+              model_id: null,
+              service_id: parseInt(serviceId),
+              base_price: numericPrice,
+              currency: '₽',
+            }),
+          }).then(res => {
+            if (res.ok) {
+              successCount++;
+              return { success: true };
+            } else {
+              errorCount++;
+              return { success: false };
+            }
+          }).catch(() => {
+            errorCount++;
+            return { success: false };
+          });
+        });
+
+        await Promise.all(batchPromises);
+      }
+
       handleOpenChange(false);
       onSave();
-      alert(`Успешно добавлено ${updates.length} цен!`);
+      
+      if (errorCount > 0) {
+        alert(`Создано цен: ${successCount}\nОшибок: ${errorCount}\n\nНекоторые цены не удалось сохранить.`);
+      } else {
+        alert(`Успешно создано ${successCount} цен!`);
+      }
     } catch (error) {
       console.error('Error bulk saving prices:', error);
       alert('Ошибка при сохранении цен');
