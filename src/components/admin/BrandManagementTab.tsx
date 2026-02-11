@@ -39,25 +39,47 @@ const BrandManagementTab = ({ brands, onRefresh }: BrandManagementTabProps) => {
   const uploadLogoFile = async (file: File) => {
     setUploadingLogo(true);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
+      const reader = new FileReader();
       
-      if (response.ok && data.url) {
-        setBrandForm({ ...brandForm, logo_url: data.url });
-      } else {
-        alert(data.error || 'Ошибка при загрузке файла');
-      }
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+
+          const response = await fetch('https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              image: base64Data,
+              filename: file.name,
+            }),
+          });
+
+          const data = await response.json();
+          
+          if (response.ok && data.url) {
+            setBrandForm({ ...brandForm, logo_url: data.url });
+          } else {
+            alert(data.error || 'Ошибка при загрузке файла');
+          }
+        } catch (error) {
+          console.error('Error uploading logo:', error);
+          alert('Ошибка при загрузке файла');
+        } finally {
+          setUploadingLogo(false);
+        }
+      };
+
+      reader.onerror = () => {
+        alert('Ошибка при чтении файла');
+        setUploadingLogo(false);
+      };
+
+      reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error uploading logo:', error);
       alert('Ошибка при загрузке файла');
-    } finally {
       setUploadingLogo(false);
     }
   };
