@@ -99,7 +99,7 @@ const BrandsSection = () => {
                 className="flex-shrink-0"
               >
                 <Card className="hover-scale cursor-pointer text-center p-6 bg-white w-32 h-32 flex flex-col items-center justify-center">
-                  <img src={brand.logo} alt={brand.name} className="h-16 object-contain mb-2" />
+                  <img src={brand.logo} alt={`Логотип ${brand.name} - ремонт и обслуживание в Красноярске`} className="h-16 object-contain mb-2" />
                   <p className="text-xs font-medium">{brand.name}</p>
                 </Card>
               </Link>
