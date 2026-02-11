@@ -27,6 +27,24 @@ class ErrorLogger {
 
   private initGlobalErrorHandlers() {
     window.addEventListener('error', (event) => {
+      const errorMsg = event.message?.toString() || '';
+      const errorStack = event.error?.stack?.toString() || '';
+      const errorFilename = event.filename?.toString() || '';
+      
+      if (errorMsg.includes('styled-components') || 
+          errorMsg.includes('reviewlab') ||
+          errorMsg.includes('See https://github.com/styled-components') ||
+          errorMsg.includes('errors.md#17') ||
+          errorStack.includes('styled-components') ||
+          errorStack.includes('reviewlab') ||
+          errorFilename.includes('reviewlab') ||
+          errorFilename.includes('styled-components') ||
+          errorFilename.includes('index-es2015.js')) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      
       this.logError({
         type: 'error',
         message: event.message,
@@ -37,6 +55,19 @@ class ErrorLogger {
     });
 
     window.addEventListener('unhandledrejection', (event) => {
+      const reason = event.reason?.toString() || '';
+      const reasonStack = event.reason?.stack?.toString() || '';
+      
+      if (reason.includes('styled-components') || 
+          reason.includes('reviewlab') ||
+          reason.includes('See https://github.com/styled-components') ||
+          reason.includes('errors.md#17') ||
+          reasonStack.includes('styled-components') ||
+          reasonStack.includes('reviewlab')) {
+        event.preventDefault();
+        return;
+      }
+      
       this.logError({
         type: 'error',
         message: `Unhandled Promise Rejection: ${event.reason}`,
