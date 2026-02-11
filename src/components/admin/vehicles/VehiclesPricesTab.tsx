@@ -68,9 +68,9 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 50;
 
-  // Create set of combinations that have prices
-  const priceSet = new Set(
-    prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
+  // Create map of combinations that exist in database
+  const priceMap = new Map(
+    prices.map(p => [`${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`, p])
   );
 
   // Generate all possible combinations
@@ -86,7 +86,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
         service_title: service.title,
         price: '0 ₽',
         id: `${brand.id}-null-${service.id}`,
-        hasPrice: priceSet.has(`${brand.id}-null-${service.id}`)
+        hasPrice: priceMap.has(`${brand.id}-null-${service.id}`)
       }];
       
       const brandModels = models.filter(m => m.brand_id === brand.id);
@@ -100,7 +100,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
           service_title: service.title,
           price: '0 ₽',
           id: `${brand.id}-${model.id}-${service.id}`,
-          hasPrice: priceSet.has(`${brand.id}-${model.id}-${service.id}`)
+          hasPrice: priceMap.has(`${brand.id}-${model.id}-${service.id}`)
         });
       });
       
