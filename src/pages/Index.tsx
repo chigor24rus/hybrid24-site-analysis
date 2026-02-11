@@ -45,8 +45,8 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>{SITE_CONFIG.name} - Сертифицированная СТО в Красноярске | Ремонт авто</title>
-        <meta name="description" content={`Профессиональный ремонт и обслуживание автомобилей в Красноярске. ✓ Опытные мастера ✓ Современное оборудование ✓ Гарантия качества. Запись по тел. ${SITE_CONFIG.phone}`} />
+        <title>Автосервис в Красноярске | {SITE_CONFIG.name}</title>
+        <meta name="description" content={`Ремонт гибридов и авто в Красноярске. Опытные мастера, гарантия. Запись: ${SITE_CONFIG.phone}`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
