@@ -15,6 +15,7 @@ const routes = [
   '/reviews',
   '/blog',
   '/brands',
+  '/about',
   '/legal',
   '/bonus-program',
   '/warranty',

@@ -41,6 +41,7 @@ import MaintenancePage from "./pages/MaintenancePage";
 import LegalPage from "./pages/LegalPage";
 import BonusProgramPage from "./pages/BonusProgramPage";
 import WarrantyPage from "./pages/WarrantyPage";
+import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -113,6 +114,7 @@ const App = () => (
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage />} />
             <Route path="/warranty" element={<WarrantyPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/admin/data" element={<AdminDataPage />} />
