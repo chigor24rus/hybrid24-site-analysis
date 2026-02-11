@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import BlogShareButton from '@/components/BlogShareButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface BlogPost {
   id: number;
@@ -241,7 +242,7 @@ const BlogPostPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBookingOpen, setIsBookingOpen] = useState(false);

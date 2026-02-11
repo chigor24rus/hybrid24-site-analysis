@@ -14,6 +14,7 @@ import ShareButton from '@/components/ShareButton';
 import PromotionSubscribe from '@/components/PromotionSubscribe';
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Promotion {
   id: number;
@@ -32,7 +33,7 @@ const PromotionsPage = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   const isEndingSoon = (dateString: string) => {
     if (dateString === 'Постоянно') return false;

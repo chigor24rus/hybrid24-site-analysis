@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Service {
   id: number;
@@ -50,7 +51,7 @@ export default function BrandPage() {
   const [models, setModels] = useState<Model[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
     const fetchBrandData = async () => {

@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface Service {
   id: number;
@@ -35,7 +36,7 @@ const ServicesPage = () => {
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
     const fetchServices = async () => {

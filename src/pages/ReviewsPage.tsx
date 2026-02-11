@@ -10,13 +10,14 @@ import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ReviewsSection, { Review } from '@/components/sections/home/ReviewsSection';
 import { generateSchemaMarkup, generateYandexSchema } from '@/utils/generateSchemaMarkup';
+import { SITE_CONFIG } from '@/config/site';
 
 const ReviewsPage = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(true);
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
     const fetchReviews = async () => {

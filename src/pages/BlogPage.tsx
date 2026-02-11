@@ -13,6 +13,7 @@ import Footer from '@/components/Footer';
 
 import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import { SITE_CONFIG } from '@/config/site';
 
 interface BlogPost {
   id: number;
@@ -34,7 +35,7 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'date' | 'popular'>('date');
   const [viewCounts, setViewCounts] = useState<Record<number, number>>({});
-  const canonicalUrl = `https://hybrid24.ru${location.pathname}`;
+  const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
     const fetchPosts = async () => {
