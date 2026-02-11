@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Brand {
   id: number;
@@ -68,12 +69,11 @@ const PriceDialog = ({
   onSave 
 }: PriceDialogProps) => {
   const [searchBrand, setSearchBrand] = useState('');
-  const [searchModel, setSearchModel] = useState('');
   const [searchService, setSearchService] = useState('');
-  const [showBrandDropdown, setShowBrandDropdown] = useState(false);
-  const [showModelDropdown, setShowModelDropdown] = useState(false);
-  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [onlyNoPrices, setOnlyNoPrices] = useState(false);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [bulkMode, setBulkMode] = useState(false);
 
   const priceSet = new Set(
     prices.map(p => `${p.brand_id}-${p.model_id || 'null'}-${p.service_id}`)
@@ -83,12 +83,11 @@ const PriceDialog = ({
     onOpenChange(open);
     if (!open) {
       setSearchBrand('');
-      setSearchModel('');
       setSearchService('');
-      setShowBrandDropdown(false);
-      setShowModelDropdown(false);
-      setShowServiceDropdown(false);
       setOnlyNoPrices(false);
+      setSelectedBrands([]);
+      setSelectedServices([]);
+      setBulkMode(false);
     }
   };
 
@@ -106,154 +105,230 @@ const PriceDialog = ({
     return matchesSearch && hasNoPriceForAnyService;
   });
 
-  const filteredModels = models.filter(m => {
-    if (m.brand_id.toString() !== priceForm.brand_id) return false;
-    if (!onlyNoPrices) return m.name.toLowerCase().includes(searchModel.toLowerCase());
-    const matchesSearch = m.name.toLowerCase().includes(searchModel.toLowerCase());
-    const serviceId = priceForm.service_id || services[0]?.id.toString() || '';
-    const hasNoPriceForService = serviceId && !hasPrice(priceForm.brand_id, m.id.toString(), serviceId);
-    return matchesSearch && hasNoPriceForService;
-  });
-
   const filteredServices = services.filter(service => {
     if (!onlyNoPrices) return service.title.toLowerCase().includes(searchService.toLowerCase());
     const matchesSearch = service.title.toLowerCase().includes(searchService.toLowerCase());
-    const hasNoPriceForCurrent = !hasPrice(
-      priceForm.brand_id || brands[0]?.id.toString() || '',
-      priceForm.model_id,
-      service.id.toString()
+    const hasNoPriceForAnyBrand = brands.some(brand =>
+      !hasPrice(brand.id.toString(), '', service.id.toString())
     );
-    return matchesSearch && hasNoPriceForCurrent;
+    return matchesSearch && hasNoPriceForAnyBrand;
   });
+
+  const toggleBrand = (brandId: string) => {
+    setSelectedBrands(prev => 
+      prev.includes(brandId) 
+        ? prev.filter(id => id !== brandId)
+        : [...prev, brandId]
+    );
+  };
+
+  const toggleService = (serviceId: string) => {
+    setSelectedServices(prev => 
+      prev.includes(serviceId) 
+        ? prev.filter(id => id !== serviceId)
+        : [...prev, serviceId]
+    );
+  };
+
+  const handleBulkSave = async () => {
+    if (selectedBrands.length === 0 || selectedServices.length === 0 || !priceForm.price) {
+      alert('Выберите хотя бы один бренд, одну услугу и укажите цену');
+      return;
+    }
+
+    try {
+      const numericPrice = parseFloat(priceForm.price.replace(/[^\d.]/g, ''));
+      const updates = [];
+
+      for (const brandId of selectedBrands) {
+        for (const serviceId of selectedServices) {
+          updates.push(
+            fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                brand_id: parseInt(brandId),
+                model_id: null,
+                service_id: parseInt(serviceId),
+                base_price: numericPrice,
+                currency: '₽',
+              }),
+            })
+          );
+        }
+      }
+
+      await Promise.all(updates);
+      handleOpenChange(false);
+      onSave();
+      alert(`Успешно добавлено ${updates.length} цен!`);
+    } catch (error) {
+      console.error('Error bulk saving prices:', error);
+      alert('Ошибка при сохранении цен');
+    }
+  };
+
+  const handleSingleSave = async () => {
+    if (!priceForm.brand_id || !priceForm.service_id || !priceForm.price) {
+      alert('Заполните обязательные поля');
+      return;
+    }
+    await onSave();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl">
         <DialogHeader>
           <DialogTitle>{priceForm.id ? 'Редактировать цену' : 'Добавить цену'}</DialogTitle>
-          <DialogDescription>Укажите бренд, модель (опционально), услугу и цену</DialogDescription>
+          <DialogDescription>
+            {bulkMode ? 'Выберите несколько брендов и услуг для массового добавления' : 'Укажите бренд, услугу и цену'}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="only-no-prices" 
-              checked={onlyNoPrices}
-              onCheckedChange={(checked) => setOnlyNoPrices(checked as boolean)}
-            />
-            <Label htmlFor="only-no-prices" className="cursor-pointer">
-              Только без цен
-            </Label>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="only-no-prices" 
+                checked={onlyNoPrices}
+                onCheckedChange={(checked) => setOnlyNoPrices(checked as boolean)}
+              />
+              <Label htmlFor="only-no-prices" className="cursor-pointer">
+                Только без цен
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="bulk-mode" 
+                checked={bulkMode}
+                onCheckedChange={(checked) => {
+                  setBulkMode(checked as boolean);
+                  if (checked) {
+                    setSelectedBrands([]);
+                    setSelectedServices([]);
+                  }
+                }}
+              />
+              <Label htmlFor="bulk-mode" className="cursor-pointer">
+                Массовое добавление
+              </Label>
+            </div>
           </div>
-          <div className="relative">
-            <Label>Бренд *</Label>
-            <Input
-              placeholder="Поиск бренда..."
-              value={searchBrand || (priceForm.brand_id ? brands.find(b => b.id.toString() === priceForm.brand_id)?.name : '')}
-              onChange={(e) => {
-                setSearchBrand(e.target.value);
-                setShowBrandDropdown(true);
-              }}
-              onFocus={() => setShowBrandDropdown(true)}
-            />
-            {showBrandDropdown && (
-              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
-                {filteredBrands.length > 0 ? (
-                  filteredBrands.map((brand) => (
-                    <div
-                      key={brand.id}
-                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
-                      onClick={() => {
-                        setPriceForm({ ...priceForm, brand_id: brand.id.toString(), model_id: '' });
-                        setSearchBrand('');
-                        setShowBrandDropdown(false);
-                      }}
-                    >
-                      {brand.name}
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
-                )}
+
+          {bulkMode ? (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Бренды *</Label>
+                <Input
+                  placeholder="Поиск бренда..."
+                  value={searchBrand}
+                  onChange={(e) => setSearchBrand(e.target.value)}
+                  className="mb-2"
+                />
+                <ScrollArea className="h-64 rounded-md border p-2">
+                  <div className="space-y-2">
+                    {filteredBrands.map((brand) => (
+                      <div key={brand.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`brand-${brand.id}`}
+                          checked={selectedBrands.includes(brand.id.toString())}
+                          onCheckedChange={() => toggleBrand(brand.id.toString())}
+                        />
+                        <Label htmlFor={`brand-${brand.id}`} className="cursor-pointer flex-1">
+                          {brand.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Выбрано: {selectedBrands.length}
+                </p>
               </div>
-            )}
-          </div>
-          <div className="relative">
-            <Label>Модель (опционально)</Label>
-            <Input
-              placeholder="Все модели"
-              value={searchModel || (priceForm.model_id ? models.find(m => m.id.toString() === priceForm.model_id)?.name : '')}
-              onChange={(e) => {
-                setSearchModel(e.target.value);
-                setShowModelDropdown(true);
-              }}
-              onFocus={() => setShowModelDropdown(true)}
-              disabled={!priceForm.brand_id}
-            />
-            {showModelDropdown && priceForm.brand_id && (
-              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
-                <div
-                  className="px-3 py-2 text-sm hover:bg-accent cursor-pointer font-medium"
-                  onClick={() => {
-                    setPriceForm({ ...priceForm, model_id: '' });
-                    setSearchModel('');
-                    setShowModelDropdown(false);
+
+              <div>
+                <Label>Услуги *</Label>
+                <Input
+                  placeholder="Поиск услуги..."
+                  value={searchService}
+                  onChange={(e) => setSearchService(e.target.value)}
+                  className="mb-2"
+                />
+                <ScrollArea className="h-64 rounded-md border p-2">
+                  <div className="space-y-2">
+                    {filteredServices.map((service) => (
+                      <div key={service.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`service-${service.id}`}
+                          checked={selectedServices.includes(service.id.toString())}
+                          onCheckedChange={() => toggleService(service.id.toString())}
+                        />
+                        <Label htmlFor={`service-${service.id}`} className="cursor-pointer flex-1">
+                          {service.title}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Выбрано: {selectedServices.length}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <Label>Бренд *</Label>
+                <Input
+                  placeholder="Поиск бренда..."
+                  value={searchBrand}
+                  onChange={(e) => setSearchBrand(e.target.value)}
+                  className="mb-2"
+                />
+                <select 
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  value={priceForm.brand_id} 
+                  onChange={(e) => {
+                    setPriceForm({ ...priceForm, brand_id: e.target.value, model_id: '' });
+                    setSearchBrand('');
                   }}
                 >
-                  Все модели
-                </div>
-                {filteredModels.length > 0 ? (
-                  filteredModels.map((model) => (
-                    <div
-                      key={model.id}
-                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
-                      onClick={() => {
-                        setPriceForm({ ...priceForm, model_id: model.id.toString() });
-                        setSearchModel('');
-                        setShowModelDropdown(false);
-                      }}
-                    >
-                      {model.name}
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
-                )}
+                  <option value="">Выберите бренд</option>
+                  {filteredBrands.map((brand) => (
+                    <option key={brand.id} value={brand.id.toString()}>
+                      {brand.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
-          </div>
-          <div className="relative">
-            <Label>Услуга *</Label>
-            <Input
-              placeholder="Поиск услуги..."
-              value={searchService || (priceForm.service_id ? services.find(s => s.id.toString() === priceForm.service_id)?.title : '')}
-              onChange={(e) => {
-                setSearchService(e.target.value);
-                setShowServiceDropdown(true);
-              }}
-              onFocus={() => setShowServiceDropdown(true)}
-            />
-            {showServiceDropdown && (
-              <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
-                {filteredServices.length > 0 ? (
-                  filteredServices.map((service) => (
-                    <div
-                      key={service.id}
-                      className="px-3 py-2 text-sm hover:bg-accent cursor-pointer"
-                      onClick={() => {
-                        setPriceForm({ ...priceForm, service_id: service.id.toString() });
-                        setSearchService('');
-                        setShowServiceDropdown(false);
-                      }}
-                    >
+
+              <div>
+                <Label>Услуга *</Label>
+                <Input
+                  placeholder="Поиск услуги..."
+                  value={searchService}
+                  onChange={(e) => setSearchService(e.target.value)}
+                  className="mb-2"
+                />
+                <select 
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  value={priceForm.service_id} 
+                  onChange={(e) => {
+                    setPriceForm({ ...priceForm, service_id: e.target.value });
+                    setSearchService('');
+                  }}
+                >
+                  <option value="">Выберите услугу</option>
+                  {filteredServices.map((service) => (
+                    <option key={service.id} value={service.id.toString()}>
                       {service.title}
-                    </div>
-                  ))
-                ) : (
-                  <div className="px-3 py-2 text-sm text-muted-foreground">Ничего не найдено</div>
-                )}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
-          </div>
+            </>
+          )}
+
           <div>
             <Label>Цена *</Label>
             <Input
@@ -261,9 +336,15 @@ const PriceDialog = ({
               onChange={(e) => setPriceForm({ ...priceForm, price: e.target.value })}
               placeholder="5 000 ₽"
             />
+            {bulkMode && selectedBrands.length > 0 && selectedServices.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-1">
+                Будет создано {selectedBrands.length * selectedServices.length} цен
+              </p>
+            )}
           </div>
+
           <div className="flex gap-2">
-            <Button onClick={onSave} className="flex-1">
+            <Button onClick={bulkMode ? handleBulkSave : handleSingleSave} className="flex-1">
               Сохранить
             </Button>
             <Button variant="outline" onClick={() => handleOpenChange(false)}>
