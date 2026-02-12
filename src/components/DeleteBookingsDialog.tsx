@@ -43,6 +43,8 @@ const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess, onExport }: Delet
 
     setDeleting(true);
     try {
+      console.log('Sending delete request:', { start_date: startDate, end_date: endDate });
+      
       const response = await fetch('https://functions.poehali.dev/6441c23c-e63f-4a3e-8cd7-aabdb983ca45', {
         method: 'POST',
         headers: {
@@ -54,7 +56,9 @@ const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess, onExport }: Delet
         }),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (response.ok && data.success) {
         alert(`Успешно удалено заявок: ${data.deleted_count}`);
@@ -67,7 +71,7 @@ const DeleteBookingsDialog = ({ open, onOpenChange, onSuccess, onExport }: Delet
       }
     } catch (error) {
       console.error('Error deleting bookings:', error);
-      alert('Ошибка при удалении заявок');
+      alert(`Ошибка при удалении заявок: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     } finally {
       setDeleting(false);
     }
