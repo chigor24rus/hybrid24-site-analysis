@@ -218,7 +218,9 @@ export const usePriceDialogLogic = (
         
         for (let attempt = 0; attempt <= retries; attempt++) {
           try {
-            const res = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
+            // Добавляем timestamp чтобы обойти кэш Cloud Functions
+            const url = `https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791?_t=${Date.now()}`;
+            const res = await fetch(url, {
               method: combo.isUpdate ? 'PUT' : 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(requestBody),
