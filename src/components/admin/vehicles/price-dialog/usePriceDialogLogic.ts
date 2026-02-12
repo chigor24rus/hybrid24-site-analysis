@@ -224,6 +224,15 @@ export const usePriceDialogLogic = (
               return { success: true };
             }
 
+            // 409 = цена уже существует, это ОК для обновления
+            if (res.status === 409 && combo.isUpdate) {
+              return { success: true };
+            }
+
+            // Логируем ошибку
+            const errorText = await res.text().catch(() => 'Unknown error');
+            console.error(`HTTP ${res.status}:`, errorText);
+
             if (res.status === 500 && attempt < retries) {
               await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
               continue;
@@ -231,6 +240,7 @@ export const usePriceDialogLogic = (
 
             return { success: false, status: res.status };
           } catch (error) {
+            console.error('Request error:', error);
             if (attempt < retries) {
               await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
               continue;
