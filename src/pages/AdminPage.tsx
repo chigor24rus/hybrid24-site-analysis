@@ -385,8 +385,8 @@ const AdminPage = () => {
       )}
 
       <DeleteBookingsDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
         onSuccess={fetchBookings}
       />
     </AdminLayout>
