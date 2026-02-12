@@ -142,9 +142,9 @@ export default function ModelServicesPage() {
         <img 
           src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80" 
           alt="Car background"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/60 z-[1]"></div>
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[

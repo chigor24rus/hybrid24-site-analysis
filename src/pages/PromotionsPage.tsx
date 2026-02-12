@@ -104,9 +104,9 @@ const PromotionsPage = () => {
         <img 
           src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=1920&q=80" 
           alt="Promotions background"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/60 z-[1]"></div>
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs items={[{ label: 'Акции' }]} className="text-white/80" />
           <div className="mt-12 text-center text-white animate-fade-in">
