@@ -41,10 +41,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     sp.id, sp.service_id, sp.brand_id, sp.model_id,
                     sp.base_price, sp.currency, sp.created_at, sp.updated_at,
                     s.title as service_title,
-                    b.name as brand_name
+                    b.name as brand_name,
+                    cm.name as model_name
                 FROM service_prices sp
                 JOIN services s ON sp.service_id = s.id
                 JOIN brands b ON sp.brand_id = b.id
+                LEFT JOIN car_models cm ON sp.model_id = cm.id
                 WHERE 1=1
             """
             
