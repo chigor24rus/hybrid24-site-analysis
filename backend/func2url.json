@@ -1,4 +1,5 @@
 {
+  "prices-api": "https://functions.poehali.dev/0cce410b-a4a1-4420-8df0-90d95a5055b7",
   "post-build": "https://functions.poehali.dev/ef9dadf3-a896-48cd-945d-e32c58eeb32f",
   "ami-listener": "https://functions.poehali.dev/0dfb073d-29de-49a6-814d-5f1cec43838f",
   "zeon-ami-sync": "https://functions.poehali.dev/86e16b48-8b61-4edb-989a-385cfae159f6",
@@ -10,7 +11,6 @@
   "generate-brand-placeholders": "https://functions.poehali.dev/3e88b79c-cf86-412b-852e-0e3efed8a855",
   "import-logos": "https://functions.poehali.dev/68543ce4-24ca-4f4d-9ecc-7756d3540704",
   "update-promotion-admin": "https://functions.poehali.dev/be6f2324-6bd1-4660-b3ee-9c314129e4c8",
-  "manage-prices": "https://functions.poehali.dev/238c471e-a087-4373-8dcf-cec9258e7a04",
   "delete-promotion-admin": "https://functions.poehali.dev/7198e7ad-0464-4bc3-93f4-9200099874b5",
   "upload-image": "https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b",
   "models-upload": "https://functions.poehali.dev/158713b5-5bec-4512-afed-3075eb5db319",

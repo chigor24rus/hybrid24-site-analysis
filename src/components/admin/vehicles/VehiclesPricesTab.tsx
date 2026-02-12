@@ -171,7 +171,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     if (!confirm('Удалить эту цену?')) return;
 
     try {
-      const response = await fetch(`https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791?id=${id}`, {
+      const response = await fetch(`https://functions.poehali.dev/0cce410b-a4a1-4420-8df0-90d95a5055b7?id=${id}`, {
         method: 'DELETE',
       });
 
@@ -225,7 +225,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
           newBasePrice = Math.round(currentValue * multiplier);
         }
 
-        return fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
+        return fetch('https://functions.poehali.dev/0cce410b-a4a1-4420-8df0-90d95a5055b7', {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

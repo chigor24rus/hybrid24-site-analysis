@@ -1,7 +1,7 @@
 {
   "tests": [
     {
-      "name": "Test GET all prices",
+      "name": "Get all prices",
       "method": "GET",
       "path": "/",
       "expectedStatus": 200,
@@ -12,13 +12,20 @@
       "bodyMatcher": "partial"
     },
     {
-      "name": "Test POST create price - missing fields",
+      "name": "Create price with model_id",
       "method": "POST",
       "path": "/",
-      "body": {},
-      "expectedStatus": 400,
+      "body": {
+        "service_id": 1,
+        "brand_id": 1,
+        "model_id": 1,
+        "base_price": 5000,
+        "currency": "₽"
+      },
+      "expectedStatus": 201,
       "expectedBody": {
-        "error": "string"
+        "success": true,
+        "message": "string"
       },
       "bodyMatcher": "partial"
     }

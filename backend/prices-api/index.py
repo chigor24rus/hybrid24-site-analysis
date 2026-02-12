@@ -7,20 +7,17 @@ from psycopg2.extras import RealDictCursor
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Manage service prices with model support - get, create, update, delete operations
-    Args: event with httpMethod, body with price data (including model_id)
-    Returns: HTTP response with operation result
+    NEW VERSION 2.0: Service prices management with proper model_id support
     '''
     method: str = event.get('httpMethod', 'GET')
     
-    # Handle CORS OPTIONS request
     if method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, X-User-Id, X-Auth-Token, X-Session-Id',
+                'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
@@ -34,7 +31,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn = psycopg2.connect(dsn)
         cur = conn.cursor(cursor_factory=RealDictCursor)
         
-        # GET all prices with brand and service names
         if method == 'GET':
             params = event.get('queryStringParameters') or {}
             brand_id = params.get('brand_id')
@@ -96,12 +92,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 })
             }
         
-        # CREATE new price
         elif method == 'POST':
             body_data = json.loads(event.get('body', '{}'))
             service_id = body_data.get('service_id')
             brand_id = body_data.get('brand_id')
-            model_id = body_data.get('model_id')  # Может быть None для всех моделей
+            model_id = body_data.get('model_id')
             base_price = body_data.get('base_price')
             currency = body_data.get('currency', '₽').strip()
             
@@ -115,21 +110,15 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': 'service_id, brand_id и base_price обязательны'})
                 }
             
-            # Check if price already exists (с учётом model_id)
+            # ВАЖНО: Проверяем дубликат с учётом model_id
             if model_id:
                 cur.execute(
-                    """
-                    SELECT id FROM service_prices 
-                    WHERE service_id = %s AND brand_id = %s AND model_id = %s
-                    """,
+                    "SELECT id FROM service_prices WHERE service_id = %s AND brand_id = %s AND model_id = %s",
                     (service_id, brand_id, model_id)
                 )
             else:
                 cur.execute(
-                    """
-                    SELECT id FROM service_prices 
-                    WHERE service_id = %s AND brand_id = %s AND model_id IS NULL
-                    """,
+                    "SELECT id FROM service_prices WHERE service_id = %s AND brand_id = %s AND model_id IS NULL",
                     (service_id, brand_id)
                 )
             existing = cur.fetchone()
@@ -143,7 +132,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'Цена для этой комбинации услуги, бренда и модели уже существует'})
+                    'body': json.dumps({'error': f'[V2.0] Цена для услуги {service_id}, бренда {brand_id}, модели {model_id} уже существует'})
                 }
             
             cur.execute(
@@ -174,11 +163,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': json.dumps({
                     'success': True,
                     'price': price_data,
-                    'message': 'Цена создана'
+                    'message': '[V2.0] Цена создана'
                 })
             }
         
-        # UPDATE existing price
         elif method == 'PUT':
             body_data = json.loads(event.get('body', '{}'))
             price_id = body_data.get('id')
@@ -240,10 +228,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 })
             }
         
-        # DELETE price
         elif method == 'DELETE':
-            body_data = json.loads(event.get('body', '{}'))
-            price_id = body_data.get('id')
+            params = event.get('queryStringParameters') or {}
+            price_id = params.get('id')
             
             if not price_id:
                 return {
@@ -252,7 +239,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'ID цены обязателен'})
+                    'body': json.dumps({'error': 'ID обязателен'})
                 }
             
             cur.execute("DELETE FROM service_prices WHERE id = %s RETURNING id", (price_id,))
@@ -298,7 +285,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 },
                 'body': json.dumps({'error': 'Метод не поддерживается'})
             }
-            
+    
     except Exception as e:
         return {
             'statusCode': 500,
