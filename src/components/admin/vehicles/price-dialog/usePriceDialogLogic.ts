@@ -137,25 +137,24 @@ export const usePriceDialogLogic = (
           
           if (!existingPrice) {
             combinations.push({ brandId, serviceId, isUpdate: false });
-          } else if (existingPrice.base_price === 0) {
+          } else {
+            // Разрешаем обновление любых существующих цен
             combinations.push({ brandId, serviceId, existingId: existingPrice.id, isUpdate: true });
           }
         }
       }
 
       if (combinations.length === 0) {
-        alert('Все выбранные комбинации уже имеют ненулевые цены');
+        alert('Не удалось найти комбинации для сохранения');
         return;
       }
 
       const newCount = combinations.filter(c => !c.isUpdate).length;
       const updateCount = combinations.filter(c => c.isUpdate).length;
-      const skippedCount = (selectedBrands.length * selectedServices.length) - combinations.length;
       
       let confirmMessage = '';
       if (newCount > 0) confirmMessage += `Создано новых: ${newCount}\n`;
-      if (updateCount > 0) confirmMessage += `Обновлено (было 0₽): ${updateCount}\n`;
-      if (skippedCount > 0) confirmMessage += `Пропущено (уже есть ненулевые): ${skippedCount}\n`;
+      if (updateCount > 0) confirmMessage += `Обновлено существующих: ${updateCount}\n`;
       confirmMessage += '\nПродолжить?';
       
       if (!confirm(confirmMessage)) return;
