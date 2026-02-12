@@ -1,115 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
-import { format } from 'date-fns';
-import ServiceSelector, { services } from './booking/ServiceSelector';
+import ServiceSelector from './booking/ServiceSelector';
 import DateTimeSelector from './booking/DateTimeSelector';
 import ContactForm from './booking/ContactForm';
+import { useBookingData } from './booking/useBookingData';
+import { useBookingSubmit } from './booking/useBookingSubmit';
+import type { BookingDialogProps, BookingFormData } from './booking/types';
 
-interface Brand {
-  id: number;
-  name: string;
-  slug: string;
-}
+const INITIAL_FORM_DATA: BookingFormData = {
+  name: '',
+  phone: '',
+  email: '',
+  brand: '',
+  model: '',
+  plateNumber: '',
+  vin: '',
+  comment: '',
+};
 
-interface Model {
-  id: number;
-  brand_id: number;
-  name: string;
-  year_range?: string;
-}
-
-interface Promotion {
-  id: number;
-  title: string;
-  description: string;
-  discount: string;
-  oldPrice: string;
-  newPrice: string;
-  validUntil: string;
-  icon: string;
-}
-
-interface BookingDialogProps {
-  setIsBookingOpen: (open: boolean) => void;
-  initialSelectedServices?: number[];
-  initialBrandId?: number;
-}
-
-const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initialBrandId }: BookingDialogProps) => {
+const BookingDialog = ({ 
+  setIsBookingOpen, 
+  initialSelectedServices = [], 
+  initialBrandId 
+}: BookingDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
   const [selectedPromotion, setSelectedPromotion] = useState<string>('');
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [brand, setBrand] = useState('');
-  const [model, setModel] = useState('');
-  const [plateNumber, setPlateNumber] = useState('');
-  const [vin, setVin] = useState('');
-  const [comment, setComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [formData, setFormData] = useState<BookingFormData>(INITIAL_FORM_DATA);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [models, setModels] = useState<Model[]>([]);
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
-  const [loadingBrands, setLoadingBrands] = useState(true);
-  const [loadingPromotions, setLoadingPromotions] = useState(true);
 
-  useEffect(() => {
-    const fetchBrands = async () => {
-      try {
-        const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f');
-        const data = await response.json();
-        setBrands(data.brands || []);
-        
-        if (initialBrandId) {
-          setBrand(initialBrandId.toString());
-        }
-      } catch (error) {
-        console.error('Error fetching brands:', error);
-      } finally {
-        setLoadingBrands(false);
-      }
-    };
+  const {
+    brands,
+    models,
+    promotions,
+    loadingBrands,
+    loadingPromotions,
+    selectedBrand,
+    setSelectedBrand,
+  } = useBookingData(initialBrandId);
 
-    const fetchPromotions = async () => {
-      try {
-        const timestamp = new Date().getTime();
-        const response = await fetch(`https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d?t=${timestamp}`);
-        const data = await response.json();
-        setPromotions(data.promotions || []);
-      } catch (error) {
-        console.error('Error fetching promotions:', error);
-      } finally {
-        setLoadingPromotions(false);
-      }
-    };
-
-    fetchBrands();
-    fetchPromotions();
-  }, [initialBrandId]);
-
-  useEffect(() => {
-    const fetchModels = async () => {
-      if (!brand) {
-        setModels([]);
-        setModel('');
-        return;
-      }
-      try {
-        const response = await fetch(`https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b?brand_id=${brand}`);
-        const data = await response.json();
-        setModels(data.models || []);
-      } catch (error) {
-        console.error('Error fetching models:', error);
-      }
-    };
-    fetchModels();
-  }, [brand]);
+  const { isSubmitting, submitSuccess, handleSubmit } = useBookingSubmit({
+    selectedServices,
+    selectedPromotion,
+    date,
+    time,
+    formData: { ...formData, brand: selectedBrand },
+    brands,
+    models,
+    promotions,
+    setIsBookingOpen,
+  });
 
   const toggleService = (id: number) => {
     setSelectedServices(prev =>
@@ -117,103 +60,43 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
     );
   };
 
-  const handleBooking = async () => {
-    if (!name || !phone) {
-      return;
-    }
-
-    if (!agreedToTerms) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const selectedServiceTitles = selectedServices
-        .map(id => services.find(s => s.id === id)?.title)
-        .filter(Boolean)
-        .join(', ');
-
-      const selectedBrand = brands.find(b => b.id.toString() === brand);
-      const selectedModel = models.find(m => m.id.toString() === model);
-
-      const selectedPromotionData = promotions.find(p => p.id.toString() === selectedPromotion);
-
-      const bookingData = {
-        name,
-        phone,
-        email,
-        service: selectedServiceTitles || 'Не указано',
-        promotion: selectedPromotionData?.title || '',
-        brand: selectedBrand?.name || '',
-        model: selectedModel?.name || '',
-        date: date ? format(date, 'yyyy-MM-dd') : '',
-        time,
-        comment,
-      };
-
-      const response = await fetch('https://functions.poehali.dev/a6d5798a-4b6c-4b15-8fd8-0264c1c51660', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSubmitSuccess(true);
-        
-        const notificationData = {
-          customer_name: name,
-          customer_phone: phone,
-          customer_email: email,
-          service_type: selectedServiceTitles || 'Не указано',
-          promotion: selectedPromotionData?.title || '',
-          car_brand: selectedBrand?.name || '',
-          car_model: selectedModel?.name || '',
-          plate_number: plateNumber,
-          vin: vin,
-          preferred_date: date ? format(date, 'dd.MM.yyyy') : '',
-          preferred_time: time,
-          comment,
-        };
-        
-        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notificationData),
-        }).catch(err => console.warn('Email notification failed:', err));
-        
-        fetch('https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notificationData),
-        }).catch(err => console.warn('Telegram notification failed:', err));
-        
-        fetch('https://functions.poehali.dev/cd36e9ce-a071-42db-b619-b47ee9c00b7c', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(notificationData),
-        }).catch(err => console.warn('MAX notification failed:', err));
-        
-        setTimeout(() => {
-          setIsBookingOpen(false);
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error submitting booking:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const updateFormField = <K extends keyof BookingFormData>(
+    field: K,
+    value: BookingFormData[K]
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleBrandChange = (value: string) => {
+    setSelectedBrand(value);
+    updateFormField('model', '');
+  };
+
+  if (submitSuccess) {
+    return (
+      <DialogContent className="max-w-md">
+        <div className="text-center py-8">
+          <div className="mb-4 flex justify-center">
+            <div className="rounded-full bg-green-100 p-3">
+              <Icon name="CheckCircle" size={48} className="text-green-600" />
+            </div>
+          </div>
+          <DialogTitle className="mb-2">Заявка отправлена!</DialogTitle>
+          <DialogDescription>
+            Мы свяжемся с вами в ближайшее время для подтверждения записи
+          </DialogDescription>
+        </div>
+      </DialogContent>
+    );
+  }
 
   return (
     <DialogContent className="max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Онлайн-запись</DialogTitle>
-        <DialogDescription>Выберите услуги, желаемую дату и время визита</DialogDescription>
+        <DialogDescription>
+          Выберите услуги, желаемую дату и время визита
+        </DialogDescription>
       </DialogHeader>
 
       <div className="space-y-6">
@@ -234,55 +117,46 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
         />
 
         <ContactForm
-          name={name}
-          phone={phone}
-          email={email}
-          brand={brand}
-          model={model}
-          plateNumber={plateNumber}
-          vin={vin}
-          comment={comment}
+          name={formData.name}
+          phone={formData.phone}
+          email={formData.email}
+          brand={selectedBrand}
+          model={formData.model}
+          plateNumber={formData.plateNumber}
+          vin={formData.vin}
+          comment={formData.comment}
           brands={brands}
           models={models}
           loadingBrands={loadingBrands}
           agreedToTerms={agreedToTerms}
-          onNameChange={setName}
-          onPhoneChange={setPhone}
-          onEmailChange={setEmail}
-          onBrandChange={setBrand}
-          onModelChange={setModel}
-          onPlateNumberChange={setPlateNumber}
-          onVinChange={setVin}
-          onCommentChange={setComment}
+          onNameChange={(value) => updateFormField('name', value)}
+          onPhoneChange={(value) => updateFormField('phone', value)}
+          onEmailChange={(value) => updateFormField('email', value)}
+          onBrandChange={handleBrandChange}
+          onModelChange={(value) => updateFormField('model', value)}
+          onPlateNumberChange={(value) => updateFormField('plateNumber', value)}
+          onVinChange={(value) => updateFormField('vin', value)}
+          onCommentChange={(value) => updateFormField('comment', value)}
           onAgreedToTermsChange={setAgreedToTerms}
         />
 
-        {submitSuccess ? (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-            <Icon name="CheckCircle" className="mx-auto mb-2 text-green-600" size={32} />
-            <p className="text-green-800 font-semibold">Заявка успешно отправлена!</p>
-            <p className="text-green-600 text-sm mt-1">Мы свяжемся с вами в ближайшее время</p>
-          </div>
-        ) : (
-          <Button
-            className="w-full gradient-primary btn-glow"
-            size="lg"
-            onClick={handleBooking}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Icon name="Loader" className="mr-2 animate-spin" size={20} />
-                Отправка...
-              </>
-            ) : (
-              <>
-                Отправить заявку
-                <Icon name="Send" className="ml-2" size={20} />
-              </>
-            )}
-          </Button>
-        )}
+        <Button
+          onClick={handleSubmit}
+          disabled={!formData.name || !formData.phone || !agreedToTerms || isSubmitting}
+          className="w-full gradient-primary"
+        >
+          {isSubmitting ? (
+            <>
+              <Icon name="Loader" className="mr-2 animate-spin" size={20} />
+              Отправка...
+            </>
+          ) : (
+            <>
+              <Icon name="Calendar" className="mr-2" size={20} />
+              Записаться на сервис
+            </>
+          )}
+        </Button>
       </div>
     </DialogContent>
   );

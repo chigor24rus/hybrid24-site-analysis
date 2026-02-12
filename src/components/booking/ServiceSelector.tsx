@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import type { Promotion } from './types';
 
 export const services = [
   {
@@ -53,17 +54,6 @@ export const services = [
     icon: 'Car'
   }
 ];
-
-interface Promotion {
-  id: number;
-  title: string;
-  description: string;
-  discount: string;
-  oldPrice: string;
-  newPrice: string;
-  validUntil: string;
-  icon: string;
-}
 
 interface ServiceSelectorProps {
   selectedServices: number[];

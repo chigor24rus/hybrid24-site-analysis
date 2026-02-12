@@ -1,5 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Phone, X } from 'lucide-react';
+import { API_ENDPOINTS } from '@/utils/apiClient';
+import { formatPhoneNumber, isValidPhone, isValidName } from '@/utils/validation';
+import { BOOKING_CONSTANTS, NOTIFICATION_MESSAGES } from './booking/constants';
 
 export default function CallbackWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,35 +19,7 @@ export default function CallbackWidget() {
     }
   }, [isOpen]);
 
-  const formatPhoneNumber = (value: string) => {
-    // Удаляем все, кроме цифр
-    const digits = value.replace(/\D/g, '');
-    
-    // Если пользователь начал вводить с 8, заменяем на 7
-    const normalizedDigits = digits.startsWith('8') ? '7' + digits.slice(1) : digits;
-    
-    // Форматируем номер: +7 (XXX) XXX-XX-XX
-    if (normalizedDigits.length === 0) {
-      return '+7';
-    }
-    
-    let formatted = '+7';
-    
-    if (normalizedDigits.length > 1) {
-      formatted += ' (' + normalizedDigits.slice(1, 4);
-    }
-    if (normalizedDigits.length >= 4) {
-      formatted += ') ' + normalizedDigits.slice(4, 7);
-    }
-    if (normalizedDigits.length >= 7) {
-      formatted += '-' + normalizedDigits.slice(7, 9);
-    }
-    if (normalizedDigits.length >= 9) {
-      formatted += '-' + normalizedDigits.slice(9, 11);
-    }
-    
-    return formatted;
-  };
+
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -65,34 +40,33 @@ export default function CallbackWidget() {
     
     // Защита 1: Honeypot - скрытое поле для ботов
     if (honeypot) {
-      console.warn('Bot detected: honeypot filled');
+      console.warn(NOTIFICATION_MESSAGES.BOT_DETECTED_HONEYPOT);
       return;
     }
 
-    // Защита 2: Минимальное время заполнения формы (2 секунды)
+    // Защита 2: Минимальное время заполнения формы
     const fillTime = Date.now() - openTimeRef.current;
-    if (fillTime < 2000) {
-      console.warn('Bot detected: form filled too quickly');
+    if (fillTime < BOOKING_CONSTANTS.MIN_FORM_FILL_TIME) {
+      console.warn(NOTIFICATION_MESSAGES.BOT_DETECTED_QUICK);
       setSubmitStatus('error');
       return;
     }
 
-    // Защита 3: Rate limiting - не более 1 запроса в 30 секунд
+    // Защита 3: Rate limiting
     const now = Date.now();
-    if (lastSubmitRef.current && now - lastSubmitRef.current < 30000) {
+    if (lastSubmitRef.current && now - lastSubmitRef.current < BOOKING_CONSTANTS.RATE_LIMIT_INTERVAL) {
       setSubmitStatus('ratelimit');
       return;
     }
 
-    // Защита 4: Валидация телефона (должен быть полный номер +7XXXXXXXXXX - 11 цифр)
-    const phoneDigits = formData.phone.replace(/\D/g, '');
-    if (phoneDigits.length !== 11 || !phoneDigits.startsWith('7')) {
+    // Защита 4: Валидация телефона
+    if (!isValidPhone(formData.phone)) {
       setSubmitStatus('error');
       return;
     }
 
-    // Защита 5: Валидация имени (минимум 2 символа, без спецсимволов)
-    if (formData.name.length < 2 || /[<>{}[\]\\\/]/.test(formData.name)) {
+    // Защита 5: Валидация имени
+    if (!isValidName(formData.name)) {
       setSubmitStatus('error');
       return;
     }
@@ -101,19 +75,19 @@ export default function CallbackWidget() {
     setSubmitStatus('idle');
 
     try {
-      const createBookingResponse = await fetch('https://functions.poehali.dev/a6d5798a-4b6c-4b15-8fd8-0264c1c51660', {
+      const createBookingResponse = await fetch(API_ENDPOINTS.bookings.create, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
           phone: formData.phone.trim(),
           email: '',
-          service: 'Обратный звонок',
+          service: BOOKING_CONSTANTS.CALLBACK_SERVICE_NAME,
           brand: '',
           model: '',
           date: '',
-          time: 'Как можно скорее',
-          comment: 'Заявка через виджет обратного звонка'
+          time: BOOKING_CONSTANTS.CALLBACK_TIME,
+          comment: BOOKING_CONSTANTS.CALLBACK_COMMENT
         })
       });
 
@@ -125,36 +99,36 @@ export default function CallbackWidget() {
         const bookingData = {
           customer_name: formData.name.trim(),
           customer_phone: formData.phone.trim(),
-          customer_email: 'Не указано',
-          service_type: 'Обратный звонок',
-          car_brand: 'Не указано',
-          car_model: 'Не указано',
-          preferred_date: 'Как можно скорее',
-          preferred_time: 'Как можно скорее',
-          comment: 'Заявка через виджет обратного звонка'
+          customer_email: BOOKING_CONSTANTS.PLACEHOLDER_VALUE,
+          service_type: BOOKING_CONSTANTS.CALLBACK_SERVICE_NAME,
+          car_brand: BOOKING_CONSTANTS.PLACEHOLDER_VALUE,
+          car_model: BOOKING_CONSTANTS.PLACEHOLDER_VALUE,
+          preferred_date: BOOKING_CONSTANTS.CALLBACK_TIME,
+          preferred_time: BOOKING_CONSTANTS.CALLBACK_TIME,
+          comment: BOOKING_CONSTANTS.CALLBACK_COMMENT
         };
         
-        fetch('https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6', {
+        fetch(API_ENDPOINTS.email.sendBooking, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bookingData)
-        }).catch(err => console.warn('Email notification failed:', err));
+        }).catch(err => console.warn(NOTIFICATION_MESSAGES.EMAIL_FAILED, err));
         
-        fetch('https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b', {
+        fetch(API_ENDPOINTS.telegram.send, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bookingData)
-        }).catch(err => console.warn('Telegram notification failed:', err));
+        }).catch(err => console.warn(NOTIFICATION_MESSAGES.TELEGRAM_FAILED, err));
         
         setTimeout(() => {
           setIsOpen(false);
           setSubmitStatus('idle');
-        }, 2000);
+        }, BOOKING_CONSTANTS.SUCCESS_REDIRECT_DELAY);
       } else {
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Callback error:', error);
+      console.error(NOTIFICATION_MESSAGES.CALLBACK_ERROR, error);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);

@@ -2,19 +2,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-interface Brand {
-  id: number;
-  name: string;
-  slug: string;
-}
-
-interface Model {
-  id: number;
-  brand_id: number;
-  name: string;
-  year_range?: string;
-}
+import type { Brand, Model } from './types';
 
 interface ContactFormProps {
   name: string;
