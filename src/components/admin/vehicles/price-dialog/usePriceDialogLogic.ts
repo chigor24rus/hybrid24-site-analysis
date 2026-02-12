@@ -203,21 +203,25 @@ export const usePriceDialogLogic = (
         const priceValue = servicePrices[combo.serviceId];
         const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
         
+        const requestBody = combo.isUpdate ? {
+          id: combo.existingId,
+          base_price: numericPrice,
+        } : {
+          brand_id: parseInt(combo.brandId),
+          model_id: combo.modelId ? parseInt(combo.modelId) : null,
+          service_id: parseInt(combo.serviceId),
+          base_price: numericPrice,
+          currency: '₽',
+        };
+        
+        console.log(`Sending ${combo.isUpdate ? 'PUT' : 'POST'} request:`, requestBody);
+        
         for (let attempt = 0; attempt <= retries; attempt++) {
           try {
             const res = await fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791', {
               method: combo.isUpdate ? 'PUT' : 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(combo.isUpdate ? {
-                id: combo.existingId,
-                base_price: numericPrice,
-              } : {
-                brand_id: parseInt(combo.brandId),
-                model_id: combo.modelId ? parseInt(combo.modelId) : null,
-                service_id: parseInt(combo.serviceId),
-                base_price: numericPrice,
-                currency: '₽',
-              }),
+              body: JSON.stringify(requestBody),
             });
 
             if (res.ok) {
