@@ -27,6 +27,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
   const [uploadBrand, setUploadBrand] = useState<string>('');
 
   console.log('ModelsManagementTab received:', { brands: brands.length, models: models.length });
+  console.log('Available tags:', availableTags);
 
   // Загрузка тегов при монтировании
   useEffect(() => {
