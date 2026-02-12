@@ -119,12 +119,10 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
 
   const handleBooking = async () => {
     if (!name || !phone) {
-      alert('Пожалуйста, укажите ваше имя и телефон');
       return;
     }
 
     if (!agreedToTerms) {
-      alert('Пожалуйста, подтвердите согласие с условиями записи');
       return;
     }
 
@@ -203,19 +201,16 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
         setTimeout(() => {
           setIsBookingOpen(false);
         }, 2000);
-      } else {
-        alert(data.error || 'Ошибка при отправке заявки. Попробуйте позже.');
       }
     } catch (error) {
       console.error('Error submitting booking:', error);
-      alert('Ошибка при отправке заявки. Проверьте соединение и попробуйте снова.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+    <DialogContent className="max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>Онлайн-запись</DialogTitle>
         <DialogDescription>Выберите услуги, желаемую дату и время визита</DialogDescription>

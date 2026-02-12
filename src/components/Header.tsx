@@ -71,16 +71,25 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
           </Link>
 
           <nav className="hidden lg:flex gap-8 items-center" role="navigation" aria-label="Основная навигация">
-            {navItems.map(item => (
-              <a 
-                key={item.href}
-                href={item.href}
-                onClick={(e) => handleNavClick(e, item.href, item.isSection)}
-                className="hover:text-primary transition-colors text-sm font-medium"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map(item => {
+              const isActive = item.isSection 
+                ? location.pathname === '/' && location.hash === item.href.split('#')[1]
+                : location.pathname === item.href;
+              
+              return (
+                <a 
+                  key={item.href}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href, item.isSection)}
+                  className={`hover:text-primary transition-colors text-sm font-medium ${
+                    isActive ? 'text-primary font-semibold' : ''
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3">
@@ -104,7 +113,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
 
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden min-w-[44px] min-h-[44px]" aria-label="Открыть меню">
                   <Icon name="Menu" size={24} />
                 </Button>
               </SheetTrigger>
@@ -121,16 +130,25 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-4 mt-8">
-                  {navItems.map(item => (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      onClick={(e) => handleNavClick(e, item.href, item.isSection)}
-                      className="text-lg hover:text-primary transition-colors py-2"
-                    >
-                      {item.label}
-                    </a>
-                  ))}
+                  {navItems.map(item => {
+                    const isActive = item.isSection 
+                      ? location.pathname === '/' && location.hash === item.href.split('#')[1]
+                      : location.pathname === item.href;
+                    
+                    return (
+                      <a
+                        key={item.href}
+                        href={item.href}
+                        onClick={(e) => handleNavClick(e, item.href, item.isSection)}
+                        className={`text-lg hover:text-primary transition-colors py-3 min-h-[48px] flex items-center ${
+                          isActive ? 'text-primary font-semibold border-l-2 border-primary pl-3' : ''
+                        }`}
+                        aria-current={isActive ? 'page' : undefined}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
                   
                   <div className="border-t border-border my-2 pt-4">
                     <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Информация</p>

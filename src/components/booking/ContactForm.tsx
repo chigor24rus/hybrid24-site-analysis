@@ -66,17 +66,20 @@ const ContactForm = ({
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="name">Ваше имя</Label>
+        <Label htmlFor="name">Ваше имя <span className="text-destructive">*</span></Label>
         <Input
           id="name"
           placeholder="Иван Иванов"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
+          required
+          className={!name ? 'border-destructive/50' : ''}
+          aria-required="true"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">Телефон *</Label>
+        <Label htmlFor="phone">Телефон <span className="text-destructive">*</span></Label>
         <Input
           id="phone"
           type="tel"
@@ -84,6 +87,8 @@ const ContactForm = ({
           value={phone}
           onChange={(e) => onPhoneChange(e.target.value)}
           required
+          className={!phone ? 'border-destructive/50' : ''}
+          aria-required="true"
         />
       </div>
 
@@ -162,16 +167,20 @@ const ContactForm = ({
         />
       </div>
 
-      <div className="flex items-start gap-3 p-4 bg-muted/30 rounded-lg border border-border">
+      <div className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
+        agreedToTerms ? 'bg-muted/30 border-border' : 'bg-destructive/5 border-destructive/30'
+      }`}>
         <input
           type="checkbox"
           id="terms"
           checked={agreedToTerms}
           onChange={(e) => onAgreedToTermsChange(e.target.checked)}
-          className="mt-1 w-4 h-4 accent-primary cursor-pointer"
+          className="mt-1 w-5 h-5 min-w-[20px] accent-primary cursor-pointer"
+          required
+          aria-required="true"
         />
-        <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer">
-          Я согласен с условиями записи и даю согласие на обработку персональных данных. Понимаю, что запись будет подтверждена обратным звонком мастера-консультанта.
+        <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer select-none">
+          Я согласен с условиями записи и даю согласие на обработку персональных данных <span className="text-destructive">*</span>. Понимаю, что запись будет подтверждена обратным звонком мастера-консультанта.
         </label>
       </div>
     </>
