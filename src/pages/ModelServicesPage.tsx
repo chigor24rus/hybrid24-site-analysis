@@ -139,7 +139,7 @@ export default function ModelServicesPage() {
 
       {/* Hero Section with Background */}
       <section 
-        className="relative pt-32 pb-24 bg-cover bg-center"
+        className="relative pt-32 pb-24 bg-cover bg-center bg-gray-800"
         style={{
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80)',
         }}
@@ -185,7 +185,7 @@ export default function ModelServicesPage() {
               >
                 <CardHeader>
                   <div className="w-16 h-16 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={service.icon as any} size={32} className="text-white" />
+                    <Icon name={service.icon as keyof typeof import('lucide-react')} size={32} className="text-white" />
                   </div>
                   <CardTitle className="text-xl">{service.title}</CardTitle>
                   <CardDescription className="text-base">{service.description}</CardDescription>

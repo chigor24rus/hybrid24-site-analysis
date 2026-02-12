@@ -114,7 +114,7 @@ export default function BrandModelsPage() {
 
       {/* Hero Section with Background */}
       <section 
-        className="relative pt-32 pb-24 bg-cover bg-center"
+        className="relative pt-32 pb-24 bg-cover bg-center bg-gray-800"
         style={{
           backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80)',
         }}
