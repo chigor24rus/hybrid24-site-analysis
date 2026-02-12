@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,12 @@ interface Brand {
   name: string;
 }
 
+interface ModelTag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 interface Model {
   id: number;
   brand_id: number;
@@ -21,6 +27,7 @@ interface Model {
   name: string;
   year_from: number | null;
   year_to: number | null;
+  tags?: ModelTag[];
 }
 
 interface VehiclesModelsTabProps {
@@ -31,10 +38,31 @@ interface VehiclesModelsTabProps {
 
 const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps) => {
   const [isModelDialogOpen, setIsModelDialogOpen] = useState(false);
-  const [modelForm, setModelForm] = useState({ id: 0, brand_id: '', name: '', year_from: '', year_to: '' });
+  const [modelForm, setModelForm] = useState({ id: 0, brand_id: '', name: '', year_from: '', year_to: '', tag_ids: [] as number[] });
   const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [availableTags, setAvailableTags] = useState<ModelTag[]>([]);
 
-  const filteredModels = filterBrand === 'all' ? models : models.filter(m => m.brand_id.toString() === filterBrand);
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        const res = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b/tags');
+        const data = await res.json();
+        setAvailableTags(data.tags || []);
+      } catch (err) {
+        console.error('Failed to load tags:', err);
+      }
+    };
+    loadTags();
+  }, []);
+
+  let filteredModels = filterBrand === 'all' ? models : models.filter(m => m.brand_id.toString() === filterBrand);
+
+  if (selectedTags.length > 0) {
+    filteredModels = filteredModels.filter(model => 
+      selectedTags.every(tagId => model.tags?.some(tag => tag.id === tagId))
+    );
+  }
 
   const handleSaveModel = async () => {
     if (!modelForm.name || !modelForm.brand_id) return;
@@ -48,6 +76,7 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
         name: modelForm.name,
         year_from: modelForm.year_from ? parseInt(modelForm.year_from) : null,
         year_to: modelForm.year_to ? parseInt(modelForm.year_to) : null,
+        tag_ids: modelForm.tag_ids,
       };
 
       const response = await fetch(url, {
@@ -58,7 +87,7 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
 
       if (response.ok) {
         setIsModelDialogOpen(false);
-        setModelForm({ id: 0, brand_id: '', name: '', year_from: '', year_to: '' });
+        setModelForm({ id: 0, brand_id: '', name: '', year_from: '', year_to: '', tag_ids: [] });
         onRefresh();
       }
     } catch (error) {
@@ -100,8 +129,39 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                   ))}
                 </SelectContent>
               </Select>
+              {availableTags.length > 0 && (
+                <div className="flex gap-1.5 items-center border rounded-md px-3 bg-background">
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">Теги:</span>
+                  <div className="flex gap-1.5">
+                    {availableTags.map((tag) => {
+                      const isSelected = selectedTags.includes(tag.id);
+                      return (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedTags(prev => 
+                              isSelected 
+                                ? prev.filter(id => id !== tag.id)
+                                : [...prev, tag.id]
+                            );
+                          }}
+                          className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all"
+                          style={{
+                            backgroundColor: isSelected ? tag.color : tag.color + '20',
+                            color: isSelected ? '#ffffff' : tag.color,
+                            border: `1px solid ${tag.color}`
+                          }}
+                        >
+                          {tag.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <Button onClick={() => {
-                setModelForm({ id: 0, brand_id: '', name: '', year_from: '', year_to: '' });
+                setModelForm({ id: 0, brand_id: '', name: '', year_from: '', year_to: '', tag_ids: [] });
                 setIsModelDialogOpen(true);
               }}>
                 <Icon name="Plus" className="mr-2" size={18} />
@@ -118,6 +178,7 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                 <TableHead>Бренд</TableHead>
                 <TableHead>Модель</TableHead>
                 <TableHead>Годы выпуска</TableHead>
+                <TableHead>Теги</TableHead>
                 <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
@@ -129,6 +190,23 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                   <TableCell>
                     {model.year_from || '—'} {model.year_to ? `— ${model.year_to}` : '— н.в.'}
                   </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {model.tags && model.tags.length > 0 ? (
+                        model.tags.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                            style={{ backgroundColor: tag.color + '20', color: tag.color }}
+                          >
+                            {tag.name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-muted-foreground text-sm">—</span>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right space-x-2">
                     <Button variant="ghost" size="sm" onClick={() => {
                       setModelForm({
@@ -137,6 +215,7 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                         name: model.name,
                         year_from: model.year_from?.toString() || '',
                         year_to: model.year_to?.toString() || '',
+                        tag_ids: model.tags?.map(t => t.id) || [],
                       });
                       setIsModelDialogOpen(true);
                     }}>
@@ -201,6 +280,40 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                   onChange={(e) => setModelForm({ ...modelForm, year_to: e.target.value })}
                   placeholder="2020"
                 />
+              </div>
+            </div>
+            <div>
+              <Label>Теги</Label>
+              <div className="flex flex-wrap gap-2 p-3 border rounded-md mt-2">
+                {availableTags.length === 0 ? (
+                  <span className="text-sm text-muted-foreground">Загрузка тегов...</span>
+                ) : (
+                  availableTags.map((tag) => {
+                    const isSelected = modelForm.tag_ids.includes(tag.id);
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => {
+                          setModelForm(prev => ({
+                            ...prev,
+                            tag_ids: isSelected
+                              ? prev.tag_ids.filter(id => id !== tag.id)
+                              : [...prev.tag_ids, tag.id]
+                          }));
+                        }}
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: isSelected ? tag.color : tag.color + '20',
+                          color: isSelected ? '#ffffff' : tag.color,
+                          border: `2px solid ${tag.color}`
+                        }}
+                      >
+                        {tag.name}
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
             <div className="flex gap-2">
