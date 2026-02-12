@@ -146,7 +146,6 @@ export default function ServiceDetailPage() {
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
-              { label: 'Главная', path: '/' },
               { label: 'Услуги', path: '/services' },
               { label: service.title }
             ]} 
