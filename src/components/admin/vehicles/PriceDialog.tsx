@@ -22,26 +22,32 @@ const PriceDialog = ({
   const {
     searchBrand,
     setSearchBrand,
+    searchModel,
+    setSearchModel,
     searchService,
     setSearchService,
     onlyNoPrices,
     setOnlyNoPrices,
     selectedBrands,
+    selectedModels,
     selectedServices,
     servicePrices,
     bulkMode,
     setBulkMode,
     filteredBrands,
+    filteredModels,
     filteredServices,
     toggleBrand,
+    toggleModel,
     toggleService,
     updateServicePrice,
     handleBulkSave,
     handleOpenChange,
     setSelectedBrands,
+    setSelectedModels,
     setSelectedServices,
     setServicePrices,
-  } = usePriceDialogLogic(brands, services, prices, onOpenChange, onRefresh);
+  } = usePriceDialogLogic(brands, models, services, prices, onOpenChange, onRefresh);
 
   const handleSingleSave = async () => {
     if (!priceForm.brand_id || !priceForm.service_id || !priceForm.price) {
@@ -80,6 +86,7 @@ const PriceDialog = ({
                   setBulkMode(checked as boolean);
                   if (checked) {
                     setSelectedBrands([]);
+                    setSelectedModels([]);
                     setSelectedServices([]);
                     setServicePrices({});
                   }
@@ -94,15 +101,20 @@ const PriceDialog = ({
           {bulkMode ? (
             <PriceDialogBulkMode
               filteredBrands={filteredBrands}
+              filteredModels={filteredModels}
               filteredServices={filteredServices}
               searchBrand={searchBrand}
               setSearchBrand={setSearchBrand}
+              searchModel={searchModel}
+              setSearchModel={setSearchModel}
               searchService={searchService}
               setSearchService={setSearchService}
               selectedBrands={selectedBrands}
+              selectedModels={selectedModels}
               selectedServices={selectedServices}
               servicePrices={servicePrices}
               toggleBrand={toggleBrand}
+              toggleModel={toggleModel}
               toggleService={toggleService}
               updateServicePrice={updateServicePrice}
             />
@@ -122,10 +134,13 @@ const PriceDialog = ({
           {bulkMode && selectedBrands.length > 0 && selectedServices.length > 0 && (
             <div className="rounded-md bg-muted p-3">
               <p className="text-sm font-medium">
-                Будет создано {selectedBrands.length * selectedServices.length} цен
+                Будет создано {(selectedModels.length || selectedBrands.length) * selectedServices.length} цен
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {selectedBrands.length} {selectedBrands.length === 1 ? 'бренд' : 'брендов'} × {selectedServices.length} {selectedServices.length === 1 ? 'услуга' : 'услуг'}
+                {selectedBrands.length} {selectedBrands.length === 1 ? 'бренд' : 'брендов'}
+                {selectedModels.length > 0 && ` (${selectedModels.length} ${selectedModels.length === 1 ? 'модель' : 'моделей'})`}
+                {' × '}
+                {selectedServices.length} {selectedServices.length === 1 ? 'услуга' : 'услуг'}
               </p>
             </div>
           )}

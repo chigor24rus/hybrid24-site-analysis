@@ -1,17 +1,20 @@
 import { useState, useMemo } from 'react';
-import type { Brand, Service, Price } from './PriceDialogTypes';
+import type { Brand, Model, Service, Price } from './PriceDialogTypes';
 
 export const usePriceDialogLogic = (
   brands: Brand[],
+  models: Model[],
   services: Service[],
   prices: Price[],
   onOpenChange: (open: boolean) => void,
   onRefresh: () => Promise<void>
 ) => {
   const [searchBrand, setSearchBrand] = useState('');
+  const [searchModel, setSearchModel] = useState('');
   const [searchService, setSearchService] = useState('');
   const [onlyNoPrices, setOnlyNoPrices] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [servicePrices, setServicePrices] = useState<Record<string, string>>({});
   const [bulkMode, setBulkMode] = useState(false);
@@ -35,9 +38,11 @@ export const usePriceDialogLogic = (
     onOpenChange(open);
     if (!open) {
       setSearchBrand('');
+      setSearchModel('');
       setSearchService('');
       setOnlyNoPrices(false);
       setSelectedBrands([]);
+      setSelectedModels([]);
       setSelectedServices([]);
       setServicePrices({});
       setBulkMode(false);
@@ -63,6 +68,15 @@ export const usePriceDialogLogic = (
     return matchesSearch && hasNoPriceForSelectedServices;
   });
 
+  const filteredModels = useMemo(() => {
+    if (selectedBrands.length === 0) return [];
+    return models.filter(model => {
+      const matchesBrand = selectedBrands.includes(model.brand_id.toString());
+      const matchesSearch = model.name.toLowerCase().includes(searchModel.toLowerCase());
+      return matchesBrand && matchesSearch;
+    });
+  }, [models, selectedBrands, searchModel]);
+
   const filteredServices = services.filter(service => {
     if (!onlyNoPrices) return service.title.toLowerCase().includes(searchService.toLowerCase());
     const matchesSearch = service.title.toLowerCase().includes(searchService.toLowerCase());
@@ -80,6 +94,13 @@ export const usePriceDialogLogic = (
   const toggleBrand = (brandId: string) => {
     setSelectedBrands(prev => {
       if (prev.includes(brandId)) {
+        // При снятии бренда - убираем и все его модели
+        const relatedModelIds = models
+          .filter(m => m.brand_id.toString() === brandId)
+          .map(m => m.id.toString());
+        setSelectedModels(prevModels => 
+          prevModels.filter(id => !relatedModelIds.includes(id))
+        );
         return prev.filter(id => id !== brandId);
       }
       
@@ -90,6 +111,14 @@ export const usePriceDialogLogic = (
       
       return [...prev, brandId];
     });
+  };
+
+  const toggleModel = (modelId: string) => {
+    setSelectedModels(prev => 
+      prev.includes(modelId)
+        ? prev.filter(id => id !== modelId)
+        : [...prev, modelId]
+    );
   };
 
   const toggleService = (serviceId: string) => {
@@ -128,18 +157,29 @@ export const usePriceDialogLogic = (
     }
 
     try {
-      const combinations: Array<{ brandId: string; serviceId: string; existingId?: number; isUpdate: boolean }> = [];
+      const combinations: Array<{ brandId: string; modelId: string | null; serviceId: string; existingId?: number; isUpdate: boolean }> = [];
       
+      // Если модели выбраны - создаём цены для конкретных моделей
+      // Если моделей нет - создаём для всех моделей бренда (model_id = null)
       for (const brandId of selectedBrands) {
-        for (const serviceId of selectedServices) {
-          const key = `${brandId}-null-${serviceId}`;
-          const existingPrice = priceMap.get(key);
-          
-          if (!existingPrice) {
-            combinations.push({ brandId, serviceId, isUpdate: false });
-          } else {
-            // Разрешаем обновление любых существующих цен
-            combinations.push({ brandId, serviceId, existingId: existingPrice.id, isUpdate: true });
+        const modelsToUse = selectedModels.length > 0 
+          ? selectedModels.filter(modelId => {
+              const model = models.find(m => m.id.toString() === modelId);
+              return model?.brand_id.toString() === brandId;
+            })
+          : [null]; // null = для всех моделей бренда
+        
+        for (const modelId of modelsToUse) {
+          for (const serviceId of selectedServices) {
+            const key = `${brandId}-${modelId || 'null'}-${serviceId}`;
+            const existingPrice = priceMap.get(key);
+            
+            if (!existingPrice) {
+              combinations.push({ brandId, modelId, serviceId, isUpdate: false });
+            } else {
+              // Разрешаем обновление любых существующих цен
+              combinations.push({ brandId, modelId, serviceId, existingId: existingPrice.id, isUpdate: true });
+            }
           }
         }
       }
@@ -159,7 +199,7 @@ export const usePriceDialogLogic = (
       
       if (!confirm(confirmMessage)) return;
 
-      const fetchWithRetry = async (combo: { brandId: string; serviceId: string; existingId?: number; isUpdate: boolean }, retries = 2) => {
+      const fetchWithRetry = async (combo: { brandId: string; modelId: string | null; serviceId: string; existingId?: number; isUpdate: boolean }, retries = 2) => {
         const priceValue = servicePrices[combo.serviceId];
         const numericPrice = parseFloat(priceValue.replace(/[^\d.]/g, ''));
         
@@ -173,7 +213,7 @@ export const usePriceDialogLogic = (
                 base_price: numericPrice,
               } : {
                 brand_id: parseInt(combo.brandId),
-                model_id: null,
+                model_id: combo.modelId ? parseInt(combo.modelId) : null,
                 service_id: parseInt(combo.serviceId),
                 base_price: numericPrice,
                 currency: '₽',
@@ -239,23 +279,29 @@ export const usePriceDialogLogic = (
   return {
     searchBrand,
     setSearchBrand,
+    searchModel,
+    setSearchModel,
     searchService,
     setSearchService,
     onlyNoPrices,
     setOnlyNoPrices,
     selectedBrands,
+    selectedModels,
     selectedServices,
     servicePrices,
     bulkMode,
     setBulkMode,
     filteredBrands,
+    filteredModels,
     filteredServices,
     toggleBrand,
+    toggleModel,
     toggleService,
     updateServicePrice,
     handleBulkSave,
     handleOpenChange,
     setSelectedBrands,
+    setSelectedModels,
     setSelectedServices,
     setServicePrices,
   };

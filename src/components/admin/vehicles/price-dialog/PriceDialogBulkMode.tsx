@@ -2,39 +2,49 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { Brand, Service } from './PriceDialogTypes';
+import type { Brand, Model, Service } from './PriceDialogTypes';
 
 interface PriceDialogBulkModeProps {
   filteredBrands: Brand[];
+  filteredModels: Model[];
   filteredServices: Service[];
   searchBrand: string;
   setSearchBrand: (value: string) => void;
+  searchModel: string;
+  setSearchModel: (value: string) => void;
   searchService: string;
   setSearchService: (value: string) => void;
   selectedBrands: string[];
+  selectedModels: string[];
   selectedServices: string[];
   servicePrices: Record<string, string>;
   toggleBrand: (brandId: string) => void;
+  toggleModel: (modelId: string) => void;
   toggleService: (serviceId: string) => void;
   updateServicePrice: (serviceId: string, price: string) => void;
 }
 
 const PriceDialogBulkMode = ({
   filteredBrands,
+  filteredModels,
   filteredServices,
   searchBrand,
   setSearchBrand,
+  searchModel,
+  setSearchModel,
   searchService,
   setSearchService,
   selectedBrands,
+  selectedModels,
   selectedServices,
   servicePrices,
   toggleBrand,
+  toggleModel,
   toggleService,
   updateServicePrice,
 }: PriceDialogBulkModeProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-3 gap-4">
       <div>
         <Label>Бренды *</Label>
         <Input
@@ -61,6 +71,41 @@ const PriceDialogBulkMode = ({
         </ScrollArea>
         <p className="text-sm text-muted-foreground mt-1">
           Выбрано: {selectedBrands.length}
+        </p>
+      </div>
+
+      <div>
+        <Label>Модели</Label>
+        <Input
+          placeholder="Поиск модели..."
+          value={searchModel}
+          onChange={(e) => setSearchModel(e.target.value)}
+          className="mb-2"
+        />
+        <ScrollArea className="h-64 rounded-md border p-2">
+          <div className="space-y-2">
+            {selectedBrands.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Выберите бренд</p>
+            ) : filteredModels.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">Нет моделей</p>
+            ) : (
+              filteredModels.map((model) => (
+                <div key={model.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`model-${model.id}`}
+                    checked={selectedModels.includes(model.id.toString())}
+                    onCheckedChange={() => toggleModel(model.id.toString())}
+                  />
+                  <Label htmlFor={`model-${model.id}`} className="cursor-pointer flex-1 text-sm">
+                    {model.name}
+                  </Label>
+                </div>
+              ))
+            )}
+          </div>
+        </ScrollArea>
+        <p className="text-sm text-muted-foreground mt-1">
+          Выбрано: {selectedModels.length}
         </p>
       </div>
 
