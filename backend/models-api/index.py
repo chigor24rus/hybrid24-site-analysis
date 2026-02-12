@@ -77,6 +77,7 @@ def handler(event: dict, context) -> dict:
             name = body.get('name')
             year_from = body.get('year_from')
             year_to = body.get('year_to')
+            tag_ids = body.get('tag_ids', [])
             
             if not brand_id or not name:
                 return {
@@ -93,6 +94,16 @@ def handler(event: dict, context) -> dict:
             """, (brand_id, name, year_from, year_to))
             
             model = cur.fetchone()
+            model_id = model['id']
+            
+            # Добавляем теги
+            for tag_id in tag_ids:
+                cur.execute("""
+                    INSERT INTO car_model_tags (model_id, tag_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT DO NOTHING
+                """, (model_id, tag_id))
+            
             conn.commit()
             
             return {
@@ -221,6 +232,20 @@ def handler(event: dict, context) -> dict:
                     'Access-Control-Allow-Origin': '*'
                 },
                 'body': json.dumps({'success': True})
+            }
+        
+        # GET /tags - получить список всех тегов
+        path = event.get('path', '')
+        if method == 'GET' and path.endswith('/tags'):
+            cur.execute("SELECT * FROM model_tags ORDER BY name")
+            tags = cur.fetchall()
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                },
+                'body': json.dumps({'tags': tags}, default=str)
             }
         
         return {

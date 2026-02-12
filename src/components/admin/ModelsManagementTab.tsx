@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import Icon from '@/components/ui/icon';
-import { Brand, Model } from './types';
+import { Brand, Model, ModelTag } from './types';
 
 interface ModelsManagementTabProps {
   brands: Brand[];
@@ -19,12 +19,21 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
-  const [formData, setFormData] = useState({ name: '', year_from: '', year_to: '', brand_id: '' });
+  const [formData, setFormData] = useState({ name: '', year_from: '', year_to: '', brand_id: '', tag_ids: [] as number[] });
+  const [availableTags, setAvailableTags] = useState<ModelTag[]>([]);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadType, setUploadType] = useState<'csv' | 'json'>('csv');
   const [uploadBrand, setUploadBrand] = useState<string>('');
 
   console.log('ModelsManagementTab received:', { brands: brands.length, models: models.length });
+
+  // Загрузка тегов при монтировании
+  useState(() => {
+    fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b/tags')
+      .then(res => res.json())
+      .then(data => setAvailableTags(data.tags || []))
+      .catch(err => console.error('Failed to load tags:', err));
+  });
 
   const filteredModels = selectedBrand === 'all'
     ? models
@@ -44,6 +53,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
           name: formData.name,
           year_from: formData.year_from ? parseInt(formData.year_from) : null,
           year_to: formData.year_to ? parseInt(formData.year_to) : null,
+          tag_ids: formData.tag_ids,
         }),
       });
 
@@ -69,6 +79,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
           name: formData.name,
           year_from: formData.year_from ? parseInt(formData.year_from) : null,
           year_to: formData.year_to ? parseInt(formData.year_to) : null,
+          tag_ids: formData.tag_ids,
         }),
       });
 
@@ -146,6 +157,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
       year_from: model.year_from?.toString() || '',
       year_to: model.year_to?.toString() || '',
       brand_id: model.brand_id.toString(),
+      tag_ids: model.tags?.map(t => t.id) || [],
     });
   };
 
@@ -244,7 +256,7 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
         if (!open) {
           setIsAddDialogOpen(false);
           setEditingModel(null);
-          setFormData({ name: '', year_from: '', year_to: '', brand_id: '' });
+          setFormData({ name: '', year_from: '', year_to: '', brand_id: '', tag_ids: [] });
         }
       }}>
         <DialogContent>
@@ -295,6 +307,40 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
                   onChange={(e) => setFormData({ ...formData, year_to: e.target.value })}
                   placeholder="2023"
                 />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Теги</label>
+              <div className="flex flex-wrap gap-2 p-3 border rounded-md">
+                {availableTags.length === 0 ? (
+                  <span className="text-sm text-muted-foreground">Загрузка тегов...</span>
+                ) : (
+                  availableTags.map((tag) => {
+                    const isSelected = formData.tag_ids.includes(tag.id);
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({
+                            ...prev,
+                            tag_ids: isSelected
+                              ? prev.tag_ids.filter(id => id !== tag.id)
+                              : [...prev.tag_ids, tag.id]
+                          }));
+                        }}
+                        className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium transition-all"
+                        style={{
+                          backgroundColor: isSelected ? tag.color : tag.color + '20',
+                          color: isSelected ? '#ffffff' : tag.color,
+                          border: `2px solid ${tag.color}`
+                        }}
+                      >
+                        {tag.name}
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
             <Button onClick={editingModel ? handleUpdateModel : handleAddModel} className="w-full">
