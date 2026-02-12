@@ -130,13 +130,13 @@ def handler(event: dict, context) -> dict:
             
             # Удаление дубликатов
             if action == 'remove_duplicates':
-                # Находим дубликаты (одинаковые brand_id + name, без LOWER - проблемы с правами)
+                # Находим дубликаты (одинаковые brand_id + name без учета регистра)
                 cur.execute("""
                     DELETE FROM car_models
                     WHERE id NOT IN (
                         SELECT MIN(id)
                         FROM car_models
-                        GROUP BY brand_id, name
+                        GROUP BY brand_id, LOWER(name)
                     )
                 """)
                 deleted_count = cur.rowcount
