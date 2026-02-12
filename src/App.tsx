@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CallbackWidget from "./components/CallbackWidget";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ErrorLogger from "./utils/errorLogger";
@@ -58,17 +58,26 @@ const MaintenanceWrapper = ({ children }: { children: React.ReactNode }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  const maintenanceCacheRef = useRef<{ data: boolean; timestamp: number } | null>(null);
+  const CACHE_DURATION = 5 * 60 * 1000;
+
   useEffect(() => {
-    // Skip maintenance check for preview mode (poehali.dev) and admin routes
     if (isPreviewMode || isAdminRoute) {
       setMaintenanceMode(false);
       return;
     }
 
     const checkMaintenance = async () => {
+      const now = Date.now();
+      if (maintenanceCacheRef.current && (now - maintenanceCacheRef.current.timestamp < CACHE_DURATION)) {
+        setMaintenanceMode(maintenanceCacheRef.current.data);
+        return;
+      }
+
       try {
         const response = await fetch('https://functions.poehali.dev/8bc3c490-c0ac-4106-91a2-e809a9fb2cdf');
         const data = await response.json();
+        maintenanceCacheRef.current = { data: data.maintenanceMode, timestamp: now };
         setMaintenanceMode(data.maintenanceMode);
       } catch (error) {
         console.error('Failed to check maintenance mode:', error);

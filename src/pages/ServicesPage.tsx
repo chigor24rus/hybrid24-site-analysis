@@ -57,10 +57,6 @@ const ServicesPage = () => {
     };
     
     fetchServices();
-    
-    const interval = setInterval(fetchServices, 60000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const toggleService = (id: number) => {

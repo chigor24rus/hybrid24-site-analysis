@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -18,6 +18,8 @@ const BrandsSection = () => {
   const [isPaused, setIsPaused] = useState(false);
   const scrollPositionRef = useRef(0);
   const animationFrameRef = useRef<number | null>(null);
+
+  const duplicatedBrands = useMemo(() => brands.concat(brands), [brands]);
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -92,14 +94,14 @@ const BrandsSection = () => {
           <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none"></div>
           <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none"></div>
           <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto scrollbar-hide" style={{ scrollBehavior: 'auto' }}>
-            {brands.concat(brands).map((brand, index) => (
+            {duplicatedBrands.map((brand, index) => (
               <Link
                 key={`brand-${brand.id}-${index}`}
                 to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}`}
                 className="flex-shrink-0"
               >
                 <Card className="hover-scale cursor-pointer text-center p-6 bg-white w-32 h-32 flex flex-col items-center justify-center">
-                  <img src={brand.logo} alt={`Логотип ${brand.name} - ремонт и обслуживание в Красноярске`} className="h-16 object-contain mb-2" />
+                  <img src={brand.logo} alt={`Логотип ${brand.name} - ремонт и обслуживание в Красноярске`} className="h-16 object-contain mb-2" loading="lazy" />
                   <p className="text-xs font-medium">{brand.name}</p>
                 </Card>
               </Link>

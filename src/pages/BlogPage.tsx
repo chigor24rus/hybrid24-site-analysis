@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Dialog } from '@/components/ui/dialog';
@@ -72,17 +72,17 @@ const BlogPage = () => {
     localStorage.setItem('blogViewCounts', JSON.stringify(newCounts));
   };
 
-  const categories = ['Все', ...Array.from(new Set(posts.map(post => post.category)))];
+  const categories = useMemo(() => ['Все', ...Array.from(new Set(posts.map(post => post.category)))], [posts]);
   
-  const maxViews = Math.max(...Object.values(viewCounts), 0);
-  const popularThreshold = maxViews > 0 ? maxViews * 0.6 : 3;
+  const maxViews = useMemo(() => Math.max(...Object.values(viewCounts), 0), [viewCounts]);
+  const popularThreshold = useMemo(() => maxViews > 0 ? maxViews * 0.6 : 3, [maxViews]);
   
   const isPopular = (postId: number) => {
     const views = viewCounts[postId] || 0;
     return views >= popularThreshold && views >= 3;
   };
   
-  const filteredPosts = posts
+  const filteredPosts = useMemo(() => posts
     .filter(post => selectedCategory === 'Все' || post.category === selectedCategory)
     .filter(post => 
       searchQuery === '' || 
@@ -94,7 +94,7 @@ const BlogPage = () => {
         return (viewCounts[b.id] || 0) - (viewCounts[a.id] || 0);
       }
       return 0;
-    });
+    }), [posts, selectedCategory, searchQuery, sortBy, viewCounts]);
 
   return (
     <div className="min-h-screen">
@@ -264,7 +264,7 @@ const BlogPage = () => {
                       </div>
                       <CardHeader>
                         <div className="flex items-center gap-2 mb-2">
-                          <Icon name={post.icon as any} size={20} className="text-primary" />
+                          <Icon name={post.icon} size={20} className="text-primary" />
                           <span className="text-sm text-muted-foreground">{post.date}</span>
                         </div>
                         <CardTitle className="text-xl line-clamp-2">{post.title}</CardTitle>
