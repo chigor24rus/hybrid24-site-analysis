@@ -36,17 +36,16 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
     setIsMobileMenuOpen(false);
     
     if (isSection) {
-      // If it's a section link and we're not on home page, navigate to home first
+      const sectionId = href.includes('#') ? href.split('#')[1] : href.replace('#', '');
+      
       if (location.pathname !== '/') {
-        navigate('/' + href);
+        navigate('/', { state: { scrollTo: sectionId } });
       } else {
-        // If on home page, just scroll to section
         setTimeout(() => {
-          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
       }
     } else {
-      // If it's a page link, navigate to it
       navigate(href);
     }
   };
