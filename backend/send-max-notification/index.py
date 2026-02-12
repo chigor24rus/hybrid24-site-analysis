@@ -78,16 +78,35 @@ def handler(event: dict, context) -> dict:
         # МАХ мессенджер использует свой API platform-api.max.ru
         # Получатель указывается в query параметрах (user_id или chat_id)
         
-        # Определяем тип получателя (если начинается с "id" - это user_id, иначе chat_id)
-        if chat_id.startswith('id'):
-            # Извлекаем числовой ID из формата "id245900919213_1_bot"
-            try:
-                user_id_str = chat_id.split('_')[0].replace('id', '')
-                query_params = f'user_id={user_id_str}'
-            except:
-                query_params = f'chat_id={chat_id}'
-        else:
+        # Парсим chat_id для МАХ API
+        # Формат может быть: "id245900919213_1_bot" или просто число "123456789"
+        print(f'[MAX] Parsing chat_id: {chat_id}')
+        
+        # Если chat_id - это просто число, используем как chat_id
+        if chat_id.isdigit():
             query_params = f'chat_id={chat_id}'
+            print(f'[MAX] Using numeric chat_id')
+        # Если формат "id{число}_..." - пробуем извлечь user_id
+        elif chat_id.startswith('id'):
+            try:
+                # Извлекаем все числа после "id" и до первого "_"
+                user_id_str = chat_id.split('_')[0].replace('id', '')
+                
+                # Проверяем что получилось число
+                if user_id_str.isdigit():
+                    query_params = f'user_id={user_id_str}'
+                    print(f'[MAX] Extracted user_id: {user_id_str}')
+                else:
+                    # Если не число - используем весь chat_id
+                    query_params = f'chat_id={chat_id}'
+                    print(f'[MAX] Failed to extract user_id, using original chat_id')
+            except Exception as e:
+                query_params = f'chat_id={chat_id}'
+                print(f'[MAX] Error parsing chat_id: {e}, using original')
+        else:
+            # Неизвестный формат - используем как chat_id
+            query_params = f'chat_id={chat_id}'
+            print(f'[MAX] Unknown format, using as chat_id')
         
         url = f'https://platform-api.max.ru/messages?{query_params}'
         
