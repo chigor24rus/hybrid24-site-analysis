@@ -76,11 +76,23 @@ def handler(event: dict, context) -> dict:
 {comment}"""
         
         # МАХ мессенджер использует свой API platform-api.max.ru
-        url = 'https://platform-api.max.ru/messages'
+        # Получатель указывается в query параметрах (user_id или chat_id)
         
-        # Формат запроса для МАХ API
+        # Определяем тип получателя (если начинается с "id" - это user_id, иначе chat_id)
+        if chat_id.startswith('id'):
+            # Извлекаем числовой ID из формата "id245900919213_1_bot"
+            try:
+                user_id_str = chat_id.split('_')[0].replace('id', '')
+                query_params = f'user_id={user_id_str}'
+            except:
+                query_params = f'chat_id={chat_id}'
+        else:
+            query_params = f'chat_id={chat_id}'
+        
+        url = f'https://platform-api.max.ru/messages?{query_params}'
+        
+        # Формат body для МАХ API (без chat_id - он в query параметрах)
         payload = {
-            'chat_id': chat_id,
             'text': message,
             'format': 'html'
         }
@@ -91,7 +103,8 @@ def handler(event: dict, context) -> dict:
         }
         
         print(f'[MAX] Sending request to: {url}')
-        print(f'[MAX] Chat ID: {chat_id}')
+        print(f'[MAX] Original chat_id: {chat_id}')
+        print(f'[MAX] Query params: {query_params}')
         print(f'[MAX] Token length: {len(bot_token)}')
         
         req = urllib.request.Request(
@@ -138,6 +151,30 @@ def handler(event: dict, context) -> dict:
                     'isBase64Encoded': False
                 }
         
+    except urllib.error.HTTPError as e:
+        # Читаем детальное сообщение об ошибке от API
+        error_body = e.read().decode('utf-8') if e.fp else ''
+        print(f'[MAX] ✗ HTTP Error {e.code}: {e.reason}')
+        print(f'[MAX] Error details: {error_body}')
+        
+        try:
+            error_json = json.loads(error_body) if error_body else {}
+            error_message = error_json.get('error', error_json.get('message', f'HTTP {e.code}: {e.reason}'))
+        except:
+            error_message = f'HTTP {e.code}: {e.reason} - {error_body}'
+        
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': json.dumps({
+                'success': False,
+                'error': error_message
+            }),
+            'isBase64Encoded': False
+        }
     except Exception as e:
         print(f'[MAX] ✗ Exception: {str(e)}')
         import traceback
