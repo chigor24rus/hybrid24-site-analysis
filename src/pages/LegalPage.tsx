@@ -63,8 +63,11 @@ const LegalPage = () => {
               </CardHeader>
               <CardContent className="space-y-4 text-muted-foreground">
                 <p>
-                  <strong>Полное наименование:</strong> ИП "HEVSeRvice"<br />
-                  <strong>Адрес:</strong> г. Красноярск, ул. Водопьянова, д. 1К<br />
+                  <strong>Полное наименование:</strong> Станция технического обслуживания "HEVSR"<br />
+                  <strong>ИП:</strong> Череватенко Игорь Николаевич<br />
+                  <strong>ОГРНИП:</strong> 312246825000176<br />
+                  <strong>ИНН:</strong> 245900919213<br />
+                  <strong>Адрес местонахождения:</strong> г. Красноярск, ул. Водопьянова, д. 1К<br />
                   <strong>Телефон:</strong> +7 (923) 016-67-50<br />
                   <strong>Email:</strong> info@hybrid24.ru
                 </p>
