@@ -46,7 +46,7 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
   useEffect(() => {
     const loadTags = async () => {
       try {
-        const res = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b/tags');
+        const res = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b?tags=true');
         const data = await res.json();
         setAvailableTags(data.tags || []);
       } catch (err) {

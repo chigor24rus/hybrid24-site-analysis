@@ -28,6 +28,21 @@ def handler(event: dict, context) -> dict:
         
         if method == 'GET':
             params = event.get('queryStringParameters') or {}
+            
+            # Если запрос тегов
+            if params.get('tags') == 'true':
+                cur.execute("SELECT * FROM model_tags ORDER BY name")
+                tags = cur.fetchall()
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'tags': tags}, default=str)
+                }
+            
+            # Иначе запрос моделей
             brand_id = params.get('brand_id')
             
             if brand_id:
@@ -246,20 +261,6 @@ def handler(event: dict, context) -> dict:
                     'Access-Control-Allow-Origin': '*'
                 },
                 'body': json.dumps({'success': True})
-            }
-        
-        # GET /tags - получить список всех тегов
-        path = event.get('path', '')
-        if method == 'GET' and path.endswith('/tags'):
-            cur.execute("SELECT * FROM model_tags ORDER BY name")
-            tags = cur.fetchall()
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                },
-                'body': json.dumps({'tags': tags}, default=str)
             }
         
         return {
