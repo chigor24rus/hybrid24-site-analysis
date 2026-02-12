@@ -138,12 +138,13 @@ export default function ModelServicesPage() {
       <Header setIsBookingOpen={setIsBookingOpen} />
 
       {/* Hero Section with Background */}
-      <section 
-        className="relative pt-32 pb-24 bg-cover bg-center bg-gray-800"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80)',
-        }}
-      >
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80" 
+          alt="Car background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
