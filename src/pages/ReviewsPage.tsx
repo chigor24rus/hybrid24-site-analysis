@@ -81,14 +81,23 @@ const ReviewsPage = () => {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} />
       </Dialog>
 
-      <section className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
-        <div className="container mx-auto px-4">
-          <Breadcrumbs items={[{ label: 'Отзывы' }]} />
-          <div className="text-center mb-12 md:mb-16 animate-fade-in">
-            <Badge className="mb-4 gradient-accent text-sm">Все отзывы</Badge>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Отзывы клиентов HEVSR в Красноярске</h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-              Реальные и проверенные отзывы о качестве нашего обслуживания
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1521791055366-0d553872125f?w=1920&q=80" 
+          alt="Customer reviews background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <Breadcrumbs items={[{ label: 'Отзывы' }]} className="text-white/80" />
+          <div className="mt-12 text-center text-white animate-fade-in">
+            <Badge className="mb-6 px-6 py-3 text-lg bg-white/20 text-white border-white/30">
+              <Icon name="MessageSquare" size={20} className="mr-2" />
+              Все отзывы
+            </Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">Отзывы клиентов HEVSR</h1>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+              Реальные и проверенные отзывы о качестве нашего обслуживания в Красноярске
             </p>
           </div>
         </div>
