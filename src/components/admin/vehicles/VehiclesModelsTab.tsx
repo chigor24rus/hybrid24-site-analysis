@@ -210,6 +210,19 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                   <TableCell className="text-right space-x-2">
                     <Button variant="ghost" size="sm" onClick={() => {
                       setModelForm({
+                        id: 0,
+                        brand_id: model.brand_id.toString(),
+                        name: model.name,
+                        year_from: model.year_from?.toString() || '',
+                        year_to: model.year_to?.toString() || '',
+                        tag_ids: model.tags?.map(t => t.id) || [],
+                      });
+                      setIsModelDialogOpen(true);
+                    }} title="Копировать модель">
+                      <Icon name="Copy" size={16} />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => {
+                      setModelForm({
                         id: model.id,
                         brand_id: model.brand_id.toString(),
                         name: model.name,
@@ -218,10 +231,10 @@ const VehiclesModelsTab = ({ brands, models, onRefresh }: VehiclesModelsTabProps
                         tag_ids: model.tags?.map(t => t.id) || [],
                       });
                       setIsModelDialogOpen(true);
-                    }}>
+                    }} title="Редактировать">
                       <Icon name="Edit" size={16} />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDeleteModel(model.id)}>
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteModel(model.id)} title="Удалить">
                       <Icon name="Trash2" size={16} />
                     </Button>
                   </TableCell>
