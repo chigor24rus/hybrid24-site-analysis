@@ -109,15 +109,26 @@ const ServicesPage = () => {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} />
       </Dialog>
 
-      <section className="py-12 md:py-16 bg-gradient-to-b from-card/30 to-background">
-        <div className="container mx-auto px-4">
-          <Breadcrumbs items={[{ label: 'Услуги' }]} />
-          <div className="text-center mb-12 animate-fade-in">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Услуги автосервиса в Красноярске</h1>
-            <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80" 
+          alt="Auto service background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <Breadcrumbs items={[{ label: 'Услуги' }]} className="text-white/80" />
+          <div className="mt-12 text-center text-white animate-fade-in">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">Услуги автосервиса в Красноярске</h1>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto">
               Полный спектр услуг для вашего автомобиля от профессиональных мастеров
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4">
 
           <h3 className="text-2xl font-bold text-center mb-8">Популярные услуги</h3>
 

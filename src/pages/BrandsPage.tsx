@@ -79,15 +79,27 @@ const BrandsPage = () => {
         <meta name="twitter:image" content="https://cdn.poehali.dev/files/2025-12-13_14-19-48.png" />
       </Helmet>
       <Header />
-      <main className="flex-1 py-12 md:py-16">
-        <div className="container mx-auto px-4">
-          <Breadcrumbs items={[{ label: 'Все бренды' }]} />
-          <div className="text-center mb-8 md:mb-12 animate-fade-in">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Ремонт и обслуживание всех марок авто в Красноярске</h1>
-            <p className="text-muted-foreground text-base md:text-lg">
-              Мы обслуживаем {brands.length} популярных марок автомобилей
+      
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80" 
+          alt="Car brands background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <Breadcrumbs items={[{ label: 'Все бренды' }]} className="text-white/80" />
+          <div className="mt-12 text-center text-white animate-fade-in">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">Ремонт и обслуживание всех марок авто</h1>
+            <p className="text-xl text-white/90">
+              Мы обслуживаем {brands.length} популярных марок автомобилей в Красноярске
             </p>
           </div>
+        </div>
+      </section>
+      
+      <main className="flex-1 py-12 md:py-16">
+        <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto mb-8 animate-fade-in">
             <h2 className="text-2xl font-bold text-center mb-4">Поиск бренда</h2>
             <div className="relative">

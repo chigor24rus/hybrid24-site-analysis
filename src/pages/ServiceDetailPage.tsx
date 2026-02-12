@@ -136,36 +136,48 @@ export default function ServiceDetailPage() {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} />
       </Dialog>
 
-      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
-        <div className="container mx-auto px-4">
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1920&q=80" 
+          alt="Auto service background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
               { label: 'Главная', path: '/' },
               { label: 'Услуги', path: '/services' },
               { label: service.title }
             ]} 
+            className="text-white/80"
           />
 
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-12 text-center animate-fade-in">
-              <div className="w-20 h-20 rounded-xl gradient-primary flex items-center justify-center mb-6 mx-auto">
-                <Icon name={service.icon} size={40} className="text-white" />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{service.title} в Красноярске</h1>
-              <p className="text-xl text-muted-foreground mb-6">
-                {service.description}
-              </p>
-              <div className="flex items-center justify-center gap-6 text-lg">
-                <div className="flex items-center gap-2">
-                  <Icon name="Clock" size={20} className="text-primary" />
-                  <span>{service.duration}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Icon name="DollarSign" size={20} className="text-primary" />
-                  <span>от {service.price}</span>
-                </div>
-              </div>
+          <div className="mt-12 text-center text-white animate-fade-in">
+            <div className="w-24 h-24 rounded-xl bg-white/20 flex items-center justify-center mb-6 mx-auto">
+              <Icon name={service.icon} size={48} className="text-white" />
             </div>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">{service.title} в Красноярске</h1>
+            <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              {service.description}
+            </p>
+            <div className="flex items-center justify-center gap-8 text-lg">
+              <Badge variant="secondary" className="px-6 py-3 text-lg bg-white/20 text-white border-white/30">
+                <Icon name="Clock" size={20} className="mr-2" />
+                {service.duration}
+              </Badge>
+              <Badge variant="secondary" className="px-6 py-3 text-lg bg-white/20 text-white border-white/30">
+                <Icon name="DollarSign" size={20} className="mr-2" />
+                от {service.price}
+              </Badge>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
 
             <Card className="mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
               <CardHeader>

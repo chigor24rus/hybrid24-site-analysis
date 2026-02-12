@@ -136,8 +136,14 @@ export default function BrandServicesPage() {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} />
       </Dialog>
 
-      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
-        <div className="container mx-auto px-4">
+      <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80" 
+          alt="Car service background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
               { label: 'Главная', path: '/' },
@@ -145,28 +151,37 @@ export default function BrandServicesPage() {
               { label: brand.name, path: `/${brandSlug}` },
               { label: 'Услуги' }
             ]} 
+            className="text-white/80"
           />
 
-          <div className="mb-12 text-center animate-fade-in">
-            {brand.logo_url && (
-              <img 
-                src={brand.logo_url} 
-                alt={brand.name}
-                className="w-24 h-24 object-contain mx-auto mb-6"
-              />
-            )}
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Услуги для {brand.name} в Красноярске
-            </h1>
+          <div className="mt-12 text-center text-white animate-fade-in">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              {brand.logo_url && (
+                <img 
+                  src={brand.logo_url} 
+                  alt={brand.name}
+                  className="w-20 h-20 object-contain bg-white rounded-lg p-2"
+                />
+              )}
+              <h1 className="text-5xl md:text-6xl font-bold">
+                Услуги для {brand.name}
+              </h1>
+            </div>
             {brand.description && (
-              <p className="text-xl text-muted-foreground mb-6 max-w-3xl mx-auto">
+              <p className="text-xl text-white/90 mb-6 max-w-2xl mx-auto">
                 {brand.description}
               </p>
             )}
-            <p className="text-lg text-muted-foreground">
-              {services.length} {services.length === 1 ? 'услуга' : services.length < 5 ? 'услуги' : 'услуг'} доступно
-            </p>
+            <Badge variant="secondary" className="px-6 py-3 text-lg bg-white/20 text-white border-white/30">
+              <Icon name="Wrench" size={20} className="mr-2" />
+              {services.length} {services.length === 1 ? 'услуга' : services.length < 5 ? 'услуги' : 'услуг'}
+            </Badge>
           </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container mx-auto px-4">
 
           <div className="max-w-5xl mx-auto mb-8">
             <Card className="animate-fade-in" style={{ animationDelay: '100ms' }}>
