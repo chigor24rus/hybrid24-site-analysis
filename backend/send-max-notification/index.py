@@ -75,29 +75,40 @@ def handler(event: dict, context) -> dict:
 💬 <b>Комментарий:</b>
 {comment}"""
         
-        # МАХ мессенджер использует Telegram Bot API
-        url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
-        data = {
+        # МАХ мессенджер использует свой API platform-api.max.ru
+        url = 'https://platform-api.max.ru/messages'
+        
+        # Формат запроса для МАХ API
+        payload = {
             'chat_id': chat_id,
             'text': message,
-            'parse_mode': 'HTML'
+            'format': 'html'
         }
+        
+        headers_dict = {
+            'Authorization': bot_token,
+            'Content-Type': 'application/json'
+        }
+        
+        print(f'[MAX] Sending request to: {url}')
+        print(f'[MAX] Chat ID: {chat_id}')
+        print(f'[MAX] Token length: {len(bot_token)}')
         
         req = urllib.request.Request(
             url,
-            data=urllib.parse.urlencode(data).encode('utf-8'),
+            data=json.dumps(payload).encode('utf-8'),
+            headers=headers_dict,
             method='POST'
         )
         
-        print(f'[MAX] Sending request to: {url[:50]}...')
-        print(f'[MAX] Chat ID: {chat_id}')
-        
         with urllib.request.urlopen(req, timeout=10) as response:
-            result = json.loads(response.read().decode('utf-8'))
+            response_text = response.read().decode('utf-8')
+            result = json.loads(response_text) if response_text else {}
             
+            print(f'[MAX] Response status: {response.status}')
             print(f'[MAX] Response: {result}')
             
-            if result.get('ok'):
+            if response.status == 200 or response.status == 201:
                 print('[MAX] ✓ Message sent successfully')
                 return {
                     'statusCode': 200,
@@ -112,7 +123,7 @@ def handler(event: dict, context) -> dict:
                     'isBase64Encoded': False
                 }
             else:
-                error_desc = result.get('description', 'MAX messenger API error')
+                error_desc = result.get('error', result.get('message', 'MAX messenger API error'))
                 print(f'[MAX] ✗ API Error: {error_desc}')
                 return {
                     'statusCode': 500,
