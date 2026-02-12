@@ -154,7 +154,7 @@ def handler(event: dict, context) -> dict:
                     # Переносим все связи на оставшуюся модель
                     for old_id in ids_to_remove:
                         cur.execute("""
-                            UPDATE prices 
+                            UPDATE service_prices 
                             SET model_id = %s 
                             WHERE model_id = %s
                         """, (group['keep_id'], old_id))
