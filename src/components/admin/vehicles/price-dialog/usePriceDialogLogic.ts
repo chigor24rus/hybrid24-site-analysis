@@ -62,9 +62,18 @@ export const usePriceDialogLogic = (
       ? services.filter(s => selectedServices.includes(s.id.toString()))
       : services;
     
-    const hasNoPriceForSelectedServices = servicesToCheck.some(service => 
-      !hasPrice(brand.id.toString(), '', service.id.toString())
-    );
+    // Проверяем комбинации: бренд + каждая модель + услуга
+    const brandModels = models.filter(m => m.brand_id === brand.id);
+    const hasNoPriceForSelectedServices = servicesToCheck.some(service => {
+      // Проверяем цену для "всех моделей" (model_id = null)
+      const hasGeneralPrice = hasPrice(brand.id.toString(), 'null', service.id.toString());
+      if (!hasGeneralPrice) return true;
+      
+      // Проверяем цены для конкретных моделей
+      return brandModels.some(model => 
+        !hasPrice(brand.id.toString(), model.id.toString(), service.id.toString())
+      );
+    });
     return matchesSearch && hasNoPriceForSelectedServices;
   });
 
@@ -73,9 +82,21 @@ export const usePriceDialogLogic = (
     return models.filter(model => {
       const matchesBrand = selectedBrands.includes(model.brand_id.toString());
       const matchesSearch = model.name.toLowerCase().includes(searchModel.toLowerCase());
-      return matchesBrand && matchesSearch;
+      
+      if (!onlyNoPrices) return matchesBrand && matchesSearch;
+      
+      // Если фильтр "Только без цен" включен - показываем только модели без цен для выбранных услуг
+      const servicesToCheck = selectedServices.length > 0
+        ? services.filter(s => selectedServices.includes(s.id.toString()))
+        : services;
+      
+      const hasNoPriceForServices = servicesToCheck.some(service => 
+        !hasPrice(model.brand_id.toString(), model.id.toString(), service.id.toString())
+      );
+      
+      return matchesBrand && matchesSearch && hasNoPriceForServices;
     });
-  }, [models, selectedBrands, searchModel]);
+  }, [models, selectedBrands, searchModel, onlyNoPrices, selectedServices, services, priceSet]);
 
   const filteredServices = services.filter(service => {
     if (!onlyNoPrices) return service.title.toLowerCase().includes(searchService.toLowerCase());
@@ -85,9 +106,17 @@ export const usePriceDialogLogic = (
       ? brands.filter(b => selectedBrands.includes(b.id.toString()))
       : brands;
     
-    const hasNoPriceForSelectedBrands = brandsToCheck.some(brand =>
-      !hasPrice(brand.id.toString(), '', service.id.toString())
-    );
+    const hasNoPriceForSelectedBrands = brandsToCheck.some(brand => {
+      // Проверяем цену для "всех моделей" (model_id = null)
+      const hasGeneralPrice = hasPrice(brand.id.toString(), 'null', service.id.toString());
+      if (!hasGeneralPrice) return true;
+      
+      // Проверяем цены для конкретных моделей
+      const brandModels = models.filter(m => m.brand_id === brand.id);
+      return brandModels.some(model => 
+        !hasPrice(brand.id.toString(), model.id.toString(), service.id.toString())
+      );
+    });
     return matchesSearch && hasNoPriceForSelectedBrands;
   });
 
