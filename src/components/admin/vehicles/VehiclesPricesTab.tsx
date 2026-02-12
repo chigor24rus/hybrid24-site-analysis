@@ -314,7 +314,6 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Все модели</SelectItem>
-                  <SelectItem value="null">Без модели</SelectItem>
                   {availableModels.map((model) => (
                     <SelectItem key={model.id} value={model.id.toString()}>
                       {model.name}
