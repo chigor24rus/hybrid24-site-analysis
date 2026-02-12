@@ -101,6 +101,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             body_data = json.loads(event.get('body', '{}'))
             service_id = body_data.get('service_id')
             brand_id = body_data.get('brand_id')
+            model_id = body_data.get('model_id')  # Может быть None для всех моделей
             base_price = body_data.get('base_price')
             currency = body_data.get('currency', '₽').strip()
             
@@ -114,14 +115,23 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'body': json.dumps({'error': 'service_id, brand_id и base_price обязательны'})
                 }
             
-            # Check if price already exists
-            cur.execute(
-                """
-                SELECT id FROM service_prices 
-                WHERE service_id = %s AND brand_id = %s AND model_id IS NULL
-                """,
-                (service_id, brand_id)
-            )
+            # Check if price already exists (с учётом model_id)
+            if model_id:
+                cur.execute(
+                    """
+                    SELECT id FROM service_prices 
+                    WHERE service_id = %s AND brand_id = %s AND model_id = %s
+                    """,
+                    (service_id, brand_id, model_id)
+                )
+            else:
+                cur.execute(
+                    """
+                    SELECT id FROM service_prices 
+                    WHERE service_id = %s AND brand_id = %s AND model_id IS NULL
+                    """,
+                    (service_id, brand_id)
+                )
             existing = cur.fetchone()
             
             if existing:
@@ -133,16 +143,16 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Origin': '*'
                     },
-                    'body': json.dumps({'error': 'Цена для этой комбинации услуги и бренда уже существует'})
+                    'body': json.dumps({'error': 'Цена для этой комбинации услуги, бренда и модели уже существует'})
                 }
             
             cur.execute(
                 """
-                INSERT INTO service_prices (service_id, brand_id, base_price, currency)
-                VALUES (%s, %s, %s, %s)
-                RETURNING id, service_id, brand_id, base_price, currency
+                INSERT INTO service_prices (service_id, brand_id, model_id, base_price, currency)
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING id, service_id, brand_id, model_id, base_price, currency
                 """,
-                (service_id, brand_id, base_price, currency)
+                (service_id, brand_id, model_id, base_price, currency)
             )
             
             result = cur.fetchone()
