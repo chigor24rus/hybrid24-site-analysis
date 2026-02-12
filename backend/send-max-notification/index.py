@@ -37,7 +37,13 @@ def handler(event: dict, context) -> dict:
         bot_token = os.environ.get('MAX_BOT_TOKEN')
         chat_id = os.environ.get('MAX_CHAT_ID')
         
+        # Подробное логирование для диагностики
+        print(f'[MAX] bot_token exists: {bool(bot_token)}, length: {len(bot_token) if bot_token else 0}')
+        print(f'[MAX] chat_id exists: {bool(chat_id)}, value: {chat_id}')
+        
         if not bot_token or not chat_id:
+            error_msg = f'MAX messenger settings not configured - token: {bool(bot_token)}, chat_id: {bool(chat_id)}'
+            print(f'[MAX] ERROR: {error_msg}')
             return {
                 'statusCode': 200,
                 'headers': {
@@ -46,7 +52,7 @@ def handler(event: dict, context) -> dict:
                 },
                 'body': json.dumps({
                     'success': False,
-                    'error': 'MAX messenger settings not configured (waiting for moderation)'
+                    'error': error_msg
                 }),
                 'isBase64Encoded': False
             }
@@ -83,10 +89,16 @@ def handler(event: dict, context) -> dict:
             method='POST'
         )
         
+        print(f'[MAX] Sending request to: {url[:50]}...')
+        print(f'[MAX] Chat ID: {chat_id}')
+        
         with urllib.request.urlopen(req, timeout=10) as response:
             result = json.loads(response.read().decode('utf-8'))
             
+            print(f'[MAX] Response: {result}')
+            
             if result.get('ok'):
+                print('[MAX] ✓ Message sent successfully')
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -100,6 +112,8 @@ def handler(event: dict, context) -> dict:
                     'isBase64Encoded': False
                 }
             else:
+                error_desc = result.get('description', 'MAX messenger API error')
+                print(f'[MAX] ✗ API Error: {error_desc}')
                 return {
                     'statusCode': 500,
                     'headers': {
@@ -108,12 +122,15 @@ def handler(event: dict, context) -> dict:
                     },
                     'body': json.dumps({
                         'success': False,
-                        'error': result.get('description', 'MAX messenger API error')
+                        'error': error_desc
                     }),
                     'isBase64Encoded': False
                 }
         
     except Exception as e:
+        print(f'[MAX] ✗ Exception: {str(e)}')
+        import traceback
+        print(f'[MAX] Traceback: {traceback.format_exc()}')
         return {
             'statusCode': 500,
             'headers': {
