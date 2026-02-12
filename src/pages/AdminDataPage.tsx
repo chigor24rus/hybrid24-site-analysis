@@ -41,7 +41,7 @@ const AdminDataPage = () => {
       const [brandsRes, servicesRes, pricesRes] = await Promise.all([
         fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f'),
         fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
-        fetch('https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791'),
+        fetch('https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc'),
       ]);
       
       const brandsData = await brandsRes.json();

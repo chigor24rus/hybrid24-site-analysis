@@ -139,7 +139,7 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
     if (!priceForm.brand_id || !priceForm.service_id || !priceForm.price) return;
 
     try {
-      const url = 'https://functions.poehali.dev/6a166b57-f740-436b-8d48-f1c3b32f0791';
+      const url = 'https://functions.poehali.dev/43a403bc-db40-4188-82e3-9949126abbfc';
       const method = priceForm.id ? 'PUT' : 'POST';
       
       // Extract numeric value from price string
