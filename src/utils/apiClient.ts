@@ -48,6 +48,9 @@ export const API_ENDPOINTS = {
   telegram: {
     send: 'https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b', // send-telegram-notification
   },
+  max: {
+    send: 'https://functions.poehali.dev/cd36e9ce-a071-42db-b619-b47ee9c00b7c', // send-max-notification
+  },
   sitemap: {
     generate: 'https://functions.poehali.dev/bfb45887-88df-472e-86be-950f37a57385', // generate-sitemap
   },

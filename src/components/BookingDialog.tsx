@@ -190,6 +190,12 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
           body: JSON.stringify(notificationData),
         }).catch(err => console.warn('Telegram notification failed:', err));
         
+        fetch('https://functions.poehali.dev/cd36e9ce-a071-42db-b619-b47ee9c00b7c', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(notificationData),
+        }).catch(err => console.warn('MAX notification failed:', err));
+        
         setTimeout(() => {
           setIsBookingOpen(false);
         }, 2000);

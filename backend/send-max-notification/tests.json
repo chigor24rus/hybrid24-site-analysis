@@ -1,0 +1,25 @@
+{
+  "tests": [
+    {
+      "name": "Test MAX notification sending",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "customer_name": "Иван Тестов",
+        "customer_phone": "+79991234567",
+        "customer_email": "test@example.com",
+        "service_type": "Техническое обслуживание",
+        "car_brand": "Toyota",
+        "car_model": "Camry",
+        "preferred_date": "15.02.2026",
+        "preferred_time": "14:00",
+        "comment": "Тестовая заявка"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": "boolean"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
