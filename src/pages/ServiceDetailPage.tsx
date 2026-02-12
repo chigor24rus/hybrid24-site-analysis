@@ -167,7 +167,6 @@ export default function ServiceDetailPage() {
                 {service.duration}
               </Badge>
               <Badge variant="secondary" className="px-6 py-3 text-lg bg-white/20 text-white border-white/30">
-                <Icon name="DollarSign" size={20} className="mr-2" />
                 от {service.price}
               </Badge>
             </div>
