@@ -16,10 +16,37 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   public static getDerivedStateFromError(error: Error): State {
+    const errorMsg = error.message || '';
+    const errorStack = error.stack || '';
+    
+    if (
+      errorMsg.includes('styled-components') ||
+      errorMsg.includes('errors.md#17') ||
+      errorMsg.includes('reviewlab') ||
+      errorStack.includes('styled-components') ||
+      errorStack.includes('reviewlab') ||
+      errorStack.includes('index-es2015.js')
+    ) {
+      return { hasError: false };
+    }
+    
     return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    const errorMsg = error.message || '';
+    const errorStack = error.stack || '';
+    
+    if (
+      errorMsg.includes('styled-components') ||
+      errorMsg.includes('errors.md#17') ||
+      errorMsg.includes('reviewlab') ||
+      errorStack.includes('styled-components') ||
+      errorStack.includes('reviewlab')
+    ) {
+      return;
+    }
+    
     const logger = ErrorLogger.getInstance();
     logger.logError({
       type: 'error',
