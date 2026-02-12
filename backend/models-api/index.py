@@ -130,35 +130,39 @@ def handler(event: dict, context) -> dict:
             
             # Удаление дубликатов
             if action == 'remove_duplicates':
-                # Шаг 1: Находим группы дубликатов и определяем какие ID оставить
+                # Шаг 1: Находим дубликаты и ID которые нужно оставить
                 cur.execute("""
-                    WITH duplicates AS (
-                        SELECT id, brand_id, LOWER(name) as name_lower,
-                               MIN(id) OVER (PARTITION BY brand_id, LOWER(name)) as keep_id
-                        FROM car_models
-                    )
-                    SELECT id, keep_id FROM duplicates WHERE id != keep_id
+                    SELECT brand_id, LOWER(name) as name_lower, MIN(id) as keep_id
+                    FROM car_models
+                    GROUP BY brand_id, LOWER(name)
+                    HAVING COUNT(*) > 1
                 """)
-                duplicates_to_remove = cur.fetchall()
+                duplicate_groups = cur.fetchall()
                 
-                # Шаг 2: Переносим все связи (цены) на оставшуюся модель
-                for dup in duplicates_to_remove:
+                deleted_count = 0
+                
+                # Шаг 2: Для каждой группы дубликатов
+                for group in duplicate_groups:
+                    # Находим все ID в этой группе
                     cur.execute("""
-                        UPDATE prices 
-                        SET model_id = %s 
-                        WHERE model_id = %s
-                    """, (dup['keep_id'], dup['id']))
+                        SELECT id FROM car_models
+                        WHERE brand_id = %s AND LOWER(name) = %s AND id != %s
+                    """, (group['brand_id'], group['name_lower'], group['keep_id']))
+                    
+                    ids_to_remove = [row['id'] for row in cur.fetchall()]
+                    
+                    # Переносим все связи на оставшуюся модель
+                    for old_id in ids_to_remove:
+                        cur.execute("""
+                            UPDATE prices 
+                            SET model_id = %s 
+                            WHERE model_id = %s
+                        """, (group['keep_id'], old_id))
+                        
+                        # Удаляем дубликат
+                        cur.execute("DELETE FROM car_models WHERE id = %s", (old_id,))
+                        deleted_count += 1
                 
-                # Шаг 3: Удаляем дубликаты
-                cur.execute("""
-                    DELETE FROM car_models
-                    WHERE id NOT IN (
-                        SELECT MIN(id)
-                        FROM car_models
-                        GROUP BY brand_id, LOWER(name)
-                    )
-                """)
-                deleted_count = cur.rowcount
                 conn.commit()
                 
                 return {
