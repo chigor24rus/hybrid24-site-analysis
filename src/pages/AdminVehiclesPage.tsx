@@ -203,12 +203,6 @@ const AdminVehiclesPage = () => {
             actions={
               <>
                 <AdminActionButton
-                  icon="ExternalLink"
-                  label="SEO-страницы"
-                  onClick={() => window.open('/services-index', '_blank')}
-                  variant="outline"
-                />
-                <AdminActionButton
                   icon="Type"
                   label="Нормализовать регистр"
                   onClick={handleNormalizeBrands}
