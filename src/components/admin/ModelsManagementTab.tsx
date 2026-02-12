@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,12 +29,19 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
   console.log('ModelsManagementTab received:', { brands: brands.length, models: models.length });
 
   // Загрузка тегов при монтировании
-  useState(() => {
-    fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b/tags')
-      .then(res => res.json())
-      .then(data => setAvailableTags(data.tags || []))
-      .catch(err => console.error('Failed to load tags:', err));
-  });
+  useEffect(() => {
+    const loadTags = async () => {
+      try {
+        const res = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b/tags');
+        const data = await res.json();
+        console.log('Loaded tags:', data.tags);
+        setAvailableTags(data.tags || []);
+      } catch (err) {
+        console.error('Failed to load tags:', err);
+      }
+    };
+    loadTags();
+  }, []);
 
   let filteredModels = selectedBrand === 'all'
     ? models
