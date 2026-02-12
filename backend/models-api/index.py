@@ -130,7 +130,26 @@ def handler(event: dict, context) -> dict:
             
             # Удаление дубликатов
             if action == 'remove_duplicates':
-                # Находим дубликаты (одинаковые brand_id + name без учета регистра)
+                # Шаг 1: Находим группы дубликатов и определяем какие ID оставить
+                cur.execute("""
+                    WITH duplicates AS (
+                        SELECT id, brand_id, LOWER(name) as name_lower,
+                               MIN(id) OVER (PARTITION BY brand_id, LOWER(name)) as keep_id
+                        FROM car_models
+                    )
+                    SELECT id, keep_id FROM duplicates WHERE id != keep_id
+                """)
+                duplicates_to_remove = cur.fetchall()
+                
+                # Шаг 2: Переносим все связи (цены) на оставшуюся модель
+                for dup in duplicates_to_remove:
+                    cur.execute("""
+                        UPDATE prices 
+                        SET model_id = %s 
+                        WHERE model_id = %s
+                    """, (dup['keep_id'], dup['id']))
+                
+                # Шаг 3: Удаляем дубликаты
                 cur.execute("""
                     DELETE FROM car_models
                     WHERE id NOT IN (
