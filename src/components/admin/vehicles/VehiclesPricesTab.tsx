@@ -111,9 +111,21 @@ const VehiclesPricesTab = ({ brands, models, services, prices, onRefresh }: Vehi
   const displayPrices = filterNoPrice ? allCombinations.filter(c => !c.hasPrice) : prices;
 
   const filteredPrices = displayPrices.filter(p => {
+    // Фильтр по бренду
     if (filterBrand !== 'all' && p.brand_id.toString() !== filterBrand) return false;
-    if (filterModel !== 'all' && (p.model_id?.toString() || 'null') !== filterModel) return false;
+    
+    // Фильтр по модели
+    if (filterModel !== 'all') {
+      const modelIdStr = p.model_id?.toString() || 'null';
+      // Если выбрана конкретная модель - показываем только записи с этой model_id (не "Все модели")
+      if (filterModel !== 'null' && modelIdStr !== filterModel) return false;
+      // Если выбрано "Без модели" - показываем только записи с model_id = null
+      if (filterModel === 'null' && modelIdStr !== 'null') return false;
+    }
+    
+    // Фильтр по услуге
     if (filterService !== 'all' && p.service_id.toString() !== filterService) return false;
+    
     return true;
   });
 
