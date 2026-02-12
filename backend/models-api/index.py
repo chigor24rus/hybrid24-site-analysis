@@ -168,13 +168,28 @@ def handler(event: dict, context) -> dict:
             model_id = params.get('id')
             action = params.get('action')
             
-            # Удаление дубликатов
+            # Удаление дубликатов с учетом тегов
             if action == 'remove_duplicates':
-                # Шаг 1: Находим дубликаты и ID которые нужно оставить
+                # Шаг 1: Находим дубликаты (одинаковые brand_id, name и теги)
                 cur.execute("""
-                    SELECT brand_id, LOWER(name) as name_lower, MIN(id) as keep_id
-                    FROM car_models
-                    GROUP BY brand_id, LOWER(name)
+                    WITH model_tags_agg AS (
+                        SELECT 
+                            m.id,
+                            m.brand_id,
+                            LOWER(m.name) as name_lower,
+                            COALESCE(array_agg(cmt.tag_id ORDER BY cmt.tag_id) FILTER (WHERE cmt.tag_id IS NOT NULL), ARRAY[]::integer[]) as tag_ids
+                        FROM car_models m
+                        LEFT JOIN car_model_tags cmt ON m.id = cmt.model_id
+                        GROUP BY m.id, m.brand_id, LOWER(m.name)
+                    )
+                    SELECT 
+                        brand_id, 
+                        name_lower, 
+                        tag_ids,
+                        MIN(id) as keep_id,
+                        array_agg(id) as all_ids
+                    FROM model_tags_agg
+                    GROUP BY brand_id, name_lower, tag_ids
                     HAVING COUNT(*) > 1
                 """)
                 duplicate_groups = cur.fetchall()
@@ -183,13 +198,9 @@ def handler(event: dict, context) -> dict:
                 
                 # Шаг 2: Для каждой группы дубликатов
                 for group in duplicate_groups:
-                    # Находим все ID в этой группе
-                    cur.execute("""
-                        SELECT id FROM car_models
-                        WHERE brand_id = %s AND LOWER(name) = %s AND id != %s
-                    """, (group['brand_id'], group['name_lower'], group['keep_id']))
-                    
-                    ids_to_remove = [row['id'] for row in cur.fetchall()]
+                    keep_id = group['keep_id']
+                    all_ids = group['all_ids']
+                    ids_to_remove = [id for id in all_ids if id != keep_id]
                     
                     # Переносим все связи на оставшуюся модель
                     for old_id in ids_to_remove:
@@ -197,7 +208,10 @@ def handler(event: dict, context) -> dict:
                             UPDATE service_prices 
                             SET model_id = %s 
                             WHERE model_id = %s
-                        """, (group['keep_id'], old_id))
+                        """, (keep_id, old_id))
+                        
+                        # Удаляем связи тегов
+                        cur.execute("DELETE FROM car_model_tags WHERE model_id = %s", (old_id,))
                         
                         # Удаляем дубликат
                         cur.execute("DELETE FROM car_models WHERE id = %s", (old_id,))
