@@ -54,10 +54,14 @@ def handler(event: dict, context) -> dict:
         if file_type == 'csv':
             csv_reader = csv.DictReader(io.StringIO(file_text))
             for row in csv_reader:
+                tags_raw = row.get('tags') or row.get('Tags') or row.get('Теги') or ''
+                tags = [t.strip() for t in tags_raw.split(',') if t.strip()] if tags_raw else []
+                
                 models.append({
                     'name': row.get('name') or row.get('Name') or row.get('Название'),
                     'year_from': row.get('year_from') or row.get('Year From') or row.get('Год с'),
-                    'year_to': row.get('year_to') or row.get('Year To') or row.get('Год по')
+                    'year_to': row.get('year_to') or row.get('Year To') or row.get('Год по'),
+                    'tags': tags
                 })
         elif file_type == 'json':
             data = json.loads(file_text)
@@ -84,15 +88,41 @@ def handler(event: dict, context) -> dict:
             
             year_from = model.get('year_from')
             year_to = model.get('year_to')
+            tags = model.get('tags', [])
             
             try:
                 cur.execute("""
                     INSERT INTO car_models (brand_id, name, year_from, year_to)
                     VALUES (%s, %s, %s, %s)
-                    ON CONFLICT (brand_id, name) DO NOTHING
+                    ON CONFLICT (brand_id, name) DO UPDATE SET
+                        year_from = EXCLUDED.year_from,
+                        year_to = EXCLUDED.year_to
+                    RETURNING id
                 """, (brand_id, name, year_from, year_to))
                 
-                if cur.rowcount > 0:
+                result = cur.fetchone()
+                if result:
+                    model_id = result['id']
+                    
+                    # Добавляем теги к модели
+                    for tag_name in tags:
+                        # Получаем или создаем тег
+                        cur.execute("""
+                            INSERT INTO model_tags (name)
+                            VALUES (%s)
+                            ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+                            RETURNING id
+                        """, (tag_name,))
+                        tag_result = cur.fetchone()
+                        tag_id = tag_result['id']
+                        
+                        # Связываем модель с тегом
+                        cur.execute("""
+                            INSERT INTO car_model_tags (model_id, tag_id)
+                            VALUES (%s, %s)
+                            ON CONFLICT (model_id, tag_id) DO NOTHING
+                        """, (model_id, tag_id))
+                    
                     added += 1
                 else:
                     skipped += 1

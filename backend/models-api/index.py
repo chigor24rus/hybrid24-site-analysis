@@ -32,7 +32,14 @@ def handler(event: dict, context) -> dict:
             
             if brand_id:
                 cur.execute("""
-                    SELECT m.*, b.name as brand_name 
+                    SELECT m.*, b.name as brand_name,
+                           COALESCE(
+                               (SELECT json_agg(json_build_object('id', mt.id, 'name', mt.name, 'color', mt.color))
+                                FROM car_model_tags cmt
+                                JOIN model_tags mt ON cmt.tag_id = mt.id
+                                WHERE cmt.model_id = m.id),
+                               '[]'::json
+                           ) as tags
                     FROM car_models m
                     JOIN brands b ON m.brand_id = b.id
                     WHERE m.brand_id = %s
@@ -40,7 +47,14 @@ def handler(event: dict, context) -> dict:
                 """, (brand_id,))
             else:
                 cur.execute("""
-                    SELECT m.*, b.name as brand_name 
+                    SELECT m.*, b.name as brand_name,
+                           COALESCE(
+                               (SELECT json_agg(json_build_object('id', mt.id, 'name', mt.name, 'color', mt.color))
+                                FROM car_model_tags cmt
+                                JOIN model_tags mt ON cmt.tag_id = mt.id
+                                WHERE cmt.model_id = m.id),
+                               '[]'::json
+                           ) as tags
                     FROM car_models m
                     JOIN brands b ON m.brand_id = b.id
                     ORDER BY b.name, m.name
@@ -96,6 +110,7 @@ def handler(event: dict, context) -> dict:
             name = body.get('name')
             year_from = body.get('year_from')
             year_to = body.get('year_to')
+            tag_ids = body.get('tag_ids', [])
             
             if not model_id:
                 return {
@@ -112,6 +127,20 @@ def handler(event: dict, context) -> dict:
             """, (name, year_from, year_to, model_id))
             
             model = cur.fetchone()
+            
+            # Обновляем теги модели
+            if tag_ids is not None:
+                # Удаляем старые связи
+                cur.execute("DELETE FROM car_model_tags WHERE model_id = %s", (model_id,))
+                
+                # Добавляем новые
+                for tag_id in tag_ids:
+                    cur.execute("""
+                        INSERT INTO car_model_tags (model_id, tag_id)
+                        VALUES (%s, %s)
+                        ON CONFLICT DO NOTHING
+                    """, (model_id, tag_id))
+            
             conn.commit()
             
             return {

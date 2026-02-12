@@ -187,13 +187,14 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
                 <TableHead>Бренд</TableHead>
                 <TableHead>Модель</TableHead>
                 <TableHead>Годы выпуска</TableHead>
+                <TableHead>Теги</TableHead>
                 <TableHead className="text-right">Действия</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredModels.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                     Нет моделей
                   </TableCell>
                 </TableRow>
@@ -204,6 +205,23 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
                     <TableCell>{model.name}</TableCell>
                     <TableCell>
                       {model.year_from || '—'} {model.year_to ? `— ${model.year_to}` : '— н.в.'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {model.tags && model.tags.length > 0 ? (
+                          model.tags.map((tag) => (
+                            <span
+                              key={tag.id}
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                              style={{ backgroundColor: tag.color + '20', color: tag.color }}
+                            >
+                              {tag.name}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground text-sm">—</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button variant="ghost" size="sm" onClick={() => openEditDialog(model)}>

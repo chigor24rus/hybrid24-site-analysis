@@ -21,6 +21,12 @@ export interface Price {
   brand_name: string;
 }
 
+export interface ModelTag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 export interface Model {
   id: number;
   brand_id: number;
@@ -28,4 +34,5 @@ export interface Model {
   year_from?: number;
   year_to?: number;
   brand_name?: string;
+  tags?: ModelTag[];
 }
