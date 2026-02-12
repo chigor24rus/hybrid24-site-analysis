@@ -13,12 +13,19 @@ interface Brand {
   name: string;
 }
 
+interface ModelTag {
+  id: number;
+  name: string;
+  color: string;
+}
+
 interface Model {
   id: number;
   brand_id: number;
   name: string;
   year_from: number | null;
   year_to: number | null;
+  tags?: ModelTag[];
 }
 
 export default function BrandModelsPage() {
@@ -163,6 +170,19 @@ export default function BrandModelsPage() {
                     <p className="text-sm text-muted-foreground text-center">
                       {model.year_from}{model.year_to ? `-${model.year_to}` : '+'} г.
                     </p>
+                  )}
+                  {model.tags && model.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 justify-center mt-3">
+                      {model.tags.map((tag) => (
+                        <span
+                          key={tag.id}
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
+                          style={{ backgroundColor: tag.color + '20', color: tag.color }}
+                        >
+                          {tag.name}
+                        </span>
+                      ))}
+                    </div>
                   )}
                   <div className="mt-4 flex items-center justify-center text-primary text-sm font-medium">
                     Выбрать
