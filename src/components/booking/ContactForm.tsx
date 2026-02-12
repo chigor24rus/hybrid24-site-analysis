@@ -22,6 +22,8 @@ interface ContactFormProps {
   email: string;
   brand: string;
   model: string;
+  plateNumber: string;
+  vin: string;
   comment: string;
   brands: Brand[];
   models: Model[];
@@ -32,6 +34,8 @@ interface ContactFormProps {
   onEmailChange: (value: string) => void;
   onBrandChange: (value: string) => void;
   onModelChange: (value: string) => void;
+  onPlateNumberChange: (value: string) => void;
+  onVinChange: (value: string) => void;
   onCommentChange: (value: string) => void;
   onAgreedToTermsChange: (value: boolean) => void;
 }
@@ -42,6 +46,8 @@ const ContactForm = ({
   email,
   brand,
   model,
+  plateNumber,
+  vin,
   comment,
   brands,
   models,
@@ -52,6 +58,8 @@ const ContactForm = ({
   onEmailChange,
   onBrandChange,
   onModelChange,
+  onPlateNumberChange,
+  onVinChange,
   onCommentChange,
   onAgreedToTermsChange
 }: ContactFormProps) => {
@@ -120,6 +128,27 @@ const ContactForm = ({
               ))}
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="plateNumber">Гос.Номер (желательно)</Label>
+          <Input
+            id="plateNumber"
+            placeholder="А123БВ777"
+            value={plateNumber}
+            onChange={(e) => onPlateNumberChange(e.target.value.toUpperCase())}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="vin">VIN / Номер кузова (желательно)</Label>
+          <Input
+            id="vin"
+            placeholder="XTA123456789"
+            value={vin}
+            onChange={(e) => onVinChange(e.target.value.toUpperCase())}
+          />
         </div>
       </div>
 

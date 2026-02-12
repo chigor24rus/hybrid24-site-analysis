@@ -47,6 +47,8 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
   const [email, setEmail] = useState('');
   const [brand, setBrand] = useState('');
   const [model, setModel] = useState('');
+  const [plateNumber, setPlateNumber] = useState('');
+  const [vin, setVin] = useState('');
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -173,6 +175,8 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
           promotion: selectedPromotionData?.title || '',
           car_brand: selectedBrand?.name || '',
           car_model: selectedModel?.name || '',
+          plate_number: plateNumber,
+          vin: vin,
           preferred_date: date ? format(date, 'dd.MM.yyyy') : '',
           preferred_time: time,
           comment,
@@ -240,6 +244,8 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
           email={email}
           brand={brand}
           model={model}
+          plateNumber={plateNumber}
+          vin={vin}
           comment={comment}
           brands={brands}
           models={models}
@@ -250,6 +256,8 @@ const BookingDialog = ({ setIsBookingOpen, initialSelectedServices = [], initial
           onEmailChange={setEmail}
           onBrandChange={setBrand}
           onModelChange={setModel}
+          onPlateNumberChange={setPlateNumber}
+          onVinChange={setVin}
           onCommentChange={setComment}
           onAgreedToTermsChange={setAgreedToTerms}
         />
