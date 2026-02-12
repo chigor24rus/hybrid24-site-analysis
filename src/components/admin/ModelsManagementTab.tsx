@@ -16,6 +16,7 @@ interface ModelsManagementTabProps {
 
 const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabProps) => {
   const [selectedBrand, setSelectedBrand] = useState<string>('all');
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
@@ -35,9 +36,16 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
       .catch(err => console.error('Failed to load tags:', err));
   });
 
-  const filteredModels = selectedBrand === 'all'
+  let filteredModels = selectedBrand === 'all'
     ? models
     : models.filter(m => m.brand_id.toString() === selectedBrand);
+
+  // Фильтр по тегам
+  if (selectedTags.length > 0) {
+    filteredModels = filteredModels.filter(model => 
+      selectedTags.every(tagId => model.tags?.some(tag => tag.id === tagId))
+    );
+  }
 
   console.log('Filtered models:', filteredModels.length);
 
@@ -181,6 +189,35 @@ const ModelsManagementTab = ({ brands, models, onUpdate }: ModelsManagementTabPr
                   ))}
                 </SelectContent>
               </Select>
+              <div className="flex gap-1.5 items-center border rounded-md px-3 bg-background">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">Теги:</span>
+                <div className="flex gap-1.5">
+                  {availableTags.map((tag) => {
+                    const isSelected = selectedTags.includes(tag.id);
+                    return (
+                      <button
+                        key={tag.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedTags(prev => 
+                            isSelected 
+                              ? prev.filter(id => id !== tag.id)
+                              : [...prev, tag.id]
+                          );
+                        }}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-all"
+                        style={{
+                          backgroundColor: isSelected ? tag.color : tag.color + '20',
+                          color: isSelected ? '#ffffff' : tag.color,
+                          border: `1px solid ${tag.color}`
+                        }}
+                      >
+                        {tag.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <Button onClick={() => setIsUploadDialogOpen(true)} variant="outline">
                 <Icon name="Upload" className="mr-2" size={18} />
                 Загрузить из файла
