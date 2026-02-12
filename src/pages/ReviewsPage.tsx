@@ -3,6 +3,7 @@ import { Dialog } from '@/components/ui/dialog';
 import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
+import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
 import Footer from '@/components/Footer';
