@@ -55,10 +55,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     conn = psycopg2.connect(dsn)
     cur = conn.cursor(cursor_factory=RealDictCursor)
     
+    # Нормализация брендов
     cur.execute("SELECT id, name FROM brands")
     brands = cur.fetchall()
     
-    updated_count = 0
+    brands_updated = 0
     errors = []
     
     for brand in brands:
@@ -78,9 +79,29 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     "UPDATE brands SET name = %s WHERE id = %s",
                     (normalized_name, brand['id'])
                 )
-                updated_count += 1
+                brands_updated += 1
             except Exception as e:
-                errors.append(f"{original_name}: {str(e)}")
+                errors.append(f"Бренд {original_name}: {str(e)}")
+    
+    # Нормализация моделей (все буквы в верхний регистр)
+    cur.execute("SELECT id, name FROM car_models")
+    models = cur.fetchall()
+    
+    models_updated = 0
+    
+    for model in models:
+        original_name = model['name']
+        normalized_name = original_name.upper().strip()
+        
+        if original_name != normalized_name:
+            try:
+                cur.execute(
+                    "UPDATE car_models SET name = %s WHERE id = %s",
+                    (normalized_name, model['id'])
+                )
+                models_updated += 1
+            except Exception as e:
+                errors.append(f"Модель {original_name}: {str(e)}")
     
     conn.commit()
     cur.close()
@@ -94,8 +115,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         },
         'body': json.dumps({
             'success': True,
-            'updated': updated_count,
-            'total': len(brands),
+            'brands_updated': brands_updated,
+            'models_updated': models_updated,
+            'total_brands': len(brands),
+            'total_models': len(models),
             'errors': errors
         })
     }

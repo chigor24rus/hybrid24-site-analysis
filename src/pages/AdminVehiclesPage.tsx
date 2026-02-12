@@ -117,7 +117,7 @@ const AdminVehiclesPage = () => {
   };
 
   const handleNormalizeBrands = async () => {
-    if (!confirm('Привести все названия брендов к единому формату (первая буква заглавная, остальные строчные)?')) {
+    if (!confirm('Привести все названия брендов и моделей к единому формату?\nБренды: первая буква заглавная\nМодели: все буквы заглавные')) {
       return;
     }
 
@@ -128,7 +128,7 @@ const AdminVehiclesPage = () => {
       const result = await response.json();
       
       if (response.ok) {
-        alert(`Успешно обновлено брендов: ${result.updated} из ${result.total}`);
+        alert(`Успешно обновлено:\nБрендов: ${result.brands_updated} из ${result.total_brands}\nМоделей: ${result.models_updated} из ${result.total_models}`);
         fetchData();
       } else {
         alert(`Ошибка при нормализации`);
