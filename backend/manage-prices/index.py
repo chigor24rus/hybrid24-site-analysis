@@ -7,8 +7,8 @@ from psycopg2.extras import RealDictCursor
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''
-    Business: Manage service prices - get, create, update, delete operations
-    Args: event with httpMethod, body with price data
+    Business: Manage service prices with model support - get, create, update, delete operations
+    Args: event with httpMethod, body with price data (including model_id)
     Returns: HTTP response with operation result
     '''
     method: str = event.get('httpMethod', 'GET')
