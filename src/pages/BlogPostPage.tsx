@@ -341,6 +341,7 @@ const BlogPostPage = () => {
         <img 
           src={post.image} 
           alt={post.title}
+          loading="eager"
           className="absolute inset-0 w-full h-full object-cover z-0"
           onError={(e) => {
             e.currentTarget.style.display = 'none';
@@ -385,7 +386,7 @@ const BlogPostPage = () => {
           {post.content.sections.map((section, index) => (
             <section key={index} className="mb-8">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Icon name={post.icon as any} size={28} className="text-primary" />
+                <Icon name={post.icon} size={28} className="text-primary" />
                 {section.title}
               </h2>
               <p className="text-muted-foreground mb-4 leading-relaxed">

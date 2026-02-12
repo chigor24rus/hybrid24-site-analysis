@@ -248,10 +248,13 @@ const BlogPage = () => {
                       className="hover-scale cursor-pointer animate-fade-in h-full"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <div 
-                        className="h-48 bg-cover bg-center rounded-t-lg relative"
-                        style={{ backgroundImage: `url(${post.image})` }}
-                      >
+                      <div className="h-48 rounded-t-lg relative overflow-hidden">
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover"
+                        />
                         <div className="h-full bg-gradient-to-b from-transparent to-black/60 rounded-t-lg flex items-end p-4">
                           <Badge className="gradient-accent">{post.category}</Badge>
                         </div>

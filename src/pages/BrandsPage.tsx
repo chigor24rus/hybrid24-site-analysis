@@ -126,7 +126,7 @@ const BrandsPage = () => {
                 style={{ animationDelay: `${index * 30}ms` }}
               >
                 <Card className="hover-scale cursor-pointer text-center p-6 bg-white h-40 flex flex-col items-center justify-center">
-                  <img src={brand.logo} alt={brand.name} className="h-20 object-contain mb-3" />
+                  <img src={brand.logo} alt={brand.name} className="h-20 object-contain mb-3" loading="lazy" />
                   <p className="text-sm font-medium">{brand.name}</p>
                 </Card>
               </Link>
