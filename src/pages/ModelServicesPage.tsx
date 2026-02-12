@@ -137,32 +137,43 @@ export default function ModelServicesPage() {
 
       <Header setIsBookingOpen={setIsBookingOpen} />
 
-      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
-        <div className="container mx-auto px-4">
+      {/* Hero Section with Background */}
+      <section 
+        className="relative pt-32 pb-24 bg-cover bg-center"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80)',
+        }}
+      >
+        <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
               { label: 'Главная', path: '/' },
               { label: brand.name, path: `/${brandSlug}` },
               { label: model.name }
             ]} 
+            className="text-white/80"
           />
 
-          <div className="mb-12 text-center">
-            <Badge className="mb-4 text-sm px-3 py-1">{brand.name}</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">{brand.name} {model.name} в Красноярске</h1>
-            <p className="text-xl text-muted-foreground">
+          <div className="mt-12 text-center text-white">
+            <Badge className="mb-6 text-sm px-4 py-1.5 bg-primary hover:bg-primary">{brand.name}</Badge>
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">{brand.name} {model.name} в Красноярске</h1>
+            <p className="text-2xl text-white/90 mb-2">
               {model.year_from && (
                 <span>
                   {model.year_from}{model.year_to ? `-${model.year_to}` : '+'} г.
                 </span>
               )}
             </p>
-            <p className="text-lg text-muted-foreground mt-4">
+            <p className="text-lg text-white/80 max-w-2xl mx-auto">
               Выберите услугу для просмотра подробной информации и записи
             </p>
           </div>
+        </div>
+      </section>
 
-          <h2 className="text-3xl font-bold text-center mb-8">Доступные услуги</h2>
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Доступные услуги</h2>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => (

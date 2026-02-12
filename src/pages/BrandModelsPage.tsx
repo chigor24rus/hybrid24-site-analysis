@@ -112,22 +112,33 @@ export default function BrandModelsPage() {
 
       <Header setIsBookingOpen={setIsBookingOpen} />
 
-      <section className="pt-32 pb-16 bg-gradient-to-b from-card/50 to-background">
-        <div className="container mx-auto px-4">
+      {/* Hero Section with Background */}
+      <section 
+        className="relative pt-32 pb-24 bg-cover bg-center"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&q=80)',
+        }}
+      >
+        <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
               { label: 'Главная', path: '/' },
               { label: brand.name }
             ]} 
+            className="text-white/80"
           />
 
-          <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Модели {brand.name} в Красноярске</h1>
-            <p className="text-xl text-muted-foreground">
+          <div className="mt-12 text-center text-white">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">Модели {brand.name} в Красноярске</h1>
+            <p className="text-xl text-white/90">
               {models.length} {models.length === 1 ? 'модель' : models.length < 5 ? 'модели' : 'моделей'} доступно
             </p>
           </div>
+        </div>
+      </section>
 
+      <section className="py-16 bg-background">
+        <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto mb-12 text-center">
             <Link to={`/brands/${brandSlug}/services`}>
               <Card className="cursor-pointer hover:border-primary hover:shadow-lg transition-all">

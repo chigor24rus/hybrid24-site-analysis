@@ -10,9 +10,10 @@ interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
+  className?: string;
 }
 
-export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -39,10 +40,10 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
           {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
-      <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-6 overflow-x-auto" aria-label="Breadcrumb">
+      <nav className={`flex items-center space-x-2 text-sm mb-6 overflow-x-auto ${className || 'text-muted-foreground'}`} aria-label="Breadcrumb">
         <Link 
           to="/" 
-          className="hover:text-foreground transition-colors flex items-center gap-1 whitespace-nowrap"
+          className={`transition-colors flex items-center gap-1 whitespace-nowrap ${className ? 'hover:text-white' : 'hover:text-foreground'}`}
         >
           <Icon name="Home" size={16} />
           <span>Главная</span>
@@ -50,16 +51,16 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
         
         {items.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
-            <Icon name="ChevronRight" size={14} className="text-muted-foreground/50" />
+            <Icon name="ChevronRight" size={14} className={className ? 'text-white/50' : 'text-muted-foreground/50'} />
             {item.path ? (
               <Link 
                 to={item.path} 
-                className="hover:text-foreground transition-colors whitespace-nowrap"
+                className={`transition-colors whitespace-nowrap ${className ? 'hover:text-white' : 'hover:text-foreground'}`}
               >
                 {item.label}
               </Link>
             ) : (
-              <span className="text-foreground font-medium whitespace-nowrap" aria-current="page">{item.label}</span>
+              <span className={`font-medium whitespace-nowrap ${className ? 'text-white' : 'text-foreground'}`} aria-current="page">{item.label}</span>
             )}
           </div>
         ))}
