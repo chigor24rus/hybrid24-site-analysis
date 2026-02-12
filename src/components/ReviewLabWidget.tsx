@@ -26,7 +26,7 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
           errorFilename.includes('index-es2015.js')) {
         event.preventDefault();
         event.stopPropagation();
-        console.warn('[ReviewLab] Suppressed styled-components error from external widget:', errorMsg);
+        event.stopImmediatePropagation();
         return false;
       }
     };
@@ -42,9 +42,20 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
           reasonStack.includes('styled-components') ||
           reasonStack.includes('reviewlab')) {
         event.preventDefault();
-        console.warn('[ReviewLab] Suppressed styled-components rejection from external widget:', reason);
+        event.stopImmediatePropagation();
         return false;
       }
+    };
+
+    const consoleErrorBackup = console.error;
+    console.error = function(...args: unknown[]) {
+      const errorStr = args.join(' ');
+      if (errorStr.includes('styled-components') || 
+          errorStr.includes('errors.md#17') ||
+          errorStr.includes('reviewlab')) {
+        return;
+      }
+      consoleErrorBackup.apply(console, args);
     };
 
     errorHandlerRef.current = globalErrorHandler;
@@ -77,12 +88,9 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
     }
 
     return () => {
+      console.error = consoleErrorBackup;
       window.removeEventListener('error', globalErrorHandler, true);
       window.removeEventListener('unhandledrejection', unhandledRejectionHandler);
-      const scriptToRemove = document.querySelector('script[src="https://app.reviewlab.ru/widget/index-es2015.js"]');
-      if (scriptToRemove && scriptToRemove.parentNode) {
-        scriptToRemove.parentNode.removeChild(scriptToRemove);
-      }
     };
   }, []);
 
