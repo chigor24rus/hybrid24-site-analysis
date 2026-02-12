@@ -257,25 +257,24 @@ export const usePriceDialogLogic = (
         return { success: false };
       };
 
-      const batchSize = 10;
+      // ⚠️ КРИТИЧНО: отправляем запросы ПОСЛЕДОВАТЕЛЬНО с задержкой (избегаем rate limit)
       let successCount = 0;
       let errorCount = 0;
 
-      for (let i = 0; i < combinations.length; i += batchSize) {
-        const batch = combinations.slice(i, i + batchSize);
+      for (let i = 0; i < combinations.length; i++) {
+        const combo = combinations[i];
+        const result = await fetchWithRetry(combo);
         
-        const batchPromises = batch.map((combo) => 
-          fetchWithRetry(combo).then(result => {
-            if (result.success) {
-              successCount++;
-            } else {
-              errorCount++;
-            }
-            return result;
-          })
-        );
-
-        await Promise.all(batchPromises);
+        if (result.success) {
+          successCount++;
+        } else {
+          errorCount++;
+        }
+        
+        // Задержка 200ms между запросами (чтобы избежать rate limit)
+        if (i < combinations.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
       }
 
       await onRefresh();
