@@ -46,7 +46,7 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
   const { data: brands = [], isLoading: loadingBrands } = useQuery<Brand[]>({
     queryKey: ['brands'],
     queryFn: async () => {
-      const response = await fetch('https://functions.poehali.dev/e50e36c2-9a36-46c9-ae75-46976c7a1c4f');
+      const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f');
       if (!response.ok) throw new Error('Failed to fetch brands');
       const data = await response.json();
       return data.brands || [];
@@ -54,14 +54,13 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
   });
 
   const { data: models = [] } = useQuery<Model[]>({
-    queryKey: ['models', brand],
+    queryKey: ['models'],
     queryFn: async () => {
-      const response = await fetch('https://functions.poehali.dev/c83a91e5-a1cb-4d7e-8b46-ef77a7d55da5');
+      const response = await fetch('https://functions.poehali.dev/c258cd9a-aa38-4b28-8870-18027041939b');
       if (!response.ok) throw new Error('Failed to fetch models');
       const data = await response.json();
       return data.models || [];
-    },
-    enabled: !!brand
+    }
   });
 
   const filteredModels = brand ? models.filter(m => m.brand_id === parseInt(brand)) : [];
