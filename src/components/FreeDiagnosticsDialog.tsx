@@ -107,12 +107,48 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
         body: JSON.stringify(bookingData)
       });
 
-      if (!response.ok) throw new Error('Failed to submit booking');
+      const data = await response.json();
 
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        setIsOpen(false);
-      }, 2000);
+      if (response.ok && data.success) {
+        setSubmitSuccess(true);
+        
+        const notificationData = {
+          customer_name: name,
+          customer_phone: phone,
+          customer_email: email,
+          service_type: 'Бесплатная диагностика по 100+ пунктам',
+          promotion: 'Бесплатная диагностика по 100+ пунктам',
+          car_brand: selectedBrandName,
+          car_model: selectedModelName,
+          plate_number: plateNumber,
+          vin: vin,
+          preferred_date: date ? format(date, 'dd.MM.yyyy', { locale: ru }) : '',
+          preferred_time: time,
+          comment: comment
+        };
+
+        const notificationEndpoints = [
+          'https://functions.poehali.dev/8b118617-cafd-4196-b36d-7a784ab13dc6',
+          'https://functions.poehali.dev/d5431aca-bf68-41c1-b31f-e7bfa56a1f4b',
+          'https://functions.poehali.dev/cd36e9ce-a071-42db-b619-b47ee9c00b7c'
+        ];
+
+        await Promise.allSettled(
+          notificationEndpoints.map(endpoint =>
+            fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(notificationData)
+            })
+          )
+        );
+        
+        setTimeout(() => {
+          setIsOpen(false);
+        }, 2000);
+      } else {
+        throw new Error('Failed to submit booking');
+      }
     } catch (error) {
       console.error('Booking error:', error);
       toast({
