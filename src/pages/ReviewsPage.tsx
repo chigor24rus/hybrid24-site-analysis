@@ -84,7 +84,7 @@ const ReviewsPage = () => {
 
       <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1521791055366-0d553872125f?w=1920&q=80" 
+          src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/9dc8b29f-056f-4466-a692-50355576fad8.jpg" 
           alt="Customer reviews background"
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
