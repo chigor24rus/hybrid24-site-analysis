@@ -3,10 +3,10 @@ import Icon from '@/components/ui/icon';
 import { Card } from '@/components/ui/card';
 
 interface SpecialOfferBannerProps {
-  setIsBookingOpen: (open: boolean) => void;
+  setIsDiagnosticsOpen: (open: boolean) => void;
 }
 
-const SpecialOfferBanner = ({ setIsBookingOpen }: SpecialOfferBannerProps) => {
+const SpecialOfferBanner = ({ setIsDiagnosticsOpen }: SpecialOfferBannerProps) => {
   return (
     <section className="py-8 bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <div className="container mx-auto px-4">
@@ -52,7 +52,7 @@ const SpecialOfferBanner = ({ setIsBookingOpen }: SpecialOfferBannerProps) => {
                 <Button 
                   size="lg" 
                   className="gradient-primary btn-glow w-full sm:w-auto text-base md:text-lg"
-                  onClick={() => setIsBookingOpen(true)}
+                  onClick={() => setIsDiagnosticsOpen(true)}
                 >
                   Записаться
                   <Icon name="ArrowRight" className="ml-2" size={20} />

@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import BookingDialog from '@/components/BookingDialog';
+import FreeDiagnosticsDialog from '@/components/FreeDiagnosticsDialog';
 import Sections from '@/components/Sections';
 import Footer from '@/components/Footer';
 import { generateSchemaMarkup, generateYandexSchema } from '@/utils/generateSchemaMarkup';
@@ -12,6 +13,7 @@ import { SITE_CONFIG } from '@/config/site';
 const Index = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
@@ -76,7 +78,11 @@ const Index = () => {
         <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} />
       </Dialog>
 
-      <Sections setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
+      <Dialog open={isDiagnosticsOpen} onOpenChange={setIsDiagnosticsOpen}>
+        <FreeDiagnosticsDialog setIsOpen={setIsDiagnosticsOpen} />
+      </Dialog>
+
+      <Sections setIsBookingOpen={setIsBookingOpen} setIsDiagnosticsOpen={setIsDiagnosticsOpen} setSelectedServices={setSelectedServices} />
       
       <Footer />
     </div>

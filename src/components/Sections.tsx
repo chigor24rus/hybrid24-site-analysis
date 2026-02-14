@@ -7,14 +7,15 @@ import ContactsSection from './sections/ContactsSection';
 
 interface SectionsProps {
   setIsBookingOpen: (open: boolean) => void;
+  setIsDiagnosticsOpen: (open: boolean) => void;
   setSelectedServices: (services: number[]) => void;
 }
 
-const Sections = ({ setIsBookingOpen, setSelectedServices }: SectionsProps) => {
+const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices }: SectionsProps) => {
   return (
     <>
       <HeroSection setIsBookingOpen={setIsBookingOpen} />
-      <SpecialOfferBanner setIsBookingOpen={setIsBookingOpen} />
+      <SpecialOfferBanner setIsDiagnosticsOpen={setIsDiagnosticsOpen} />
       <BrandsSection />
       <ServicesSection setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
       <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
