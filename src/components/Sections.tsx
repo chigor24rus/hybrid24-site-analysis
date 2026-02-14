@@ -1,4 +1,5 @@
 import HeroSection from './sections/HeroSection';
+import SpecialOfferBanner from './sections/SpecialOfferBanner';
 import BrandsSection from './sections/BrandsSection';
 import ServicesSection from './sections/ServicesSection';
 import PromotionsReviewsSection from './sections/PromotionsReviewsSection';
@@ -13,6 +14,7 @@ const Sections = ({ setIsBookingOpen, setSelectedServices }: SectionsProps) => {
   return (
     <>
       <HeroSection setIsBookingOpen={setIsBookingOpen} />
+      <SpecialOfferBanner setIsBookingOpen={setIsBookingOpen} />
       <BrandsSection />
       <ServicesSection setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
       <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
