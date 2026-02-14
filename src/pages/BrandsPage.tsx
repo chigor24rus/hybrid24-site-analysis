@@ -82,7 +82,7 @@ const BrandsPage = () => {
       
       <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80" 
+          src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/c3ce0034-a13b-4503-b9ee-3c454b1b44a5.jpg" 
           alt="Car brands background"
           className="absolute inset-0 w-full h-full object-cover z-0"
         />

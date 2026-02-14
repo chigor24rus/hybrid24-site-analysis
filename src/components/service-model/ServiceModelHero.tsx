@@ -39,7 +39,7 @@ export default function ServiceModelHero({ brand, model, service, finalPrice }: 
   return (
     <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
       <img 
-        src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80" 
+        src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/files/80977afe-6a7d-4b27-803c-d96416871914.jpg" 
         alt="Car service background"
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
