@@ -101,7 +101,7 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
         time: time || ''
       };
 
-      const response = await fetch('https://functions.poehali.dev/4e5b5e0a-81a7-43e5-8e76-d2e85a6cf42d', {
+      const response = await fetch('https://functions.poehali.dev/a6d5798a-4b6c-4b15-8fd8-0264c1c51660', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingData)
