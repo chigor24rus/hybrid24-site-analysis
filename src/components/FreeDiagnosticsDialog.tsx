@@ -4,7 +4,6 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/c
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -308,18 +307,20 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
             />
           </div>
 
-          <div className="flex items-start space-x-2">
-            <Checkbox
+          <div className={`flex items-start gap-3 p-4 rounded-lg border transition-colors ${
+            agreedToTerms ? 'bg-muted/30 border-border' : 'bg-destructive/5 border-destructive/30'
+          }`}>
+            <input
+              type="checkbox"
               id="terms"
               checked={agreedToTerms}
-              onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mt-1 w-5 h-5 min-w-[20px] accent-primary cursor-pointer"
+              required
+              aria-required="true"
             />
-            <label
-              htmlFor="terms"
-              className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Я согласен на обработку персональных данных и принимаю условия{' '}
-              <a href="/legal" className="text-primary hover:underline">политики конфиденциальности</a>
+            <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer select-none">
+              Я согласен с условиями записи и даю согласие на обработку персональных данных <span className="text-destructive">*</span>. Понимаю, что запись будет подтверждена обратным звонком мастера-консультанта.
             </label>
           </div>
         </div>
