@@ -1,4 +1,5 @@
 {
+  "ping-search-engines": "https://functions.poehali.dev/d8a6de65-c081-4edd-9267-3cc041b42dcb",
   "send-max-notification": "https://functions.poehali.dev/cd36e9ce-a071-42db-b619-b47ee9c00b7c",
   "prices-api": "https://functions.poehali.dev/0cce410b-a4a1-4420-8df0-90d95a5055b7",
   "post-build": "https://functions.poehali.dev/ef9dadf3-a896-48cd-945d-e32c58eeb32f",

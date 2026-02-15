@@ -1,12 +1,45 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { AdminLayout, AdminPageHeader } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 const AdminSeoGuidePage = () => {
   const navigate = useNavigate();
   const { logout } = useAdminAuth();
+  const [isPinging, setIsPinging] = useState(false);
+
+  const handlePingSearchEngines = async () => {
+    setIsPinging(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/d8a6de65-c081-4edd-9267-3cc041b42dcb', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        const successes = Object.entries(data.results)
+          .filter(([, status]) => status === 'success')
+          .map(([engine]) => engine);
+        
+        if (successes.length > 0) {
+          toast.success(`Уведомление отправлено: ${successes.join(', ')}`);
+        } else {
+          toast.error('Не удалось уведомить поисковики');
+        }
+      } else {
+        toast.error('Ошибка при отправке уведомлений');
+      }
+    } catch (error) {
+      console.error('Error pinging search engines:', error);
+      toast.error('Ошибка при отправке уведомлений');
+    } finally {
+      setIsPinging(false);
+    }
+  };
 
   return (
     <AdminLayout
@@ -112,6 +145,36 @@ const AdminSeoGuidePage = () => {
                 <li>Нажмите Ctrl+U (просмотр исходного кода)</li>
                 <li>Найдите текст "Профессиональный ремонт" — он должен быть в HTML</li>
               </ol>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                <span className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-sm">7</span>
+                Уведомить поисковики
+              </h3>
+              <p className="text-muted-foreground mb-3">
+                После загрузки на хостинг уведомите Google, Яндекс и Bing об обновлении sitemap:
+              </p>
+              <Button 
+                onClick={handlePingSearchEngines} 
+                disabled={isPinging}
+                className="w-full sm:w-auto"
+              >
+                {isPinging ? (
+                  <>
+                    <Icon name="Loader" className="animate-spin mr-2" size={16} />
+                    Отправка...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="Send" className="mr-2" size={16} />
+                    Уведомить поисковики
+                  </>
+                )}
+              </Button>
+              <p className="text-sm text-muted-foreground mt-2">
+                Это ускорит переиндексацию обновлённых страниц
+              </p>
             </div>
           </CardContent>
         </Card>

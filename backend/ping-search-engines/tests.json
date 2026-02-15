@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Ping search engines",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "message": "string",
+        "sitemap_url": "string",
+        "results": {}
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
