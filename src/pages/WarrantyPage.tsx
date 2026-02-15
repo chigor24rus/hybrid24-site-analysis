@@ -14,7 +14,11 @@ import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
 
-const WarrantyPage = () => {
+interface WarrantyPageProps {
+  isUnderDevelopment?: boolean;
+}
+
+const WarrantyPage = ({ isUnderDevelopment = false }: WarrantyPageProps) => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
@@ -57,6 +61,43 @@ const WarrantyPage = () => {
       description: 'Плановое техническое обслуживание'
     }
   ];
+
+  if (isUnderDevelopment) {
+    return (
+      <div className="min-h-screen">
+        <Helmet>
+          <title>Гарантия - В разработке | HEVSR</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        
+        <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
+        
+        <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+          <BookingDialog setIsBookingOpen={setIsBookingOpen} />
+        </Dialog>
+
+        <section className="py-20 md:py-32 bg-gradient-to-b from-card/30 to-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="w-24 h-24 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6">
+                <Icon name="Construction" size={48} className="text-white" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Страница в разработке</h1>
+              <p className="text-muted-foreground text-lg mb-8">
+                Мы работаем над детальным описанием условий гарантии. Скоро здесь появится полная информация о наших гарантийных обязательствах.
+              </p>
+              <Button asChild size="lg" className="gradient-primary">
+                <a href="/">Вернуться на главную</a>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <Footer />
+        <ScrollToTopButton />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -115,7 +156,7 @@ const WarrantyPage = () => {
                     >
                       <div className="flex items-start gap-3 mb-3">
                         <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
-                          <Icon name={item.icon as any} size={20} className="text-white" />
+                          <Icon name={item.icon} size={20} className="text-white" />
                         </div>
                         <div>
                           <h3 className="font-semibold">{item.service}</h3>

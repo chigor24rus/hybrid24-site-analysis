@@ -27,7 +27,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
   const mobileExtraItems = [
     { href: '/about', label: 'О нас', isSection: false },
     // { href: '/bonus-program', label: 'Бонусная программа', isSection: false },
-    { href: '/warranty', label: 'Гарантия', isSection: false },
+    // { href: '/warranty', label: 'Гарантия', isSection: false },
     { href: '/legal', label: 'Правовая информация', isSection: false }
   ];
 

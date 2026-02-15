@@ -122,7 +122,7 @@ const App = () => (
             <Route path="/services-index" element={<SeoIndexPage />} />
             <Route path="/legal" element={<LegalPage />} />
             <Route path="/bonus-program" element={<BonusProgramPage isUnderDevelopment />} />
-            <Route path="/warranty" element={<WarrantyPage />} />
+            <Route path="/warranty" element={<WarrantyPage isUnderDevelopment />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminPage />} />
