@@ -51,6 +51,7 @@ const AdminReviewsPage = () => {
   };
 
   const handleAddReview = async () => {
+    console.log('Sending formData:', formData);
     try {
       const response = await fetch('https://functions.poehali.dev/0916c610-058d-41be-ba74-88b82dac175e', {
         method: 'POST',
@@ -61,6 +62,7 @@ const AdminReviewsPage = () => {
       });
 
       const data = await response.json();
+      console.log('Response:', response.status, data);
 
       if (response.ok) {
         toast.success('Отзыв успешно добавлен!');
@@ -232,7 +234,20 @@ const AdminReviewsPage = () => {
 
       <ReviewFormDialog
         open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        onOpenChange={(open) => {
+          setIsAddDialogOpen(open);
+          if (!open) {
+            setFormData({
+              customer_name: '',
+              rating: 5,
+              review_text: '',
+              service_name: '',
+              review_date: new Date().toISOString().split('T')[0],
+              source: 'yandex',
+              is_visible: true
+            });
+          }
+        }}
         title="Добавить новый отзыв"
         formData={formData}
         onFormDataChange={setFormData}
