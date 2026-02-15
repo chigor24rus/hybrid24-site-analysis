@@ -14,7 +14,11 @@ import ScrollToTopButton from '@/components/ScrollToTopButton';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
 
-const BonusProgramPage = () => {
+interface BonusProgramPageProps {
+  isUnderDevelopment?: boolean;
+}
+
+const BonusProgramPage = ({ isUnderDevelopment = false }: BonusProgramPageProps) => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
@@ -53,6 +57,43 @@ const BonusProgramPage = () => {
       benefits: ['10% скидка на все услуги', 'VIP-обслуживание', 'Скидка 20% на запчасти', 'Годовое ТО в подарок', 'Персональный менеджер']
     }
   ];
+
+  if (isUnderDevelopment) {
+    return (
+      <div className="min-h-screen">
+        <Helmet>
+          <title>Бонусная программа - В разработке | HEVSR</title>
+          <meta name="robots" content="noindex, nofollow" />
+        </Helmet>
+        
+        <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
+        
+        <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+          <BookingDialog setIsBookingOpen={setIsBookingOpen} />
+        </Dialog>
+
+        <section className="py-20 md:py-32 bg-gradient-to-b from-card/30 to-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="w-24 h-24 rounded-full gradient-primary flex items-center justify-center mx-auto mb-6">
+                <Icon name="Construction" size={48} className="text-white" />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Страница в разработке</h1>
+              <p className="text-muted-foreground text-lg mb-8">
+                Мы работаем над бонусной программой для наших клиентов. Скоро здесь появится полная информация о скидках и привилегиях.
+              </p>
+              <Button asChild size="lg" className="gradient-primary">
+                <a href="/">Вернуться на главную</a>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        <Footer />
+        <ScrollToTopButton />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -104,7 +145,7 @@ const BonusProgramPage = () => {
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-bl-full" />
                   <CardHeader>
                     <div className={`w-16 h-16 rounded-lg gradient-primary flex items-center justify-center mb-4 ${level.color}`}>
-                      <Icon name={level.icon as any} size={32} />
+                      <Icon name={level.icon} size={32} />
                     </div>
                     <CardTitle className="text-2xl">{level.level}</CardTitle>
                     <CardDescription>

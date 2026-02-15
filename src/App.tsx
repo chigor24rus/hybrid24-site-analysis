@@ -121,7 +121,7 @@ const App = () => (
             <Route path="/brands/:brandSlug/services" element={<BrandServicesPage />} />
             <Route path="/services-index" element={<SeoIndexPage />} />
             <Route path="/legal" element={<LegalPage />} />
-            {/* <Route path="/bonus-program" element={<BonusProgramPage />} /> */}
+            <Route path="/bonus-program" element={<BonusProgramPage isUnderDevelopment />} />
             <Route path="/warranty" element={<WarrantyPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
