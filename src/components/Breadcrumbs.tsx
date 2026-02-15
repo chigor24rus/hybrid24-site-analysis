@@ -24,12 +24,17 @@ export default function Breadcrumbs({ items, className = '' }: BreadcrumbsProps)
         "name": "Главная",
         "item": `${SITE_CONFIG.domain}/`
       },
-      ...items.map((item, index) => ({
-        "@type": "ListItem",
-        "position": index + 2,
-        "name": item.label,
-        ...(item.path && { "item": `${SITE_CONFIG.domain}${item.path}` })
-      }))
+      ...items.map((item, index) => {
+        const element: Record<string, string | number> = {
+          "@type": "ListItem",
+          "position": index + 2,
+          "name": item.label
+        };
+        if (item.path) {
+          element["item"] = `${SITE_CONFIG.domain}${item.path}`;
+        }
+        return element;
+      })
     ]
   };
 

@@ -33,7 +33,7 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
     }
   }));
 
-  const schema = {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "AutoRepair",
     "name": "HEVSeRvice",
@@ -79,14 +79,6 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
       "Техническое обслуживание автомобилей",
       "Диагностика автомобилей"
     ],
-    "aggregateRating": (reviews.length > 0 || googleMapsRating) ? {
-      "@type": "AggregateRating",
-      "ratingValue": averageRating,
-      "reviewCount": totalReviews,
-      "bestRating": "5",
-      "worstRating": "1"
-    } : undefined,
-    "review": reviews.length > 0 ? reviewsSchema : undefined,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Услуги автосервиса",
@@ -116,6 +108,20 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
     }
   };
 
+  if (reviews.length > 0 || googleMapsRating) {
+    schema["aggregateRating"] = {
+      "@type": "AggregateRating",
+      "ratingValue": averageRating,
+      "reviewCount": totalReviews,
+      "bestRating": "5",
+      "worstRating": "1"
+    };
+  }
+
+  if (reviews.length > 0) {
+    schema["review"] = reviewsSchema;
+  }
+
   return schema;
 };
 
@@ -125,7 +131,7 @@ export const generateYandexSchema = (reviews: Review[]) => {
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : '0.0';
 
-  return {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "HEVSeRvice",
@@ -146,13 +152,18 @@ export const generateYandexSchema = (reviews: Review[]) => {
       "@type": "GeoCoordinates",
       "latitude": "56.062692",
       "longitude": "92.900855"
-    },
-    "aggregateRating": reviews.length > 0 ? {
+    }
+  };
+
+  if (reviews.length > 0) {
+    schema["aggregateRating"] = {
       "@type": "AggregateRating",
       "ratingValue": averageRating,
       "reviewCount": reviews.length,
       "bestRating": "5",
       "worstRating": "1"
-    } : undefined
-  };
+    };
+  }
+
+  return schema;
 };
