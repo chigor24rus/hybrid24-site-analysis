@@ -7,8 +7,7 @@ import {
   AdminStatsGrid,
   AdminStat,
   ReviewCard, 
-  ReviewFormDialog, 
-  ImportDialog,
+  ReviewFormDialog,
   AdminActionButton
 } from '@/components/admin';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -20,9 +19,6 @@ const AdminReviewsPage = () => {
   const [loading, setLoading] = useState(true);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
-  const [importUrl, setImportUrl] = useState('');
-  const [importing, setImporting] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   
   const [formData, setFormData] = useState({
@@ -159,39 +155,7 @@ const AdminReviewsPage = () => {
     setIsEditDialogOpen(true);
   };
 
-  const handleImportReviews = async () => {
-    if (!importUrl.trim()) {
-      toast.error('Введите URL организации на Яндекс.Картах');
-      return;
-    }
 
-    setImporting(true);
-    try {
-      const response = await fetch('https://functions.poehali.dev/e046b52b-bb1a-44dd-a9e3-989af297c485', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ organization_url: importUrl })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        toast.success(`Импортировано ${data.imported} отзывов, пропущено ${data.skipped}`);
-        setIsImportDialogOpen(false);
-        setImportUrl('');
-        fetchReviews();
-      } else {
-        toast.error(data.error || data.note || 'Ошибка при импорте отзывов');
-      }
-    } catch (error) {
-      console.error('Error importing reviews:', error);
-      toast.error('Ошибка при импорте отзывов');
-    } finally {
-      setImporting(false);
-    }
-  };
 
   if (loading) {
     return <LoadingScreen />;
@@ -208,16 +172,10 @@ const AdminReviewsPage = () => {
       <div className="container mx-auto px-4 py-8">
         <AdminPageHeader
           title="Управление отзывами"
-          description="Отзывы клиентов и импорт из внешних источников"
+          description="Отзывы клиентов автосервиса"
           showBackButton
           actions={
             <>
-              <AdminActionButton
-                icon="Download"
-                label="Импорт из Яндекс.Карт"
-                onClick={() => setIsImportDialogOpen(true)}
-                variant="outline"
-              />
               <AdminActionButton
                 icon="Plus"
                 label="Добавить отзыв"
@@ -293,15 +251,6 @@ const AdminReviewsPage = () => {
         onFormDataChange={setFormData}
         onSubmit={handleEditReview}
         submitLabel="Сохранить изменения"
-      />
-
-      <ImportDialog
-        open={isImportDialogOpen}
-        onOpenChange={setIsImportDialogOpen}
-        importUrl={importUrl}
-        onImportUrlChange={setImportUrl}
-        onImport={handleImportReviews}
-        importing={importing}
       />
     </AdminLayout>
   );
