@@ -40,6 +40,8 @@ def handler(event: dict, context) -> dict:
         is_visible = body.get('is_visible', True)
 
         if not customer_name or not rating or not review_text or not service_name:
+            print(f"Validation failed: customer_name={bool(customer_name)}, rating={rating}, review_text={bool(review_text)}, service_name={bool(service_name)}")
+            print(f"Body received: {body}")
             return {
                 'statusCode': 400,
                 'headers': {
@@ -48,7 +50,13 @@ def handler(event: dict, context) -> dict:
                 },
                 'body': json.dumps({
                     'error': 'Missing required fields',
-                    'required': ['customer_name', 'rating', 'review_text', 'service_name']
+                    'required': ['customer_name', 'rating', 'review_text', 'service_name'],
+                    'received': {
+                        'customer_name': bool(customer_name),
+                        'rating': rating,
+                        'review_text': bool(review_text),
+                        'service_name': bool(service_name)
+                    }
                 })
             }
 
