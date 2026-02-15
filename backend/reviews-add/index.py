@@ -76,11 +76,16 @@ def handler(event: dict, context) -> dict:
         conn = psycopg2.connect(dsn)
         cur = conn.cursor()
 
-        cur.execute("""
+        customer_name_escaped = customer_name.replace("'", "''")
+        review_text_escaped = review_text.replace("'", "''")
+        service_name_escaped = service_name.replace("'", "''")
+        source_escaped = source.replace("'", "''")
+        
+        cur.execute(f"""
             INSERT INTO reviews (customer_name, rating, review_text, service_name, review_date, source, is_visible)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            VALUES ('{customer_name_escaped}', {rating}, '{review_text_escaped}', '{service_name_escaped}', '{review_date}', '{source_escaped}', {is_visible})
             RETURNING id, customer_name, rating, review_text, service_name, review_date, source, is_visible, created_at
-        """, (customer_name, rating, review_text, service_name, review_date, source, is_visible))
+        """)
 
         result = cur.fetchone()
         conn.commit()
