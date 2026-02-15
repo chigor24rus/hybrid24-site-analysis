@@ -61,7 +61,7 @@ async function prerenderRoutes() {
       });
 
       // Ждём, пока React отрендерит контент
-      await page.waitForTimeout(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Получаем HTML
       const html = await page.content();
