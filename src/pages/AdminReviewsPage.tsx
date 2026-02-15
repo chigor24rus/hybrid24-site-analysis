@@ -51,7 +51,23 @@ const AdminReviewsPage = () => {
   };
 
   const handleAddReview = async () => {
-    console.log('Sending formData:', formData);
+    if (!formData.customer_name.trim()) {
+      toast.error('Введите имя клиента');
+      return;
+    }
+    if (!formData.review_text.trim()) {
+      toast.error('Введите текст отзыва');
+      return;
+    }
+    if (!formData.service_name.trim()) {
+      toast.error('Введите название услуги');
+      return;
+    }
+    if (!formData.rating || formData.rating < 1 || formData.rating > 5) {
+      toast.error('Выберите рейтинг от 1 до 5');
+      return;
+    }
+
     try {
       const response = await fetch('https://functions.poehali.dev/0916c610-058d-41be-ba74-88b82dac175e', {
         method: 'POST',
@@ -62,7 +78,6 @@ const AdminReviewsPage = () => {
       });
 
       const data = await response.json();
-      console.log('Response:', response.status, data);
 
       if (response.ok) {
         toast.success('Отзыв успешно добавлен!');
@@ -88,6 +103,23 @@ const AdminReviewsPage = () => {
 
   const handleEditReview = async () => {
     if (!editingReview) return;
+
+    if (!formData.customer_name.trim()) {
+      toast.error('Введите имя клиента');
+      return;
+    }
+    if (!formData.review_text.trim()) {
+      toast.error('Введите текст отзыва');
+      return;
+    }
+    if (!formData.service_name.trim()) {
+      toast.error('Введите название услуги');
+      return;
+    }
+    if (!formData.rating || formData.rating < 1 || formData.rating > 5) {
+      toast.error('Выберите рейтинг от 1 до 5');
+      return;
+    }
 
     try {
       const response = await fetch('https://functions.poehali.dev/32d0d28e-e35c-44a4-b9b2-bf9152960524', {
