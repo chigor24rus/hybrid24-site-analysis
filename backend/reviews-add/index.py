@@ -80,10 +80,11 @@ def handler(event: dict, context) -> dict:
         review_text_escaped = review_text.replace("'", "''")
         service_name_escaped = service_name.replace("'", "''")
         source_escaped = source.replace("'", "''")
+        is_visible_str = 'true' if is_visible else 'false'
         
         cur.execute(f"""
             INSERT INTO reviews (customer_name, rating, review_text, service_name, review_date, source, is_visible)
-            VALUES ('{customer_name_escaped}', {rating}, '{review_text_escaped}', '{service_name_escaped}', '{review_date}', '{source_escaped}', {is_visible})
+            VALUES ('{customer_name_escaped}', {rating}, '{review_text_escaped}', '{service_name_escaped}', '{review_date}', '{source_escaped}', {is_visible_str})
             RETURNING id, customer_name, rating, review_text, service_name, review_date, source, is_visible, created_at
         """)
 
