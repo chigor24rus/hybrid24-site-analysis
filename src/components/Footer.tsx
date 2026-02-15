@@ -45,9 +45,9 @@ const Footer = () => {
               <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 О нас
               </Link>
-              <Link to="/bonus-program" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {/* <Link to="/bonus-program" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Бонусная программа
-              </Link>
+              </Link> */}
               <Link to="/warranty" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Гарантия
               </Link>
