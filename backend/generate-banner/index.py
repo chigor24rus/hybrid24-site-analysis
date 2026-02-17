@@ -95,12 +95,12 @@ def handler(event, context):
 
     s3.put_object(
         Bucket='files',
-        Key='Image/banner-suspension-diagnostics.jpg',
+        Key='Image/banner-suspension-v2.jpg',
         Body=output.read(),
         ContentType='image/jpeg'
     )
 
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-diagnostics.jpg"
+    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v2.jpg"
 
     return {
         'statusCode': 200,
