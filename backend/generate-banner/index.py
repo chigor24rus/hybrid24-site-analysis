@@ -54,15 +54,15 @@ def handler(event, context):
     draw = ImageDraw.Draw(bg)
 
     try:
-        font_url = "https://github.com/google/fonts/raw/main/ofl/roboto/Roboto%5Bwdth%2Cwght%5D.ttf"
+        font_url = "https://github.com/google/fonts/raw/main/ofl/montserrat/static/Montserrat-Bold.ttf"
         req_font = urllib.request.Request(font_url)
         with urllib.request.urlopen(req_font) as resp:
             font_data = resp.read()
 
-        font_title = ImageFont.truetype(io.BytesIO(font_data), 52)
-        font_subtitle = ImageFont.truetype(io.BytesIO(font_data), 36)
-        font_discount = ImageFont.truetype(io.BytesIO(font_data), 120)
-        font_action = ImageFont.truetype(io.BytesIO(font_data), 34)
+        font_title = ImageFont.truetype(io.BytesIO(font_data), 48)
+        font_subtitle = ImageFont.truetype(io.BytesIO(font_data), 38)
+        font_discount = ImageFont.truetype(io.BytesIO(font_data), 140)
+        font_action = ImageFont.truetype(io.BytesIO(font_data), 32)
     except Exception:
         font_title = ImageFont.load_default()
         font_subtitle = font_title
@@ -74,13 +74,13 @@ def handler(event, context):
     discount = "-20%"
     action_text = "на устранение замечаний"
 
-    draw.text((450, 60), title, fill=(255, 255, 255), font=font_title, anchor="mt")
-    draw.text((450, 130), subtitle, fill=(255, 200, 50), font=font_title, anchor="mt")
+    draw.text((450, 60), title, fill=(255, 215, 0), font=font_title, anchor="mt")
+    draw.text((450, 130), subtitle, fill=(255, 215, 0), font=font_title, anchor="mt")
 
-    draw.text((450, 220), discount, fill=(255, 255, 255), font=font_discount, anchor="mt")
+    draw.text((450, 220), discount, fill=(255, 69, 0), font=font_discount, anchor="mt")
 
     draw.text((450, 390), action_text, fill=(255, 255, 255), font=font_action, anchor="mt")
-    draw.text((450, 440), "hybrid24.ru", fill=(255, 200, 50), font=font_subtitle, anchor="mt")
+    draw.text((450, 440), "hybrid24.ru", fill=(255, 215, 0), font=font_subtitle, anchor="mt")
 
     output = io.BytesIO()
     bg.save(output, format='JPEG', quality=92)
@@ -95,12 +95,12 @@ def handler(event, context):
 
     s3.put_object(
         Bucket='files',
-        Key='Image/banner-suspension-v2.jpg',
+        Key='Image/banner-suspension-v3.jpg',
         Body=output.read(),
         ContentType='image/jpeg'
     )
 
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v2.jpg"
+    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v3.jpg"
 
     return {
         'statusCode': 200,
