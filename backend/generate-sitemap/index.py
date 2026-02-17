@@ -36,9 +36,9 @@ def handler(event: dict, context) -> dict:
         cur = conn.cursor()
         
         # Определяем схему
-        schema = os.environ.get('MAIN_DB_SCHEMA', 'public')
+        schema = os.environ.get('MAIN_DB_SCHEMA', 't_p13334878_hybrid24_site_analys')
         
-        base_url = 'https://hevsr.ru'
+        base_url = 'https://hybrid24.ru'
         today = datetime.now().strftime('%Y-%m-%d')
         
         urls = []
@@ -51,6 +51,7 @@ def handler(event: dict, context) -> dict:
             {'loc': '/promotions', 'priority': '0.8', 'changefreq': 'daily'},
             {'loc': '/reviews', 'priority': '0.7', 'changefreq': 'weekly'},
             {'loc': '/blog', 'priority': '0.7', 'changefreq': 'daily'},
+            {'loc': '/about', 'priority': '0.7', 'changefreq': 'monthly'},
             {'loc': '/bonus-program', 'priority': '0.6', 'changefreq': 'monthly'},
             {'loc': '/warranty', 'priority': '0.6', 'changefreq': 'monthly'},
             {'loc': '/legal', 'priority': '0.5', 'changefreq': 'yearly'},
@@ -71,7 +72,7 @@ def handler(event: dict, context) -> dict:
         for brand in brands:
             brand_slug = brand[0]
             urls.append(f'''  <url>
-    <loc>{base_url}/brands/{brand_slug}</loc>
+    <loc>{base_url}/brand/{brand_slug}</loc>
     <lastmod>{today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -79,16 +80,33 @@ def handler(event: dict, context) -> dict:
             
             # Модели бренда
             urls.append(f'''  <url>
-    <loc>{base_url}/brands/{brand_slug}/models</loc>
+    <loc>{base_url}/{brand_slug}</loc>
     <lastmod>{today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>''')
+            
+            # Услуги для бренда
+            urls.append(f'''  <url>
+    <loc>{base_url}/brands/{brand_slug}/services</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>''')
         
-        # Получаем slug услуг один раз (есть is_active)
-        cur.execute(f"SELECT id FROM {schema}.services WHERE is_active = true")
+        # Получаем услуги (есть is_active)
+        cur.execute(f"SELECT id, title FROM {schema}.services WHERE is_active = true")
         services_data = cur.fetchall()
-        service_ids = [s[0] for s in services_data]
+        
+        # Страницы отдельных услуг
+        for service_id, service_title in services_data:
+            service_slug = service_title.lower().replace(' ', '-').replace('/', '-')
+            urls.append(f'''  <url>
+    <loc>{base_url}/services/{service_slug}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>''')
         
         # Модели с услугами (без slug и is_active в car_models)
         cur.execute(f"""
@@ -103,18 +121,19 @@ def handler(event: dict, context) -> dict:
             # Создаем slug из имени модели
             model_slug = model_name.lower().replace(' ', '-').replace('/', '-')
             
-            # Страница услуг модели
+            # Страница модели с услугами
             urls.append(f'''  <url>
-    <loc>{base_url}/brands/{brand_slug}/models/{model_slug}/services</loc>
+    <loc>{base_url}/{brand_slug}/{model_slug}</loc>
     <lastmod>{today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>''')
             
-            # Конкретные услуги для модели
-            for service_id in service_ids:
+            # Страницы услуг для конкретной модели
+            for service_id, service_title in services_data:
+                service_slug = service_title.lower().replace(' ', '-').replace('/', '-')
                 urls.append(f'''  <url>
-    <loc>{base_url}/brands/{brand_slug}/models/{model_slug}/services/{service_id}</loc>
+    <loc>{base_url}/{brand_slug}/{model_slug}/{service_slug}</loc>
     <lastmod>{today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
