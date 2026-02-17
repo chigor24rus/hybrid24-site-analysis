@@ -166,7 +166,7 @@ export default function ServiceDetailPage() {
                 {service.duration}
               </Badge>
               <Badge variant="secondary" className="px-6 py-3 text-lg bg-white/20 text-white border-white/30">
-                от {service.price}
+                {service.price}
               </Badge>
             </div>
           </div>
