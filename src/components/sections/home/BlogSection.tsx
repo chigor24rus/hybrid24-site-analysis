@@ -56,12 +56,14 @@ const BlogSection = ({ blogPosts, loading, viewCounts, onRefresh, hasMore }: Blo
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div 
-                  className="h-48 bg-cover bg-center rounded-t-lg relative overflow-hidden group"
+                  className="h-48 relative overflow-hidden group rounded-t-lg"
                 >
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                    style={{ backgroundImage: `url(${post.image})` }}
-                  ></div>
+                  <img 
+                    src={post.image} 
+                    alt={post.title}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 rounded-t-lg flex items-end p-4">
                     <Badge className="gradient-accent">{post.category}</Badge>
                   </div>
