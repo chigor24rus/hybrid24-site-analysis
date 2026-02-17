@@ -54,15 +54,15 @@ def handler(event, context):
     draw = ImageDraw.Draw(bg)
 
     try:
-        font_url = "https://github.com/google/fonts/raw/main/ofl/montserrat/static/Montserrat-Bold.ttf"
+        font_url = "https://github.com/google/fonts/raw/main/apache/robotocondensed/static/RobotoCondensed-Bold.ttf"
         req_font = urllib.request.Request(font_url)
         with urllib.request.urlopen(req_font) as resp:
             font_data = resp.read()
 
-        font_title = ImageFont.truetype(io.BytesIO(font_data), 48)
-        font_subtitle = ImageFont.truetype(io.BytesIO(font_data), 38)
-        font_discount = ImageFont.truetype(io.BytesIO(font_data), 140)
-        font_action = ImageFont.truetype(io.BytesIO(font_data), 32)
+        font_title = ImageFont.truetype(io.BytesIO(font_data), 52)
+        font_subtitle = ImageFont.truetype(io.BytesIO(font_data), 40)
+        font_discount = ImageFont.truetype(io.BytesIO(font_data), 150)
+        font_action = ImageFont.truetype(io.BytesIO(font_data), 36)
     except Exception:
         font_title = ImageFont.load_default()
         font_subtitle = font_title
@@ -95,12 +95,12 @@ def handler(event, context):
 
     s3.put_object(
         Bucket='files',
-        Key='Image/banner-suspension-v4.jpg',
+        Key='Image/banner-suspension-v5.jpg',
         Body=output.read(),
         ContentType='image/jpeg'
     )
 
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v4.jpg"
+    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v5.jpg"
 
     return {
         'statusCode': 200,
