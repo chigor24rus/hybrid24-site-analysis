@@ -28,6 +28,17 @@ def handler(event, context):
         bg_data = resp.read()
 
     bg = Image.open(io.BytesIO(bg_data))
+    w, h = bg.size
+    target_ratio = 900 / 480
+    current_ratio = w / h
+    if current_ratio > target_ratio:
+        new_w = int(h * target_ratio)
+        left = (w - new_w) // 2
+        bg = bg.crop((left, 0, left + new_w, h))
+    else:
+        new_h = int(w / target_ratio)
+        top = (h - new_h) // 2
+        bg = bg.crop((0, top, w, top + new_h))
     bg = bg.resize((900, 480), Image.LANCZOS)
 
     overlay = Image.new('RGBA', (900, 480), (0, 0, 0, 0))
