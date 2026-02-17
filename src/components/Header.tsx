@@ -67,6 +67,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
               alt="HEVSeRvice - Сертифицированная СТО в Красноярске" 
               className="h-10 sm:h-12 md:h-16 w-auto"
+              fetchPriority="high"
             />
           </Link>
 
@@ -125,6 +126,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                         src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
                         alt="HEVSeRvice" 
                         className="h-10 w-auto"
+                        loading="lazy"
                       />
                     </Link>
                   </SheetTitle>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { Dialog } from '@/components/ui/dialog';
 import { Link } from 'react-router-dom';
 import PromotionDetailDialog from '@/components/PromotionDetailDialog';
@@ -94,8 +94,10 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
       }
     };
 
-    fetchPromotions();
-    fetchBlogPosts();
+    startTransition(() => {
+      fetchPromotions();
+      fetchBlogPosts();
+    });
   }, []);
 
   const refreshPromotions = () => {

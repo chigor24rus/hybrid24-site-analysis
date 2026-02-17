@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, startTransition } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,9 +52,11 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
           new Map((data.services || []).map((s: Service) => [s.id, s])).values()
         );
         
-        setAllServices(uniqueServices);
-        const shuffled = shuffleArray(uniqueServices);
-        setServices(shuffled.slice(0, 6));
+        startTransition(() => {
+          setAllServices(uniqueServices);
+          const shuffled = shuffleArray(uniqueServices);
+          setServices(shuffled.slice(0, 6));
+        });
       } catch (error) {
         console.error('Error fetching services:', error);
       } finally {
@@ -63,10 +65,6 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
     };
     
     fetchServices();
-    
-    const interval = setInterval(fetchServices, 60000);
-    
-    return () => clearInterval(interval);
   }, []);
 
   const toggleService = (id: number) => {

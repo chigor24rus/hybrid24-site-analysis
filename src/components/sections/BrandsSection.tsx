@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, startTransition } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
@@ -26,7 +26,9 @@ const BrandsSection = () => {
       try {
         const response = await fetch('https://functions.poehali.dev/3811becc-a55e-4be9-a710-283d3eee897f');
         const data = await response.json();
-        setBrands(data.brands || []);
+        startTransition(() => {
+          setBrands(data.brands || []);
+        });
       } catch (error) {
         console.error('Error fetching brands:', error);
       } finally {

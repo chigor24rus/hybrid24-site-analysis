@@ -7,9 +7,30 @@ interface ReviewLabWidgetProps {
 const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const errorHandlerRef = useRef<((event: ErrorEvent) => void) | null>(null);
 
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '50px' }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!shouldLoad) return;
     const globalErrorHandler = (event: ErrorEvent) => {
       const errorMsg = event.message?.toString() || '';
       const errorStack = event.error?.stack?.toString() || '';
@@ -103,13 +124,18 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
   }
 
   return (
-    <div className="reviewlab-widget-container" style={{ minHeight: '400px' }}>
-      {!isLoaded && (
+    <div ref={containerRef} className="reviewlab-widget-container" style={{ minHeight: '400px' }}>
+      {!shouldLoad && (
+        <div className="flex items-center justify-center py-12">
+          <p className="text-muted-foreground">Загрузка отзывов...</p>
+        </div>
+      )}
+      {shouldLoad && !isLoaded && (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
       )}
-      <review-lab data-widgetid={widgetId}></review-lab>
+      {shouldLoad && <review-lab data-widgetid={widgetId}></review-lab>}
     </div>
   );
 };
