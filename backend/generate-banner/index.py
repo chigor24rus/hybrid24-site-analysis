@@ -44,8 +44,8 @@ def handler(event, context):
     overlay = Image.new('RGBA', (900, 480), (0, 0, 0, 0))
     draw_overlay = ImageDraw.Draw(overlay)
 
-    draw_overlay.rectangle([(0, 0), (900, 480)], fill=(0, 30, 70, 160))
-    draw_overlay.rectangle([(0, 340), (900, 480)], fill=(220, 80, 20, 220))
+    draw_overlay.rectangle([(0, 0), (900, 480)], fill=(20, 30, 50, 180))
+    draw_overlay.rectangle([(0, 340), (900, 480)], fill=(245, 130, 32, 240))
 
     bg = bg.convert('RGBA')
     bg = Image.alpha_composite(bg, overlay)
@@ -74,13 +74,13 @@ def handler(event, context):
     discount = "-20%"
     action_text = "на устранение замечаний"
 
-    draw.text((450, 60), title, fill=(255, 215, 0), font=font_title, anchor="mt")
-    draw.text((450, 130), subtitle, fill=(255, 215, 0), font=font_title, anchor="mt")
+    draw.text((450, 60), title, fill=(188, 208, 42), font=font_title, anchor="mt")
+    draw.text((450, 130), subtitle, fill=(188, 208, 42), font=font_title, anchor="mt")
 
-    draw.text((450, 220), discount, fill=(255, 69, 0), font=font_discount, anchor="mt")
+    draw.text((450, 220), discount, fill=(245, 130, 32), font=font_discount, anchor="mt")
 
     draw.text((450, 390), action_text, fill=(255, 255, 255), font=font_action, anchor="mt")
-    draw.text((450, 440), "hybrid24.ru", fill=(255, 215, 0), font=font_subtitle, anchor="mt")
+    draw.text((450, 440), "hybrid24.ru", fill=(188, 208, 42), font=font_subtitle, anchor="mt")
 
     output = io.BytesIO()
     bg.save(output, format='JPEG', quality=92)
@@ -95,12 +95,12 @@ def handler(event, context):
 
     s3.put_object(
         Bucket='files',
-        Key='Image/banner-suspension-v3.jpg',
+        Key='Image/banner-suspension-v4.jpg',
         Body=output.read(),
         ContentType='image/jpeg'
     )
 
-    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v3.jpg"
+    cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/Image/banner-suspension-v4.jpg"
 
     return {
         'statusCode': 200,
