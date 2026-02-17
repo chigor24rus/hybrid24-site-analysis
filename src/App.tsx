@@ -43,6 +43,7 @@ import BonusProgramPage from "./pages/BonusProgramPage";
 import WarrantyPage from "./pages/WarrantyPage";
 import AboutPage from "./pages/AboutPage";
 import NotFound from "./pages/NotFound";
+import NotFound404 from "./pages/NotFound404";
 
 const queryClient = new QueryClient();
 
@@ -143,7 +144,7 @@ const App = () => (
             <Route path="/:brandSlug/:modelSlug" element={<ModelServicesPage />} />
             <Route path="/:brandSlug/:modelSlug/:serviceSlug" element={<ServiceModelPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFound404 />} />
           </Routes>
           <CallbackWidget />
           </MaintenanceWrapper>
