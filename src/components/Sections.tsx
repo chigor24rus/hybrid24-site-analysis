@@ -2,6 +2,7 @@ import HeroSection from './sections/HeroSection';
 import SpecialOfferBanner from './sections/SpecialOfferBanner';
 import BrandsSection from './sections/BrandsSection';
 import ServicesSection from './sections/ServicesSection';
+import AwardsSection from './sections/AwardsSection';
 import PromotionsReviewsSection from './sections/PromotionsReviewsSection';
 import ContactsSection from './sections/ContactsSection';
 
@@ -18,6 +19,7 @@ const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices 
       <SpecialOfferBanner setIsDiagnosticsOpen={setIsDiagnosticsOpen} />
       <BrandsSection />
       <ServicesSection setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
+      <AwardsSection />
       <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
       <ContactsSection />
     </>
