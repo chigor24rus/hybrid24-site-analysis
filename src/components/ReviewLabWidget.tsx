@@ -113,7 +113,7 @@ const ReviewLabWidget = ({ widgetId }: ReviewLabWidgetProps) => {
       window.removeEventListener('error', globalErrorHandler, true);
       window.removeEventListener('unhandledrejection', unhandledRejectionHandler);
     };
-  }, []);
+  }, [shouldLoad]);
 
   if (hasError) {
     return (
