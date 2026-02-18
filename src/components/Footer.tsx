@@ -21,13 +21,13 @@ const Footer = () => {
               <img 
                 src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/91f44172-a46c-4899-8c17-f1a748095476.png"
                 alt="Премия 2GIS"
-                className="h-8"
+                className="h-10"
                 loading="lazy"
               />
               <img 
                 src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/d58ce515-5eb6-42f7-9f05-60cf45585b03.png"
                 alt="Хорошее место 2026"
-                className="h-8"
+                className="h-10"
                 loading="lazy"
               />
             </div>
