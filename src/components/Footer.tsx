@@ -17,19 +17,19 @@ const Footer = () => {
             <p className="text-muted-foreground text-sm mb-4">
               Профессиональный автосервис в Красноярске
             </p>
-            <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 dark:bg-orange-950 rounded-md text-xs font-medium text-orange-800 dark:text-orange-200">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
-                </svg>
-                2GIS 2025
-              </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-red-100 dark:bg-red-950 rounded-md text-xs font-medium text-red-800 dark:text-red-200">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor"/>
-                </svg>
-                Яндекс 2026
-              </div>
+            <div className="flex flex-wrap gap-3">
+              <img 
+                src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/91f44172-a46c-4899-8c17-f1a748095476.png"
+                alt="Премия 2GIS"
+                className="h-8"
+                loading="lazy"
+              />
+              <img 
+                src="https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/d58ce515-5eb6-42f7-9f05-60cf45585b03.png"
+                alt="Хорошее место 2026"
+                className="h-8"
+                loading="lazy"
+              />
             </div>
           </div>
 
