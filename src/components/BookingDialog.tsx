@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
@@ -26,6 +26,12 @@ const BookingDialog = ({
   initialBrandId 
 }: BookingDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
+
+  useEffect(() => {
+    if (initialSelectedServices.length > 0) {
+      setSelectedServices(initialSelectedServices);
+    }
+  }, [initialSelectedServices]);
   const [selectedPromotion, setSelectedPromotion] = useState<string>('');
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
