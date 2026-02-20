@@ -211,7 +211,7 @@ export default function ServiceDetailPage() {
                   key={brand.id}
                   className="cursor-pointer hover:border-primary hover:shadow-lg transition-all animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => navigate(`/brands/${brand.slug}/services`)}
+                  onClick={() => navigate(`/brands/${brand.slug}/services/${serviceSlug}`)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between mb-4">

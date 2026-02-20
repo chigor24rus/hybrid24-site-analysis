@@ -229,7 +229,7 @@ export default function BrandServicesPage() {
                   key={service.id}
                   className="cursor-pointer hover:border-primary hover:shadow-lg transition-all animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
-                  onClick={() => navigate(`/services/${serviceSlug}`)}
+                  onClick={() => navigate(`/brands/${brandSlug}/services/${serviceSlug}`)}
                 >
                   <CardHeader>
                     <div className="w-16 h-16 rounded-lg gradient-primary flex items-center justify-center mb-4">
