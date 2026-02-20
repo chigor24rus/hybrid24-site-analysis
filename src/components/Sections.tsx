@@ -19,7 +19,7 @@ const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices 
       <SpecialOfferBanner setIsDiagnosticsOpen={setIsDiagnosticsOpen} />
       <BrandsSection />
       <ServicesSection setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
-      <AwardsSection />
+      {/* <AwardsSection /> */}
       <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
       <ContactsSection />
     </>

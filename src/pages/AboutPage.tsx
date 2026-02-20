@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContentSection from '@/components/sections/ContentSection';
+import AwardsSection from '@/components/sections/AwardsSection';
 import { SITE_CONFIG } from '@/config/site';
 import { useState } from 'react';
 import { Dialog } from '@/components/ui/dialog';
@@ -31,6 +32,7 @@ const AboutPage = () => {
       </Dialog>
 
       <ContentSection />
+      <AwardsSection />
       
       <Footer />
     </div>
