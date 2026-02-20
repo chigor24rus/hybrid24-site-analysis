@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import BookingDialog from '@/components/BookingDialog';
+import ServiceDescription from '@/components/service-model/ServiceDescription';
 import { Dialog } from '@/components/ui/dialog';
 import { SITE_CONFIG } from '@/config/site';
 import { slugify } from '@/utils/slugify';
@@ -178,14 +179,8 @@ export default function ServiceDetailPage() {
           <div className="max-w-5xl mx-auto">
 
             <Card className="mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <CardHeader>
-                <CardTitle className="text-2xl">Описание услуги</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed">
-                  {service.description}
-                </p>
-                <div className="flex gap-4 pt-4">
+              <CardContent className="pt-6 space-y-4">
+                <div className="flex gap-4 flex-wrap">
                   <Button size="lg" onClick={() => setIsBookingOpen(true)}>
                     <Icon name="Calendar" size={18} className="mr-2" />
                     Записаться на услугу
@@ -199,6 +194,12 @@ export default function ServiceDetailPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <ServiceDescription
+              brand={{ id: 0, name: '' }}
+              model={{ id: 0, brand_id: 0, brand_name: '', name: '', year_from: null, year_to: null }}
+              service={service}
+            />
 
             <h2 className="text-3xl font-bold mb-6">Цены по брендам</h2>
             <p className="text-muted-foreground mb-8 text-center">

@@ -31,6 +31,8 @@ interface ServiceDescriptionProps {
 }
 
 export default function ServiceDescription({ brand, model, service }: ServiceDescriptionProps) {
+  const subject = [brand.name, model.name].filter(Boolean).join(' ');
+
   return (
     <>
       <h2 className="text-3xl font-bold mt-12 mb-6">Описание услуги</h2>
@@ -43,7 +45,7 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
           {service.title === 'Техническое обслуживание' && (
             <>
               <p>
-                Техническое обслуживание (ТО) вашего {brand.name} {model.name} — это залог надежности и безопасности на дороге. 
+                Техническое обслуживание (ТО){subject ? ` вашего ${subject}` : ''} — это залог надежности и безопасности на дороге. 
                 Мы предлагаем полный спектр регламентных работ, направленный на поддержание технического состояния 
                 автомобиля на высоком уровне. Своевременное прохождение ТО позволяет избежать серьезных поломок 
                 и существенно продлить ресурс авто.
@@ -61,7 +63,7 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
                   </li>
                   <li className="flex items-start gap-2">
                     <Icon name="CheckCircle2" size={18} className="text-primary mt-0.5" />
-                    <span>Опытные мастера, знающие специфику моделей {brand.name}</span>
+                    <span>Опытные мастера, знающие специфику{brand.name ? ` моделей ${brand.name}` : ' вашего автомобиля'}</span>
                   </li>
                 </ul>
               </div>
@@ -75,7 +77,7 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
           {service.title === 'Диагностика двигателя' && (
             <>
               <p>
-                Диагностика двигателя {brand.name} {model.name} — это комплексная проверка всех систем силового агрегата 
+                Диагностика двигателя{subject ? ` ${subject}` : ''} — это комплексная проверка всех систем силового агрегата 
                 с использованием современного оборудования. Мы выявляем скрытые неисправности на ранних стадиях, 
                 что позволяет избежать дорогостоящего ремонта в будущем.
               </p>
@@ -105,7 +107,7 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
           {service.title === 'Замена масла' && (
             <>
               <p>
-                Замена масла в {brand.name} {model.name} — одна из важнейших процедур регулярного обслуживания. 
+                Замена масла{subject ? ` в ${subject}` : ''} — одна из важнейших процедур регулярного обслуживания. 
                 Качественное моторное масло обеспечивает надежную защиту двигателя от износа, перегрева и коррозии. 
                 Мы используем только сертифицированные масла, рекомендованные производителем.
               </p>
@@ -135,8 +137,8 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
           {service.title === 'Ремонт подвески' && (
             <>
               <p>
-                Ремонт подвески {brand.name} {model.name} требует профессионального подхода и знания конструктивных 
-                особенностей модели. Мы устраняем стуки, посторонние шумы, восстанавливаем плавность хода и управляемость 
+                Ремонт подвески{subject ? ` ${subject}` : ''} требует профессионального подхода и знания конструктивных 
+                особенностей автомобиля. Мы устраняем стуки, посторонние шумы, восстанавливаем плавность хода и управляемость 
                 автомобиля. Используем только качественные запчасти с гарантией.
               </p>
               <div>
@@ -165,7 +167,7 @@ export default function ServiceDescription({ brand, model, service }: ServiceDes
           {service.title === 'Ремонт тормозной системы' && (
             <>
               <p>
-                Ремонт тормозной системы {brand.name} {model.name} — это вопрос безопасности, который не терпит компромиссов. 
+                Ремонт тормозной системы{subject ? ` ${subject}` : ''} — это вопрос безопасности, который не терпит компромиссов. 
                 Мы проводим диагностику, замену тормозных колодок, дисков, суппортов и прокачку тормозной жидкости. 
                 Гарантируем четкую и безопасную работу тормозов.
               </p>
