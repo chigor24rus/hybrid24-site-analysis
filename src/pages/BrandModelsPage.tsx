@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -52,7 +53,7 @@ export default function BrandModelsPage() {
         const brands: Brand[] = brandsData.brands || [];
         const allModels: Model[] = modelsData.models || [];
 
-        const foundBrand = brands.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === brandSlug);
+        const foundBrand = brands.find(b => slugify(b.name) === brandSlug);
 
         if (!foundBrand) {
           navigate('/404');
@@ -87,8 +88,7 @@ export default function BrandModelsPage() {
   }
 
   const handleModelClick = (model: Model) => {
-    const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/${brandSlug}/${modelSlug}`);
+    navigate(`/${brandSlug}/${slugify(model.name)}`);
   };
 
   return (

@@ -11,6 +11,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import BookingDialog from '@/components/BookingDialog';
 import { Dialog } from '@/components/ui/dialog';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -221,7 +222,7 @@ export default function BrandServicesPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => {
               const price = getServicePrice(service.id);
-              const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
+              const serviceSlug = slugify(service.title);
               
               return (
                 <Card 

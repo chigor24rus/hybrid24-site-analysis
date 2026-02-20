@@ -8,6 +8,7 @@ import ServiceModelHero from '@/components/service-model/ServiceModelHero';
 import ServiceDetailsCards from '@/components/service-model/ServiceDetailsCards';
 import ServiceDescription from '@/components/service-model/ServiceDescription';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -72,9 +73,9 @@ const ServiceModelPage = () => {
         const services: Service[] = servicesData.services || [];
         const prices: Price[] = pricesData.prices || [];
 
-        const foundBrand = brands.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === brandSlug);
-        const foundModel = models.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === modelSlug && m.brand_id === foundBrand?.id);
-        const foundService = services.find(s => s.title.toLowerCase().replace(/\s+/g, '-') === serviceSlug);
+        const foundBrand = brands.find(b => slugify(b.name) === brandSlug);
+        const foundModel = models.find(m => slugify(m.name) === modelSlug && m.brand_id === foundBrand?.id);
+        const foundService = services.find(s => slugify(s.title) === serviceSlug);
 
         if (!foundBrand || !foundModel || !foundService) {
           navigate('/404');

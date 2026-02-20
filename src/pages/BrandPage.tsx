@@ -11,6 +11,7 @@ import Footer from '@/components/Footer';
 import BookingDialog from '@/components/BookingDialog';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Service {
   id: number;
@@ -169,7 +170,7 @@ export default function BrandPage() {
               {models.map((model) => (
                 <Link
                   key={model.id}
-                  to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}/${model.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  to={`/${slugify(brand.name)}/${slugify(model.name)}`}
                   className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow border border-border cursor-pointer hover:border-primary block"
                 >
                   <div className="flex items-center justify-center mb-2">

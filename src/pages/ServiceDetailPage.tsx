@@ -11,6 +11,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import BookingDialog from '@/components/BookingDialog';
 import { Dialog } from '@/components/ui/dialog';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Service {
   id: number;
@@ -64,9 +65,7 @@ export default function ServiceDetailPage() {
         const allBrands: Brand[] = brandsData.brands || [];
         const allPrices: Price[] = pricesData.prices || [];
 
-        const foundService = services.find(s => 
-          s.title.toLowerCase().replace(/\s+/g, '-') === serviceSlug
-        );
+        const foundService = services.find(s => slugify(s.title) === serviceSlug);
 
         if (!foundService) {
           navigate('/404');
@@ -77,7 +76,7 @@ export default function ServiceDetailPage() {
         const brandsWithPrices = allBrands
           .map(brand => ({
             ...brand,
-            slug: brand.name.toLowerCase().replace(/\s+/g, '-')
+            slug: slugify(brand.name)
           }))
           .filter(brand => servicePrices.some(p => p.brand_id === brand.id))
           .sort((a, b) => a.name.localeCompare(b.name, 'ru'));

@@ -8,6 +8,7 @@ import Icon from '@/components/ui/icon';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -88,9 +89,9 @@ const SeoIndexPage = () => {
                 p.service_id === service.id
               );
 
-              const brandSlug = brand.name.toLowerCase().replace(/\s+/g, '-');
-              const modelSlug = model.name.toLowerCase().replace(/\s+/g, '-');
-              const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
+              const brandSlug = slugify(brand.name);
+              const modelSlug = slugify(model.name);
+              const serviceSlug = slugify(service.title);
               
               pages.push({
                 brand,

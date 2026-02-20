@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -71,8 +72,8 @@ export default function ModelServicesPage() {
         const allServices: Service[] = servicesData.services || [];
         const allPrices: Price[] = pricesData.prices || [];
 
-        const foundBrand = brands.find(b => b.name.toLowerCase().replace(/\s+/g, '-') === brandSlug);
-        const foundModel = models.find(m => m.name.toLowerCase().replace(/\s+/g, '-') === modelSlug && m.brand_id === foundBrand?.id);
+        const foundBrand = brands.find(b => slugify(b.name) === brandSlug);
+        const foundModel = models.find(m => slugify(m.name) === modelSlug && m.brand_id === foundBrand?.id);
 
         if (!foundBrand || !foundModel) {
           navigate('/404');
@@ -107,8 +108,7 @@ export default function ModelServicesPage() {
   }
 
   const handleServiceClick = (service: Service) => {
-    const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
-    navigate(`/${brandSlug}/${modelSlug}/${serviceSlug}`);
+    navigate(`/${brandSlug}/${modelSlug}/${slugify(service.title)}`);
   };
 
   const getServicePrice = (service: Service) => {

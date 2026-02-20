@@ -11,6 +11,7 @@ import BookingDialog from '@/components/BookingDialog';
 
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Service {
   id: number;
@@ -135,7 +136,7 @@ const ServicesPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
             {services.map((service, index) => {
-              const serviceSlug = service.title.toLowerCase().replace(/\s+/g, '-');
+              const serviceSlug = slugify(service.title);
               
               return (
                 <Link key={service.id} to={`/services/${serviceSlug}`}>

@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { SITE_CONFIG } from '@/config/site';
+import { slugify } from '@/utils/slugify';
 
 interface Brand {
   id: number;
@@ -134,7 +135,7 @@ const BrandsPage = () => {
               {filteredBrands.map((brand, index) => (
               <Link
                 key={brand.id}
-                to={`/${brand.name.toLowerCase().replace(/\s+/g, '-')}`}
+                to={`/${slugify(brand.name)}`}
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
