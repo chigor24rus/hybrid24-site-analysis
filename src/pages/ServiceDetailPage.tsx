@@ -201,7 +201,7 @@ export default function ServiceDetailPage() {
               service={service}
             />
 
-            <h2 className="text-3xl font-bold mb-6">Цены по брендам</h2>
+            <h2 className="text-3xl font-bold mt-12 mb-6">Цены по брендам</h2>
             <p className="text-muted-foreground mb-8 text-center">
               Выберите марку вашего автомобиля для просмотра точной цены
             </p>
