@@ -27,9 +27,10 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight drop-shadow-lg text-white">
               Сервис, которому доверяют!<br />HEVSR — сертифицированная станция<br />технического обслуживания
             </h1>
-            <div className="text-base md:text-lg lg:text-xl text-gray-200 mb-6 md:mb-8 drop-shadow-md space-y-2">
-              <p>Автосервис HEVSR в Красноярске — ремонт легковых автомобилей любой сложности: диагностика, ТО, ходовая, двигатель.</p>
-              <p className="text-base text-gray-300">Работаем ежедневно с 8:15 до 19:45. Гарантия на все работы.</p>
+            <div className="text-base md:text-lg lg:text-xl text-gray-200 mb-6 md:mb-8 drop-shadow-md">
+              <p>Мы предоставляем услуги по техническому обслуживанию и ремонту легковых автомобилей.<br />
+              Позвольте нам позаботиться о вашем автомобиле, пока вы занимаетесь тем, что действительно любите.<br />
+              Мы увлечены своей работой и готовы помочь вам!</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
               <Button size="lg" className="gradient-primary btn-glow text-base md:text-lg w-full sm:w-auto" onClick={() => setIsBookingOpen(true)}>
