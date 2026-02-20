@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
-import * as XLSX from 'xlsx';
 
 interface Brand {
   id: number;
@@ -50,6 +49,7 @@ const VehiclesUploadDialog = ({ isOpen, onClose, brands, models, services, onRef
 
     setIsUploading(true);
     try {
+      const XLSX = await import('xlsx');
       const data = await uploadFile.arrayBuffer();
       const workbook = XLSX.read(data);
       const sheetName = workbook.SheetNames[0];
