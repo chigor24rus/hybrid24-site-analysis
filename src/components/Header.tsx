@@ -65,7 +65,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
           <Link to="/" className="flex items-center gap-1.5 sm:gap-2 logo-glow">
             <img 
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
-              alt="HEVSeRvice - Сертифицированная СТО в Красноярске" 
+              alt="HEVSR - Сертифицированная СТО в Красноярске" 
               className="h-10 sm:h-12 md:h-16 w-auto"
               fetchPriority="high"
             />
@@ -124,7 +124,7 @@ const Header = ({ isBookingOpen, setIsBookingOpen }: HeaderProps) => {
                     <Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
                       <img 
                         src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
-                        alt="HEVSeRvice" 
+                        alt="HEVSR" 
                         className="h-10 w-auto"
                         loading="lazy"
                       />

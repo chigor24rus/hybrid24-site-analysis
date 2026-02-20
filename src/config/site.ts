@@ -1,6 +1,6 @@
 export const SITE_CONFIG = {
   domain: 'https://hybrid24.ru',
-  name: 'HEVSeRvice',
+  name: 'HEVSR',
   phone: '+7 (923) 016-67-50',
   address: {
     locality: 'Красноярск',

@@ -10,7 +10,7 @@ const Footer = () => {
           <div>
             <img 
               src="https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png" 
-              alt="HEVSeRvice" 
+              alt="HEVSR" 
               className="h-10 w-auto mb-4"
               loading="lazy"
             />

@@ -36,9 +36,9 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "AutoRepair",
-    "name": "HEVSeRvice",
-    "description": "Профессиональный ремонт и обслуживание гибридных автомобилей в Красноярске",
-    "url": "https://hybrids24.ru",
+    "name": "HEVSR",
+    "description": "Профессиональный ремонт легковых автомобилей, диагностика и техническое обслуживание в Красноярске",
+    "url": "https://hybrid24.ru",
     "logo": "https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png",
     "image": "https://cdn.poehali.dev/files/2025-12-13_14-19-48.png",
     "telephone": "+79230166750",
@@ -75,9 +75,13 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
       "name": "Красноярск"
     },
     "serviceType": [
-      "Ремонт гибридных автомобилей",
+      "Ремонт легковых автомобилей",
       "Техническое обслуживание автомобилей",
-      "Диагностика автомобилей"
+      "Диагностика автомобилей",
+      "Ремонт гибридных автомобилей",
+      "Ремонт двигателя",
+      "Ремонт ходовой части",
+      "Замена масла и расходников"
     ],
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
@@ -87,7 +91,14 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": "Диагностика и ремонт гибридных систем"
+            "name": "Ремонт легковых автомобилей"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Диагностика автомобилей"
           }
         },
         {
@@ -102,6 +113,20 @@ export const generateSchemaMarkup = (reviews: Review[], googleMapsRating?: { rat
           "itemOffered": {
             "@type": "Service",
             "name": "Ремонт двигателя"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ремонт ходовой части"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ремонт гибридных систем и высоковольтных батарей"
           }
         }
       ]
@@ -134,9 +159,9 @@ export const generateYandexSchema = (reviews: Review[]) => {
   const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "HEVSeRvice",
-    "description": "Профессиональный ремонт и обслуживание гибридных автомобилей в Красноярске",
-    "url": "https://hybrids24.ru",
+    "name": "HEVSR",
+    "description": "Профессиональный ремонт легковых автомобилей, диагностика и техническое обслуживание в Красноярске",
+    "url": "https://hybrid24.ru",
     "logo": "https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png",
     "image": "https://cdn.poehali.dev/files/2025-12-13_14-19-48.png",
     "telephone": "+79230166750",
