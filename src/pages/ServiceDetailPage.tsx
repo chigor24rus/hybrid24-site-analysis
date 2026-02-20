@@ -179,18 +179,31 @@ export default function ServiceDetailPage() {
           <div className="max-w-5xl mx-auto">
 
             <Card className="mb-8 animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <CardContent className="pt-6 space-y-4">
-                <div className="flex gap-4 flex-wrap">
-                  <Button size="lg" onClick={() => setIsBookingOpen(true)}>
-                    <Icon name="Calendar" size={18} className="mr-2" />
-                    Записаться на услугу
-                  </Button>
-                  <Button size="lg" variant="outline" asChild>
-                    <a href={`tel:${SITE_CONFIG.phone}`}>
-                      <Icon name="Phone" size={18} className="mr-2" />
-                      {SITE_CONFIG.phone}
-                    </a>
-                  </Button>
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center">
+                      <Icon name={service.icon} size={24} className="text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">Профессиональный сервис</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {service.title} в Красноярске
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button onClick={() => setIsBookingOpen(true)}>
+                      <Icon name="Calendar" size={18} className="mr-2" />
+                      Записаться
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <a href={`tel:${SITE_CONFIG.phone}`}>
+                        <Icon name="Phone" size={18} className="mr-2" />
+                        Позвонить
+                      </a>
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
