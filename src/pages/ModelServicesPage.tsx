@@ -149,7 +149,6 @@ export default function ModelServicesPage() {
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
-              { label: 'Главная', path: '/' },
               { label: brand.name, path: `/${brandSlug}` },
               { label: model.name }
             ]} 

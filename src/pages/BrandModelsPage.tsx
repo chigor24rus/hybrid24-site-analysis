@@ -124,7 +124,6 @@ export default function BrandModelsPage() {
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumbs 
             items={[
-              { label: 'Главная', path: '/' },
               { label: brand.name }
             ]} 
             className="text-white/80"
