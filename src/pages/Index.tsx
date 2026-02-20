@@ -47,8 +47,8 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Helmet>
-        <title>Автосервис в Красноярске | {SITE_CONFIG.name}</title>
-        <meta name="description" content={`Ремонт гибридов и авто в Красноярске. Опытные мастера, гарантия. Запись: ${SITE_CONFIG.phone}`} />
+        <title>Автосервис HEVSR в Красноярске | Ремонт авто</title>
+        <meta name="description" content="Автосервис HEVSR в Красноярске — ремонт легковых автомобилей, диагностика, ТО, ходовая, двигатель. Сертифицированные мастера, гарантия на работы. Запись: +7 (923) 016-67-50" />
         <meta name="keywords" content="автосервис Красноярск, ремонт гибридов, ТО автомобиля, диагностика авто, СТО Красноярск, ремонт Toyota, ремонт Lexus, замена масла, развал схождение" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
