@@ -2,6 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import Breadcrumbs from '@/components/Breadcrumbs';
+
+interface BreadcrumbItem {
+  label: string;
+  path?: string;
+}
 
 interface Brand {
   id: number;
@@ -31,9 +37,10 @@ interface ServiceModelHeroProps {
   model: Model;
   service: Service;
   finalPrice: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
-export default function ServiceModelHero({ brand, model, service, finalPrice }: ServiceModelHeroProps) {
+export default function ServiceModelHero({ brand, model, service, finalPrice, breadcrumbs }: ServiceModelHeroProps) {
   const navigate = useNavigate();
 
   return (
@@ -46,10 +53,14 @@ export default function ServiceModelHero({ brand, model, service, finalPrice }: 
       <div className="absolute inset-0 bg-black/60 z-[1]"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="mb-6">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="text-white hover:text-white hover:bg-white/10">
-            <Icon name="ArrowLeft" size={18} className="mr-2" />
-            Назад
-          </Button>
+          {breadcrumbs ? (
+            <Breadcrumbs items={breadcrumbs} className="text-white/80" />
+          ) : (
+            <Button variant="ghost" onClick={() => navigate(-1)} className="text-white hover:text-white hover:bg-white/10">
+              <Icon name="ArrowLeft" size={18} className="mr-2" />
+              Назад
+            </Button>
+          )}
         </div>
 
         <div className="mt-12 text-center text-white animate-fade-in">

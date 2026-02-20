@@ -188,6 +188,11 @@ export default function BrandServiceDetailPage() {
         model={fakeModel}
         service={service}
         finalPrice={finalPrice}
+        breadcrumbs={[
+          { label: 'Бренды', path: '/brands' },
+          { label: brand.name, path: `/brands/${brandSlug}/services` },
+          { label: service.title },
+        ]}
       />
 
       <section className="py-12 md:py-16">
