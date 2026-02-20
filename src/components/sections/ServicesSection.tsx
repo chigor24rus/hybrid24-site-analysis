@@ -28,7 +28,6 @@ interface ServicesSectionProps {
 }
 
 const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelectedServices }: ServicesSectionProps) => {
-  const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,32 +65,6 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
     
     fetchServices();
   }, []);
-
-  const toggleService = (id: number) => {
-    setSelectedServices(prev => {
-      const newServices = prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id];
-      setParentSelectedServices(newServices);
-      return newServices;
-    });
-  };
-
-  const extractPrice = (priceString: string): number => {
-    const match = priceString.match(/(\d+[\s\d]*)/);
-    if (match) {
-      return parseInt(match[1].replace(/\s/g, ''));
-    }
-    return 0;
-  };
-
-  const calculateTotal = () => {
-    return selectedServices.reduce((sum, id) => {
-      const service = allServices.find(s => s.id === id);
-      if (service) {
-        return sum + extractPrice(service.price);
-      }
-      return sum;
-    }, 0);
-  };
 
   const refreshServices = () => {
     if (allServices.length > 0) {
@@ -189,90 +162,6 @@ const ServicesSection = ({ setIsBookingOpen, setSelectedServices: setParentSelec
               </Link>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* <section id="calculator" className="py-12 md:py-16"> */}
-      <section id="calculator" className="py-12 md:py-16 hidden">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8 md:mb-12 animate-fade-in">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4">Калькулятор стоимости</h2>
-              <p className="text-muted-foreground text-base md:text-lg">Рассчитайте примерную стоимость услуг</p>
-            </div>
-            <Card className="animate-fade-in">
-              <CardHeader>
-                <CardTitle>Выберите необходимые услуги</CardTitle>
-                <CardDescription>Отметьте галочками нужные позиции</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {allServices.map(service => (
-                    <div
-                      key={`calc-${service.id}`}
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        selectedServices.includes(service.id)
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:border-primary/50'
-                      }`}
-                      onClick={() => toggleService(service.id)}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1">
-                          <h4 className="font-semibold mb-1">{service.title}</h4>
-                          <p className="text-sm text-muted-foreground mb-2">{service.description}</p>
-                          <div className="flex gap-3 text-sm">
-                            <span className="text-primary font-semibold">{service.price}</span>
-                            <span className="text-muted-foreground flex items-center">
-                              <Icon name="Clock" size={14} className="mr-1" />
-                              {service.duration}
-                            </span>
-                          </div>
-                        </div>
-                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                          selectedServices.includes(service.id)
-                            ? 'border-primary bg-primary'
-                            : 'border-border'
-                        }`}>
-                          {selectedServices.includes(service.id) && (
-                            <Icon name="Check" size={16} className="text-white" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {selectedServices.length > 0 && (
-                  <div className="p-4 md:p-6 rounded-lg border border-primary/30">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div>
-                        <div className="text-xs md:text-sm text-muted-foreground mb-1">Выбрано услуг: {selectedServices.length}</div>
-                        <div className="text-2xl md:text-3xl font-bold px-3 py-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-primary/30 rounded-lg inline-block transition-all duration-300">
-                          {calculateTotal().toLocaleString()} ₽
-                        </div>
-                        <div className="text-xs md:text-sm text-muted-foreground mt-1">Предварительная стоимость</div>
-                      </div>
-                      <Button size="lg" className="gradient-primary btn-glow w-full md:w-auto" onClick={() => {
-                        setParentSelectedServices(selectedServices);
-                        setIsBookingOpen(true);
-                      }}>
-                        Записаться на услуги
-                        <Icon name="ArrowRight" className="ml-2" size={20} />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
-                {selectedServices.length === 0 && (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <Icon name="Calculator" size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>Выберите услуги для расчёта стоимости</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
         </div>
       </section>
 
