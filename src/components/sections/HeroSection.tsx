@@ -22,7 +22,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl lg:max-w-none">
             <Badge className="mb-3 md:mb-4 gradient-accent text-xs md:text-sm">Быстро • Качественно • Надёжно</Badge>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight drop-shadow-lg text-white">
               Сервис, которому доверяют!<br />HEVSR — сертифицированная станция технического обслуживания
