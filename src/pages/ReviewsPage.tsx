@@ -54,6 +54,7 @@ const ReviewsPage = () => {
       <Helmet>
         <title>Отзывы о HEVSR - Реальные отзывы клиентов | Красноярск</title>
         <meta name="description" content="Читайте реальные отзывы клиентов автосервиса HEVSR в Красноярске. Оцените качество нашей работы!" />
+        <meta name="keywords" content="отзывы автосервис Красноярск, отзывы HEVSR, клиенты автосервиса, рейтинг СТО, отзывы о ремонте авто" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

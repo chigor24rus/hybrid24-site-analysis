@@ -49,6 +49,7 @@ const Index = () => {
       <Helmet>
         <title>Автосервис в Красноярске | {SITE_CONFIG.name}</title>
         <meta name="description" content={`Ремонт гибридов и авто в Красноярске. Опытные мастера, гарантия. Запись: ${SITE_CONFIG.phone}`} />
+        <meta name="keywords" content="автосервис Красноярск, ремонт гибридов, ТО автомобиля, диагностика авто, СТО Красноярск, ремонт Toyota, ремонт Lexus, замена масла, развал схождение" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />
