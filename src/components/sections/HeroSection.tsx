@@ -28,7 +28,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
               Сертифицированная станция<br />технического обслуживания
             </h1>
             <div className="text-base md:text-lg lg:text-xl text-gray-200 mb-6 md:mb-8 drop-shadow-md space-y-2">
-              <p>Автосервис HEVSR в Красноярске — ремонт легковых автомобилей любой сложности: диагностика, ТО, ходовая, двигатель.</p>
+              <p>Автосервис HEVSR в Красноярске — ремонт легковых автомобилей любой сложности:<br />диагностика, ТО, ходовая, двигатель.</p>
               <p className="text-base text-gray-300">Работаем ежедневно с 8:15 до 19:45. Гарантия на все работы.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
