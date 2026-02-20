@@ -121,6 +121,7 @@ export default function BrandServicesPage() {
       <Helmet>
         <title>{pageTitle} - {SITE_CONFIG.name}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`услуги ${brand.name} Красноярск, ремонт ${brand.name}, диагностика ${brand.name}, ТО ${brand.name}, обслуживание ${brand.name} СТО`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/brands/${brandSlug}/services`} />
         <meta property="og:title" content={`${pageTitle} - ${SITE_CONFIG.name}`} />

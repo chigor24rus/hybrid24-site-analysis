@@ -100,6 +100,7 @@ const BonusProgramPage = ({ isUnderDevelopment = false }: BonusProgramPageProps)
       <Helmet>
         <title>Бонусная программа HEVSR Красноярск - скидки до 10%</title>
         <meta name="description" content="Бонусная программа лояльности в Красноярске. ✓ Скидки до 10% ✓ VIP-обслуживание ✓ Бесплатная мойка. Накапливайте бонусы!" />
+        <meta name="keywords" content="бонусная программа автосервис, скидки на ремонт авто, программа лояльности СТО, VIP обслуживание автомобиля Красноярск" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

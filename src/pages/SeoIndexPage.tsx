@@ -145,6 +145,7 @@ const SeoIndexPage = () => {
       <Helmet>
         <title>Все услуги по маркам и моделям - {SITE_CONFIG.name}</title>
         <meta name="description" content={`Полный каталог услуг автосервиса для всех марок и моделей автомобилей в ${SITE_CONFIG.address.locality}. Узнайте точную стоимость обслуживания вашего автомобиля.`} />
+        <meta name="keywords" content="каталог услуг автосервис, все марки авто Красноярск, стоимость ремонта авто, цены на обслуживание автомобилей, СТО HEVSR каталог" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/services-index`} />
         <meta property="og:title" content={`Все услуги по маркам и моделям - ${SITE_CONFIG.name}`} />

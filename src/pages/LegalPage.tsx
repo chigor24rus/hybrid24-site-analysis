@@ -22,6 +22,7 @@ const LegalPage = () => {
       <Helmet>
         <title>Правовая информация - HEVSR</title>
         <meta name="description" content="Правовая информация, политика конфиденциальности и пользовательское соглашение автосервиса HEVSR в Красноярске" />
+        <meta name="keywords" content="политика конфиденциальности HEVSR, пользовательское соглашение автосервис, правовая информация СТО Красноярск" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

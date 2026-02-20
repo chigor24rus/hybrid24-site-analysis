@@ -114,6 +114,7 @@ export default function BrandPage() {
       <Helmet>
         <title>Ремонт и обслуживание {brand.name} в Красноярске - HEVSR</title>
         <meta name="description" content={`Профессиональный ремонт и обслуживание ${brand.name} в Красноярске. ✓ Опытные мастера ✓ Оригинальные запчасти ✓ Гарантия на работы. Запись онлайн!`} />
+        <meta name="keywords" content={`ремонт ${brand.name} Красноярск, обслуживание ${brand.name}, СТО ${brand.name}, запчасти ${brand.name}, ТО ${brand.name} Красноярск`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

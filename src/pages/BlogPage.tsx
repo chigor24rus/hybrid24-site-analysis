@@ -101,6 +101,7 @@ const BlogPage = () => {
       <Helmet>
         <title>Блог HEVSR - советы по ремонту авто | Красноярск</title>
         <meta name="description" content="Полезные статьи о ремонте, обслуживании и эксплуатации автомобилей. Профессиональные советы экспертов автосервиса HEVSR в Красноярске. Читайте и узнавайте больше!" />
+        <meta name="keywords" content="блог автосервис, советы по ремонту авто, статьи об автомобилях, эксплуатация авто, HEVSR блог, уход за автомобилем" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

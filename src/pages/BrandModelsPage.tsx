@@ -96,6 +96,7 @@ export default function BrandModelsPage() {
       <Helmet>
         <title>Модели {brand.name} в Красноярске - {SITE_CONFIG.name}</title>
         <meta name="description" content={`Выберите модель ${brand.name} для просмотра доступных услуг и цен на обслуживание в Красноярске. ✓ Профессиональный ремонт ✓ Запись онлайн!`} />
+        <meta name="keywords" content={`модели ${brand.name} Красноярск, ремонт ${brand.name} по моделям, обслуживание ${brand.name} цены, СТО ${brand.name} Красноярск`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}`} />
         <meta property="og:title" content={`Модели ${brand.name} - ${SITE_CONFIG.name}`} />

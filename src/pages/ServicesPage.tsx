@@ -96,6 +96,7 @@ const ServicesPage = () => {
       <Helmet>
         <title>Услуги автосервиса в Красноярске - HEVSR | ТО, ремонт, диагностика</title>
         <meta name="description" content="Полный спектр услуг по ремонту и обслуживанию автомобилей в Красноярске. ✓ Техническое обслуживание ✓ Диагностика ✓ Шиномонтаж ✓ Кузовной ремонт. Запись онлайн!" />
+        <meta name="keywords" content="услуги автосервиса Красноярск, ТО автомобиля, шиномонтаж, кузовной ремонт, компьютерная диагностика, замена масла, тормозная система, подвеска" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

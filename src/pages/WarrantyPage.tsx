@@ -104,6 +104,7 @@ const WarrantyPage = ({ isUnderDevelopment = false }: WarrantyPageProps) => {
       <Helmet>
         <title>Гарантия на ремонт авто HEVSR Красноярск - до 12 месяцев</title>
         <meta name="description" content="Гарантия на ремонт в Красноярске до 12 месяцев. ✓ Прозрачные условия ✓ Ответственность за качество ✓ Документальное подтверждение. Узнайте больше!" />
+        <meta name="keywords" content="гарантия на ремонт авто, гарантия автосервис Красноярск, гарантийное обслуживание СТО, качество ремонта HEVSR" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

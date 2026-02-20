@@ -161,6 +161,7 @@ const ServiceModelPage = () => {
       <Helmet>
         <title>{pageTitle} - {SITE_CONFIG.name}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`${service.title} ${brand.name} ${model.name}, ремонт ${brand.name} ${model.name} Красноярск, ${service.title} цена ${brand.name}, СТО ${brand.name} ${model.name}`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}/${serviceSlug}`} />
         <meta property="og:title" content={`${pageTitle} - ${SITE_CONFIG.name}`} />

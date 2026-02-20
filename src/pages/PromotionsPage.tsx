@@ -79,6 +79,7 @@ const PromotionsPage = () => {
       <Helmet>
         <title>Акции автосервиса HEVSR в Красноярске | Скидки до 50%</title>
         <meta name="description" content="Выгодные акции на ремонт и обслуживание автомобилей в Красноярске. Скидки до 50% на диагностику, ТО, шиномонтаж. Запишитесь сейчас!" />
+        <meta name="keywords" content="акции автосервис Красноярск, скидки на ремонт авто, выгодное ТО, акция диагностика, шиномонтаж акция, HEVSR акции" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

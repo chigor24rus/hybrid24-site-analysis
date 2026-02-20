@@ -63,6 +63,7 @@ const BrandsPage = () => {
       <Helmet>
         <title>Ремонт и обслуживание всех марок авто - HEVSR Красноярск</title>
         <meta name="description" content={`Ремонт и обслуживание ${brands.length} популярных марок автомобилей в Красноярске. Профессиональный сервис, опытные мастера. Выберите свой бренд!`} />
+        <meta name="keywords" content="ремонт марки авто Красноярск, обслуживание Toyota Красноярск, ремонт Lexus, Honda, Nissan, Kia, Hyundai, все марки автомобилей СТО" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="website" />

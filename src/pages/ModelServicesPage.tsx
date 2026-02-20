@@ -121,6 +121,7 @@ export default function ModelServicesPage() {
       <Helmet>
         <title>Услуги для {brand.name} {model.name} в Красноярске - {SITE_CONFIG.name}</title>
         <meta name="description" content={`Полный список услуг по обслуживанию ${brand.name} ${model.name} в Красноярске. ✓ Диагностика ✓ Ремонт ✓ ТО. Запись онлайн!`} />
+        <meta name="keywords" content={`услуги ${brand.name} ${model.name}, ремонт ${brand.name} ${model.name} цены, обслуживание ${brand.name} ${model.name} Красноярск, ТО ${brand.name} ${model.name}`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/${brandSlug}/${modelSlug}`} />
         <meta property="og:title" content={`Услуги для ${brand.name} ${model.name} - ${SITE_CONFIG.name}`} />

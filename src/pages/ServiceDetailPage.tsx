@@ -121,6 +121,7 @@ export default function ServiceDetailPage() {
       <Helmet>
         <title>{pageTitle} - {SITE_CONFIG.name}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="keywords" content={`${service.title} Красноярск, цена ${service.title}, ${service.title} автосервис, стоимость ${service.title} авто`} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href={`${SITE_CONFIG.domain}/services/${serviceSlug}`} />
         <meta property="og:title" content={`${pageTitle} - ${SITE_CONFIG.name}`} />
