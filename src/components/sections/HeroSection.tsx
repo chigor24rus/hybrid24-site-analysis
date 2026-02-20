@@ -27,7 +27,7 @@ const HeroSection = ({ setIsBookingOpen }: HeroSectionProps) => {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl font-bold mb-4 md:mb-6 leading-tight drop-shadow-lg text-white">
               Сервис, которому доверяют!<br />HEVSR — сертифицированная станция<br />технического обслуживания
             </h1>
-            <div className="text-base md:text-lg lg:text-xl text-gray-200 mb-6 md:mb-8 drop-shadow-md">
+            <div className="text-base md:text-base lg:text-lg text-gray-200 mb-6 md:mb-8 drop-shadow-md">
               <p>Мы предоставляем услуги по техническому обслуживанию и ремонту легковых автомобилей.<br />
               Позвольте нам позаботиться о вашем автомобиле, пока вы занимаетесь тем, что действительно любите.<br />
               Мы увлечены своей работой и готовы помочь вам!</p>
