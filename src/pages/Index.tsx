@@ -62,7 +62,7 @@ const Index = () => {
         <meta property="og:image:alt" content={`${SITE_CONFIG.name} - Профессиональный автосервис в Красноярске`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${SITE_CONFIG.name} - Сертифицированная СТО в Красноярске`} />
-        <meta name="twitter:description" content="Профессиональный ремонт, обслуживание автомобилей в Красноярске. Опытные мастера, современное оборудование." />
+        <meta name="twitter:description" content={`Сертифицированная СТО в Красноярске. Ремонт гибридов, ТО, диагностика. Запись: ${SITE_CONFIG.phone}`} />
         <meta name="twitter:image" content={SITE_CONFIG.ogImage} />
         <script type="application/ld+json">
           {JSON.stringify(generateSchemaMarkup(reviews))}
