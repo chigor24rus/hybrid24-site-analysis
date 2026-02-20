@@ -5,6 +5,7 @@ import ServicesSection from './sections/ServicesSection';
 import AwardsSection from './sections/AwardsSection';
 import PromotionsReviewsSection from './sections/PromotionsReviewsSection';
 import ContactsSection from './sections/ContactsSection';
+import AdvantagesSection from './sections/AdvantagesSection';
 
 interface SectionsProps {
   setIsBookingOpen: (open: boolean) => void;
@@ -22,6 +23,7 @@ const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices 
       {/* <AwardsSection /> */}
       <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
       <ContactsSection />
+      <AdvantagesSection />
     </>
   );
 };
