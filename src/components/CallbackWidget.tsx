@@ -119,6 +119,12 @@ export default function CallbackWidget() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bookingData)
         }).catch(err => console.warn(NOTIFICATION_MESSAGES.TELEGRAM_FAILED, err));
+
+        fetch(API_ENDPOINTS.max.send, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bookingData)
+        }).catch(err => console.warn('MAX notification failed:', err));
         
         setTimeout(() => {
           setIsOpen(false);
