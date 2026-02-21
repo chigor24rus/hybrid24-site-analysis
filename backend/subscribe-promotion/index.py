@@ -6,14 +6,14 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-LOGO_URL = 'https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png'
+LOGO_URL = 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/979b7247-a981-48f4-9326-8c07c9b7658d.png'
 SITE_URL = 'https://hybrids24.ru'
 UNSUBSCRIBE_BASE = 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
 
 # Brand colors
-C_PRIMARY = '#8ab61e'       # зелёный основной (hsl 94 73% 46% ~ #7ab317, уточнено до сайта)
-C_PRIMARY_DARK = '#6a8f10'  # тёмный зелёный
-C_PRIMARY_LIGHT = '#f2f7e0' # светлый фон
+C_PRIMARY = '#206EB5'
+C_PRIMARY_DARK = '#1a5a99'
+C_PRIMARY_LIGHT = '#e8f0f9'
 C_TEXT = '#1a1a1a'
 C_MUTED = '#6b7280'
 C_BORDER = '#e5e7eb'
