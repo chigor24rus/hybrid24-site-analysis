@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Invalid email",
+      "method": "POST",
+      "path": "/",
+      "body": {"email": "notanemail"},
+      "expectedStatus": 400,
+      "expectedBody": {"success": false},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Valid subscription",
+      "method": "POST",
+      "path": "/",
+      "body": {"email": "test-subscriber@example.com"},
+      "expectedStatus": 200,
+      "expectedBody": {"success": true},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

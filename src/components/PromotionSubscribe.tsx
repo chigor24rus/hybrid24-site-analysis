@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
 import { toast } from 'sonner';
+import { API_ENDPOINTS } from '@/utils/apiClient';
 
 const PromotionSubscribe = () => {
   const [email, setEmail] = useState('');
@@ -19,13 +20,29 @@ const PromotionSubscribe = () => {
 
     setIsLoading(true);
 
-    setTimeout(() => {
-      toast.success('Спасибо! Вы подписаны на акции', {
-        description: 'Мы будем присылать только самые выгодные предложения'
+    try {
+      const response = await fetch(API_ENDPOINTS.promotions.subscribe, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
       });
-      setEmail('');
+      const data = await response.json();
+
+      if (data.already) {
+        toast.info('Вы уже подписаны на акции');
+      } else if (data.success) {
+        toast.success('Спасибо! Вы подписаны на акции', {
+          description: 'Мы будем присылать только самые выгодные предложения'
+        });
+        setEmail('');
+      } else {
+        toast.error('Что-то пошло не так, попробуйте ещё раз');
+      }
+    } catch {
+      toast.error('Ошибка соединения, попробуйте позже');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
