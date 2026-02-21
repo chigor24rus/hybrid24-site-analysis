@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
-SITE_URL = 'https://hybrids24.ru'
+SITE_URL = 'https://hybrid24.ru'
 LOGO_URL = 'https://cdn.poehali.dev/projects/06c15a5e-698d-45c4-8ef4-b26fa9657aca/bucket/979b7247-a981-48f4-9326-8c07c9b7658d.png'
 UNSUBSCRIBE_BASE = 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
 C_PRIMARY = '#206EB5'
@@ -119,7 +119,7 @@ def _email_wrapper(content_html: str) -> str:
       {content_html}
       <tr>
         <td style="background:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid {C_BORDER};">
-          <p style="color:{C_MUTED};font-size:12px;margin:0;">Красноярск · hybrids24.ru · +7 (923) 016-67-50</p>
+          <p style="color:{C_MUTED};font-size:12px;margin:0;">Красноярск · hybrid24.ru · +7 (923) 016-67-50</p>
         </td>
       </tr>
     </table>
