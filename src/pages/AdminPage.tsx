@@ -210,6 +210,11 @@ const AdminPage = () => {
                         label="Отзывы"
                         onClick={() => navigate('/admin/reviews')}
                       />
+                      <AdminActionButton
+                        icon="Bell"
+                        label="Подписчики"
+                        onClick={() => navigate('/admin/subscribers')}
+                      />
                     </div>
                   </div>
 

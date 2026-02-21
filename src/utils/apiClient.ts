@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
     update: 'https://functions.poehali.dev/be6f2324-6bd1-4660-b3ee-9c314129e4c8', // update-promotion-admin
     delete: 'https://functions.poehali.dev/7198e7ad-0464-4bc3-93f4-9200099874b5', // delete-promotion-admin
     subscribe: 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6', // subscribe-promotion
+    subscribers: 'https://functions.poehali.dev/199ae90d-71d2-441d-b460-e56731e4a2fb', // get-subscribers-admin
   },
   blog: {
     list: 'https://functions.poehali.dev/e92433da-3db2-4e99-b9d6-a4596b987e6a', // blog
