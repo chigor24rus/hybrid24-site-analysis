@@ -104,10 +104,37 @@ def handler(event: dict, context) -> dict:
         conn.commit()
         cursor.close()
         conn.close()
+        html = f"""<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Отписка от рассылки</title></head>
+<body style="margin:0;padding:0;background:{C_BG};font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:{C_BG};padding:60px 16px;">
+  <tr><td align="center">
+    <table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);">
+      <tr><td style="background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});padding:28px 32px;text-align:center;">
+        <img src="{LOGO_URL}" alt="HEVSR" width="120" style="display:block;margin:0 auto 12px;max-width:120px;">
+        <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;">Автосервис · Красноярск</p>
+      </td></tr>
+      <tr><td style="padding:40px 32px;text-align:center;">
+        <p style="font-size:48px;margin:0 0 16px;">✓</p>
+        <h2 style="color:{C_TEXT};font-size:22px;margin:0 0 12px;">Вы отписались от рассылки</h2>
+        <p style="color:{C_MUTED};font-size:15px;line-height:1.6;margin:0 0 28px;">
+          Адрес <strong>{email}</strong> удалён из списка рассылки.<br>
+          Вы больше не будете получать уведомления об акциях.
+        </p>
+        <a href="{SITE_URL}" style="display:inline-block;background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:bold;">На сайт →</a>
+      </td></tr>
+      <tr><td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid {C_BORDER};">
+        <p style="color:{C_MUTED};font-size:12px;margin:0;">Красноярск · hybrid24.ru · +7 (923) 016-67-50</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>"""
         return {
             'statusCode': 200,
-            'headers': {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
-            'body': json.dumps({'success': True, 'message': 'Вы успешно отписались'})
+            'headers': {'Access-Control-Allow-Origin': '*', 'Content-Type': 'text/html; charset=utf-8'},
+            'body': html
         }
 
     body = json.loads(event.get('body', '{}'))
