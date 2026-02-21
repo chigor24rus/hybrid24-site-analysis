@@ -7,7 +7,7 @@ from datetime import datetime
 
 def handler(event: dict, context) -> dict:
     """
-    Отправляет email уведомление о новой заявке на service@hybrids24.ru
+    Отправляет email уведомление о новой заявке на service@hybrid24.ru
     """
     
     if event.get('httpMethod') == 'OPTIONS':
@@ -57,7 +57,7 @@ def handler(event: dict, context) -> dict:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = 'Заявка с сайта Hybrid24.ru'
         msg['From'] = smtp_email
-        msg['To'] = 'service@hybrids24.ru'
+        msg['To'] = 'service@hybrid24.ru'
         
         html_content = f"""
         <html>

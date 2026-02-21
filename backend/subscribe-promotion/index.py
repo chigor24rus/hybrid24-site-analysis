@@ -182,7 +182,7 @@ def _send_admin_notification(subscriber_email: str):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'Новый подписчик на акции — HEVSR'
     msg['From'] = e
-    msg['To'] = 'service@hybrids24.ru'
+    msg['To'] = 'service@hybrid24.ru'
 
     content = f"""
       <tr><td style="padding:32px;">
