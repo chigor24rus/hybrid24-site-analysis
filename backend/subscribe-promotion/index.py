@@ -12,16 +12,43 @@ def handler(event: dict, context) -> dict:
     Подписка на акции: сохраняет email в БД и отправляет уведомление на service@hybrids24.ru
     """
 
-    if event.get('httpMethod') == 'OPTIONS':
+    method = event.get('httpMethod', 'POST')
+
+    if method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
                 'Access-Control-Allow-Headers': 'Content-Type',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
+        }
+
+    if method == 'GET':
+        params = event.get('queryStringParameters') or {}
+        email = params.get('email', '').strip().lower()
+        if not email or '@' not in email:
+            return {
+                'statusCode': 400,
+                'headers': {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
+                'body': json.dumps({'success': False, 'error': 'Некорректный email'})
+            }
+        schema = os.environ.get('MAIN_DB_SCHEMA', 'public')
+        conn = psycopg2.connect(os.environ['DATABASE_URL'])
+        cursor = conn.cursor()
+        cursor.execute(
+            f'UPDATE {schema}.subscriptions SET is_active = FALSE WHERE email = %s',
+            (email,)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {
+            'statusCode': 200,
+            'headers': {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'},
+            'body': json.dumps({'success': True, 'message': 'Вы успешно отписались'})
         }
 
     body = json.loads(event.get('body', '{}'))

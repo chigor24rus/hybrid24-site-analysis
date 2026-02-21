@@ -115,11 +115,13 @@ def _send_promotion_emails(
     smtp_port = int(os.environ.get('SMTP_PORT', '465'))
     smtp_email = os.environ.get('SMTP_EMAIL')
     smtp_password = os.environ.get('SMTP_PASSWORD')
+    unsubscribe_base = 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
 
     if not all([smtp_host, smtp_email, smtp_password]):
         return 0
 
     promotion_url = f'{SITE_URL}/promotions'
+    booking_url = f'{SITE_URL}/#booking'
     valid_text = f'до {valid_until}' if valid_until != 'Постоянно' else 'постоянно'
 
     sent = 0
@@ -128,6 +130,7 @@ def _send_promotion_emails(
             server.login(smtp_email, smtp_password)
             for email in subscribers:
                 try:
+                    unsubscribe_url = f'{unsubscribe_base}?email={email}'
                     msg = MIMEMultipart('alternative')
                     msg['Subject'] = f'Новая акция HEVSR: {title}'
                     msg['From'] = smtp_email
@@ -164,11 +167,18 @@ def _send_promotion_emails(
                                     </td>
                                   </tr>
                                 </table>
-                                <table width="100%" cellpadding="0" cellspacing="0">
+                                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
                                   <tr>
-                                    <td align="center">
+                                    <td align="center" style="padding-bottom:12px;">
                                       <a href="{promotion_url}" style="display:inline-block;background:linear-gradient(135deg,#1e40af,#2563eb);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:bold;">
                                         Смотреть акцию →
+                                      </a>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td align="center">
+                                      <a href="{booking_url}" style="display:inline-block;background:#ffffff;color:#2563eb;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:bold;border:2px solid #2563eb;">
+                                        Записаться на обслуживание
                                       </a>
                                     </td>
                                   </tr>
@@ -177,10 +187,13 @@ def _send_promotion_emails(
                             </tr>
                             <tr>
                               <td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
-                                <p style="color:#9ca3af;font-size:12px;margin:0;">
+                                <p style="color:#9ca3af;font-size:12px;margin:0 0 6px;">
                                   Вы получили это письмо, так как подписались на акции HEVSR.<br>
                                   Красноярск · hybrids24.ru
                                 </p>
+                                <a href="{unsubscribe_url}" style="color:#d1d5db;font-size:11px;text-decoration:underline;">
+                                  Отписаться от рассылки
+                                </a>
                               </td>
                             </tr>
                           </table>

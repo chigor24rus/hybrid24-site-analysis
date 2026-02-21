@@ -49,6 +49,7 @@ const AdminReviewsPage = lazy(() => import("./pages/AdminReviewsPage"));
 const AdminZeonSyncPage = lazy(() => import("./pages/AdminZeonSyncPage"));
 const AdminSeoGuidePage = lazy(() => import("./pages/AdminSeoGuidePage"));
 const AdminSubscribersPage = lazy(() => import("./pages/AdminSubscribersPage"));
+const UnsubscribePage = lazy(() => import("./pages/UnsubscribePage"));
 
 const queryClient = new QueryClient();
 
@@ -145,6 +146,7 @@ const App = () => (
                 <Route path="/admin/zeon-sync" element={<AdminZeonSyncPage />} />
                 <Route path="/admin/seo-guide" element={<AdminSeoGuidePage />} />
                 <Route path="/admin/subscribers" element={<AdminSubscribersPage />} />
+                <Route path="/unsubscribe" element={<UnsubscribePage />} />
                 {/* Dynamic SEO routes - MUST be at the end before catch-all */}
                 <Route path="/:brandSlug" element={<BrandModelsPage />} />
                 <Route path="/:brandSlug/:modelSlug" element={<ModelServicesPage />} />
