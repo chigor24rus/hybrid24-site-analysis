@@ -8,6 +8,15 @@ from email.mime.multipart import MIMEMultipart
 
 
 SITE_URL = 'https://hybrids24.ru'
+LOGO_URL = 'https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png'
+UNSUBSCRIBE_BASE = 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
+C_PRIMARY = '#8ab61e'
+C_PRIMARY_DARK = '#6a8f10'
+C_PRIMARY_LIGHT = '#f2f7e0'
+C_MUTED = '#6b7280'
+C_TEXT = '#1a1a1a'
+C_BORDER = '#e5e7eb'
+C_BG = '#f4f6f0'
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -94,6 +103,31 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     }
 
 
+def _email_wrapper(content_html: str) -> str:
+    return f"""<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:{C_BG};font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:{C_BG};padding:32px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);">
+      <tr>
+        <td style="background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});padding:28px 32px;text-align:center;">
+          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;">
+          <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;">Автосервис · Красноярск</p>
+        </td>
+      </tr>
+      {content_html}
+      <tr>
+        <td style="background:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid {C_BORDER};">
+          <p style="color:{C_MUTED};font-size:12px;margin:0;">Красноярск · hybrids24.ru · +7 (923) 016-67-50</p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>"""
+
+
 def _send_promotion_emails(
     subscribers: list,
     title: str,
@@ -107,7 +141,6 @@ def _send_promotion_emails(
     smtp_port = int(os.environ.get('SMTP_PORT', '465'))
     smtp_email = os.environ.get('SMTP_EMAIL')
     smtp_password = os.environ.get('SMTP_PASSWORD')
-    unsubscribe_base = f'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
 
     if not all([smtp_host, smtp_email, smtp_password]):
         return 0
@@ -122,79 +155,47 @@ def _send_promotion_emails(
             server.login(smtp_email, smtp_password)
             for email in subscribers:
                 try:
-                    unsubscribe_url = f'{unsubscribe_base}?email={email}'
+                    unsubscribe_url = f'{UNSUBSCRIBE_BASE}?email={email}'
                     msg = MIMEMultipart('alternative')
                     msg['Subject'] = f'Новая акция HEVSR: {title}'
                     msg['From'] = smtp_email
                     msg['To'] = email
 
-                    html = f"""
-                    <html><body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">
-                      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
+                    content = f"""
+                    <tr><td style="padding:32px;">
+                      <div style="background:{C_PRIMARY_LIGHT};border-left:4px solid {C_PRIMARY};border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:20px;">
+                        <p style="font-size:30px;font-weight:bold;color:{C_PRIMARY_DARK};margin:0 0 4px;">{discount}</p>
+                        <p style="font-size:18px;font-weight:bold;color:{C_TEXT};margin:0;">{title}</p>
+                      </div>
+                      <p style="color:{C_MUTED};line-height:1.7;margin:0 0 20px;font-size:15px;">{description}</p>
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                        <tr>
+                          <td style="padding:10px 14px;background:#f9fafb;border-radius:8px;width:48%;">
+                            <p style="color:{C_MUTED};font-size:12px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.5px;">Цена по акции</p>
+                            <p style="color:{C_PRIMARY_DARK};font-weight:bold;font-size:17px;margin:0;">{new_price}</p>
+                          </td>
+                          <td width="4%"></td>
+                          <td style="padding:10px 14px;background:#f9fafb;border-radius:8px;width:48%;">
+                            <p style="color:{C_MUTED};font-size:12px;margin:0 0 4px;text-transform:uppercase;letter-spacing:0.5px;">Действует</p>
+                            <p style="color:{C_TEXT};font-weight:bold;font-size:15px;margin:0;">{valid_text}</p>
+                          </td>
+                        </tr>
+                      </table>
+                      <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr><td align="center" style="padding-bottom:12px;">
+                          <a href="{promotion_url}" style="display:inline-block;background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:bold;">Смотреть акцию →</a>
+                        </td></tr>
+                        <tr><td align="center" style="padding-bottom:20px;">
+                          <a href="{booking_url}" style="display:inline-block;background:#ffffff;color:{C_PRIMARY_DARK};text-decoration:none;padding:12px 36px;border-radius:8px;font-size:15px;font-weight:bold;border:2px solid {C_PRIMARY};">Записаться на обслуживание</a>
+                        </td></tr>
                         <tr><td align="center">
-                          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                            <tr>
-                              <td style="background:linear-gradient(135deg,#1e40af,#2563eb);padding:32px;text-align:center;">
-                                <p style="color:#bfdbfe;font-size:13px;margin:0 0 8px;">HEVSR Автосервис · Красноярск</p>
-                                <h1 style="color:#ffffff;font-size:24px;margin:0;">Новая акция для вас!</h1>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="padding:32px;">
-                                <div style="background:#eff6ff;border-left:4px solid #2563eb;border-radius:4px;padding:16px 20px;margin-bottom:24px;">
-                                  <p style="font-size:28px;font-weight:bold;color:#1e40af;margin:0 0 4px;">{discount}</p>
-                                  <p style="font-size:18px;font-weight:bold;color:#1e3a8a;margin:0;">{title}</p>
-                                </div>
-                                <p style="color:#4b5563;line-height:1.6;margin:0 0 16px;">{description}</p>
-                                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-                                  <tr>
-                                    <td style="padding:8px 12px;background:#f9fafb;border-radius:6px;">
-                                      <span style="color:#6b7280;font-size:13px;">Цена по акции:</span>
-                                      <span style="color:#1e40af;font-weight:bold;font-size:16px;margin-left:8px;">{new_price}</span>
-                                    </td>
-                                    <td width="12"></td>
-                                    <td style="padding:8px 12px;background:#f9fafb;border-radius:6px;">
-                                      <span style="color:#6b7280;font-size:13px;">Действует:</span>
-                                      <span style="color:#374151;font-weight:bold;font-size:14px;margin-left:8px;">{valid_text}</span>
-                                    </td>
-                                  </tr>
-                                </table>
-                                <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
-                                  <tr>
-                                    <td align="center" style="padding-bottom:12px;">
-                                      <a href="{promotion_url}" style="display:inline-block;background:linear-gradient(135deg,#1e40af,#2563eb);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:bold;">
-                                        Смотреть акцию →
-                                      </a>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td align="center">
-                                      <a href="{booking_url}" style="display:inline-block;background:#ffffff;color:#2563eb;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:bold;border:2px solid #2563eb;">
-                                        Записаться на обслуживание
-                                      </a>
-                                    </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
-                                <p style="color:#9ca3af;font-size:12px;margin:0 0 6px;">
-                                  Вы получили это письмо, так как подписались на акции HEVSR.<br>
-                                  Красноярск · hybrids24.ru
-                                </p>
-                                <a href="{unsubscribe_url}" style="color:#d1d5db;font-size:11px;text-decoration:underline;">
-                                  Отписаться от рассылки
-                                </a>
-                              </td>
-                            </tr>
-                          </table>
+                          <a href="{unsubscribe_url}" style="color:#d1d5db;font-size:11px;text-decoration:underline;">Отписаться от рассылки</a>
                         </td></tr>
                       </table>
-                    </body></html>
+                    </td></tr>
                     """
 
-                    msg.attach(MIMEText(html, 'html', 'utf-8'))
+                    msg.attach(MIMEText(_email_wrapper(content), 'html', 'utf-8'))
                     server.send_message(msg)
                     sent += 1
                 except Exception:

@@ -6,10 +6,69 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
+LOGO_URL = 'https://cdn.poehali.dev/files/3d75c71d-b131-4e61-ab96-350ab118a033.png'
+SITE_URL = 'https://hybrids24.ru'
+UNSUBSCRIBE_BASE = 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6'
+
+# Brand colors
+C_PRIMARY = '#8ab61e'       # зелёный основной (hsl 94 73% 46% ~ #7ab317, уточнено до сайта)
+C_PRIMARY_DARK = '#6a8f10'  # тёмный зелёный
+C_PRIMARY_LIGHT = '#f2f7e0' # светлый фон
+C_TEXT = '#1a1a1a'
+C_MUTED = '#6b7280'
+C_BORDER = '#e5e7eb'
+C_BG = '#f4f6f0'
+
+
+def _email_wrapper(content_html: str) -> str:
+    return f"""<!DOCTYPE html>
+<html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:{C_BG};font-family:Arial,Helvetica,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:{C_BG};padding:32px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);">
+
+      <!-- HEADER -->
+      <tr>
+        <td style="background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});padding:28px 32px;text-align:center;">
+          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;">
+          <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;">Автосервис · Красноярск</p>
+        </td>
+      </tr>
+
+      <!-- CONTENT -->
+      {content_html}
+
+      <!-- FOOTER -->
+      <tr>
+        <td style="background:#f9fafb;padding:20px 32px;text-align:center;border-top:1px solid {C_BORDER};">
+          <p style="color:{C_MUTED};font-size:12px;margin:0 0 6px;">Красноярск · hybrids24.ru · +7 (923) 016-67-50</p>
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
+</body></html>"""
+
+
+def _btn_primary(url: str, label: str) -> str:
+    return f'<a href="{url}" style="display:inline-block;background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:8px;font-size:16px;font-weight:bold;">{label}</a>'
+
+
+def _btn_outline(url: str, label: str) -> str:
+    return f'<a href="{url}" style="display:inline-block;background:#ffffff;color:{C_PRIMARY_DARK};text-decoration:none;padding:12px 36px;border-radius:8px;font-size:15px;font-weight:bold;border:2px solid {C_PRIMARY};">{label}</a>'
+
+
+def _unsubscribe_link(email: str) -> str:
+    url = f'{UNSUBSCRIBE_BASE}?email={email}'
+    return f'<a href="{url}" style="color:#d1d5db;font-size:11px;text-decoration:underline;">Отписаться от рассылки</a>'
+
 
 def handler(event: dict, context) -> dict:
     """
-    Подписка на акции: сохраняет email в БД и отправляет уведомление на service@hybrids24.ru
+    Подписка на акции: сохраняет email в БД, отправляет приветственное письмо подписчику
+    и уведомление на service@hybrids24.ru
     """
 
     method = event.get('httpMethod', 'POST')
@@ -105,133 +164,81 @@ def handler(event: dict, context) -> dict:
     }
 
 
-def _smtp_connect():
-    smtp_host = os.environ.get('SMTP_HOST')
-    smtp_port = int(os.environ.get('SMTP_PORT', '465'))
-    smtp_email = os.environ.get('SMTP_EMAIL')
-    smtp_password = os.environ.get('SMTP_PASSWORD')
-    if not all([smtp_host, smtp_email, smtp_password]):
-        return None, None, None
-    return smtp_host, smtp_port, smtp_email, smtp_password
+def _smtp_session():
+    h = os.environ.get('SMTP_HOST')
+    p = int(os.environ.get('SMTP_PORT', '465'))
+    e = os.environ.get('SMTP_EMAIL')
+    pw = os.environ.get('SMTP_PASSWORD')
+    if not all([h, e, pw]):
+        return None, None, None, None
+    return h, p, e, pw
 
 
 def _send_admin_notification(subscriber_email: str):
-    smtp_host = os.environ.get('SMTP_HOST')
-    smtp_port = int(os.environ.get('SMTP_PORT', '465'))
-    smtp_email = os.environ.get('SMTP_EMAIL')
-    smtp_password = os.environ.get('SMTP_PASSWORD')
-
-    if not all([smtp_host, smtp_email, smtp_password]):
+    h, p, e, pw = _smtp_session()
+    if not h:
         return
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'Новый подписчик на акции — HEVSR'
-    msg['From'] = smtp_email
+    msg['From'] = e
     msg['To'] = 'service@hybrids24.ru'
 
-    html = f"""
-    <html><body style="font-family:Arial,sans-serif;color:#333;">
-      <div style="max-width:500px;margin:0 auto;padding:20px;">
-        <div style="background:#2563eb;color:white;padding:16px;border-radius:8px 8px 0 0;text-align:center;">
-          <h2 style="margin:0;">Новый подписчик на акции</h2>
-        </div>
-        <div style="background:#f9fafb;padding:20px;border:1px solid #e5e7eb;border-radius:0 0 8px 8px;">
-          <p><strong>Email:</strong> {subscriber_email}</p>
-          <p><strong>Дата:</strong> {datetime.now().strftime('%d.%m.%Y %H:%M')}</p>
-        </div>
-        <p style="text-align:center;color:#9ca3af;font-size:12px;margin-top:12px;">
-          Автоматическое уведомление сайта HEVSR
-        </p>
-      </div>
-    </body></html>
+    content = f"""
+      <tr><td style="padding:32px;">
+        <h2 style="color:{C_TEXT};margin:0 0 16px;">Новый подписчик</h2>
+        <table cellpadding="0" cellspacing="0" style="background:{C_PRIMARY_LIGHT};border-radius:8px;width:100%;">
+          <tr><td style="padding:16px 20px;">
+            <p style="margin:0 0 8px;color:{C_TEXT};"><strong>Email:</strong> {subscriber_email}</p>
+            <p style="margin:0;color:{C_MUTED};font-size:14px;"><strong>Дата:</strong> {datetime.now().strftime('%d.%m.%Y %H:%M')}</p>
+          </td></tr>
+        </table>
+      </td></tr>
     """
 
-    msg.attach(MIMEText(html, 'html', 'utf-8'))
-
-    with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
-        server.login(smtp_email, smtp_password)
+    msg.attach(MIMEText(_email_wrapper(content), 'html', 'utf-8'))
+    with smtplib.SMTP_SSL(h, p, timeout=10) as server:
+        server.login(e, pw)
         server.send_message(msg)
 
 
 def _send_welcome_email(subscriber_email: str):
-    smtp_host = os.environ.get('SMTP_HOST')
-    smtp_port = int(os.environ.get('SMTP_PORT', '465'))
-    smtp_email = os.environ.get('SMTP_EMAIL')
-    smtp_password = os.environ.get('SMTP_PASSWORD')
-
-    if not all([smtp_host, smtp_email, smtp_password]):
+    h, p, e, pw = _smtp_session()
+    if not h:
         return
 
-    unsubscribe_url = f'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6?email={subscriber_email}'
-    promotions_url = 'https://hybrids24.ru/promotions'
-    booking_url = 'https://hybrids24.ru/#booking'
+    promotions_url = f'{SITE_URL}/promotions'
+    booking_url = f'{SITE_URL}/#booking'
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = 'Вы подписались на акции HEVSR'
-    msg['From'] = smtp_email
+    msg['From'] = e
     msg['To'] = subscriber_email
 
-    html = f"""
-    <html><body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,sans-serif;">
-      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:32px 0;">
-        <tr><td align="center">
-          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-            <tr>
-              <td style="background:linear-gradient(135deg,#1e40af,#2563eb);padding:32px;text-align:center;">
-                <p style="color:#bfdbfe;font-size:13px;margin:0 0 8px;">HEVSR Автосервис · Красноярск</p>
-                <h1 style="color:#ffffff;font-size:24px;margin:0;">Вы подписаны на акции!</h1>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:32px;">
-                <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;">
-                  Спасибо за подписку! Теперь вы будете первыми узнавать о выгодных предложениях
-                  и скидках на обслуживание автомобиля в HEVSR.
-                </p>
-                <div style="background:#eff6ff;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
-                  <p style="color:#1e40af;font-weight:bold;margin:0 0 8px;">Что вас ждёт:</p>
-                  <ul style="color:#374151;margin:0;padding-left:20px;line-height:1.8;">
-                    <li>Эксклюзивные скидки для подписчиков</li>
-                    <li>Сезонные акции на ТО и ремонт</li>
-                    <li>Только 1–2 письма в месяц</li>
-                  </ul>
-                </div>
-                <table width="100%" cellpadding="0" cellspacing="0">
-                  <tr>
-                    <td align="center" style="padding-bottom:12px;">
-                      <a href="{promotions_url}" style="display:inline-block;background:linear-gradient(135deg,#1e40af,#2563eb);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:bold;">
-                        Смотреть текущие акции →
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center">
-                      <a href="{booking_url}" style="display:inline-block;background:#ffffff;color:#2563eb;text-decoration:none;padding:12px 32px;border-radius:8px;font-size:15px;font-weight:bold;border:2px solid #2563eb;">
-                        Записаться на обслуживание
-                      </a>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td style="background:#f9fafb;padding:16px 32px;text-align:center;border-top:1px solid #e5e7eb;">
-                <p style="color:#9ca3af;font-size:12px;margin:0 0 6px;">
-                  Красноярск · hybrids24.ru
-                </p>
-                <a href="{unsubscribe_url}" style="color:#d1d5db;font-size:11px;text-decoration:underline;">
-                  Отписаться от рассылки
-                </a>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-      </table>
-    </body></html>
+    content = f"""
+      <tr><td style="padding:32px;">
+        <h2 style="color:{C_TEXT};margin:0 0 12px;">Вы подписаны на акции!</h2>
+        <p style="color:{C_MUTED};font-size:15px;line-height:1.7;margin:0 0 20px;">
+          Спасибо за подписку! Теперь вы будете первыми узнавать о выгодных предложениях
+          и скидках на обслуживание автомобиля в HEVSR.
+        </p>
+        <table cellpadding="0" cellspacing="0" style="background:{C_PRIMARY_LIGHT};border-left:4px solid {C_PRIMARY};border-radius:0 8px 8px 0;width:100%;margin-bottom:24px;">
+          <tr><td style="padding:16px 20px;">
+            <p style="color:{C_PRIMARY_DARK};font-weight:bold;margin:0 0 10px;font-size:14px;">ЧТО ВАС ЖДЁТ:</p>
+            <p style="color:{C_TEXT};margin:0 0 6px;font-size:14px;">✓&nbsp; Эксклюзивные скидки для подписчиков</p>
+            <p style="color:{C_TEXT};margin:0 0 6px;font-size:14px;">✓&nbsp; Сезонные акции на ТО и ремонт</p>
+            <p style="color:{C_TEXT};margin:0;font-size:14px;">✓&nbsp; Только 1–2 письма в месяц</p>
+          </td></tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td align="center" style="padding-bottom:12px;">{_btn_primary(promotions_url, 'Смотреть текущие акции →')}</td></tr>
+          <tr><td align="center" style="padding-bottom:20px;">{_btn_outline(booking_url, 'Записаться на обслуживание')}</td></tr>
+          <tr><td align="center">{_unsubscribe_link(subscriber_email)}</td></tr>
+        </table>
+      </td></tr>
     """
 
-    msg.attach(MIMEText(html, 'html', 'utf-8'))
-
-    with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
-        server.login(smtp_email, smtp_password)
+    msg.attach(MIMEText(_email_wrapper(content), 'html', 'utf-8'))
+    with smtplib.SMTP_SSL(h, p, timeout=10) as server:
+        server.login(e, pw)
         server.send_message(msg)
