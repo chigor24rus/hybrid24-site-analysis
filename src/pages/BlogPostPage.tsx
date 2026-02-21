@@ -414,11 +414,9 @@ const BlogPostPage = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <Button size="lg" className="gradient-primary" asChild>
-            <Link to="/">
-              Записаться на обслуживание
-              <Icon name="ArrowRight" className="ml-2" size={20} />
-            </Link>
+          <Button size="lg" className="gradient-primary" onClick={() => setIsBookingOpen(true)}>
+            Записаться на обслуживание
+            <Icon name="ArrowRight" className="ml-2" size={20} />
           </Button>
         </div>
 
