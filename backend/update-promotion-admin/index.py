@@ -120,8 +120,8 @@ def _email_wrapper(content_html: str) -> str:
   <tr><td align="center">
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.10);">
       <tr>
-        <td style="background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});padding:28px 32px;text-align:center;">
-          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;background:#ffffff;border-radius:8px;padding:8px 12px;">
+        <td style="background:linear-gradient(135deg,#1a5a99,#206EB5);padding:28px 32px;text-align:center;">
+          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;">
           <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;">Автосервис · Красноярск</p>
         </td>
       </tr>
