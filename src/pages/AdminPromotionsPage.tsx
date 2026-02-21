@@ -121,6 +121,15 @@ const AdminPromotionsPage = () => {
   };
 
   const handleSave = async () => {
+    if (!formData.title || !formData.description || !formData.discount || !formData.new_price || !formData.details) {
+      alert('Заполните все обязательные поля: название, описание, скидка, новая цена, подробности');
+      return;
+    }
+    if (!isPermanent && !formData.valid_until) {
+      alert('Укажите дату окончания акции или отметьте "Постоянная акция"');
+      return;
+    }
+
     setSaving(true);
     try {
       const url = editingPromotion
