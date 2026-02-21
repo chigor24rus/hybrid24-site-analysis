@@ -31,7 +31,7 @@ def _email_wrapper(content_html: str) -> str:
       <!-- HEADER -->
       <tr>
         <td style="background:linear-gradient(135deg,{C_PRIMARY_DARK},{C_PRIMARY});padding:28px 32px;text-align:center;">
-          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;">
+          <img src="{LOGO_URL}" alt="HEVSR" width="140" style="display:block;margin:0 auto 14px;max-width:140px;background:#ffffff;border-radius:8px;padding:8px 12px;">
           <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:0;">Автосервис · Красноярск</p>
         </td>
       </tr>
