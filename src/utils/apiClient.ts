@@ -24,7 +24,7 @@ export const API_ENDPOINTS = {
   promotions: {
     list: 'https://functions.poehali.dev/f1aecbb9-bab7-4235-a31d-88082b99927d', // get-promotions
     listAdmin: 'https://functions.poehali.dev/0a5a5f24-24e2-4ab9-9cd1-b55adbc62b49', // get-promotions-admin
-    create: 'https://functions.poehali.dev/d374936d-7021-460c-a734-2db07ff903be', // create-promotion-admin
+    create: 'https://functions.poehali.dev/41e1a512-82fb-463c-ae25-c5687f6dc664', // new-promotion-notify
     update: 'https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45', // update-promotion-admin
     delete: 'https://functions.poehali.dev/7198e7ad-0464-4bc3-93f4-9200099874b5', // delete-promotion-admin
     subscribe: 'https://functions.poehali.dev/57151564-a5c5-4699-93d7-040cd4af8da6', // subscribe-promotion
