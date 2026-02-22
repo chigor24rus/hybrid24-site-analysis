@@ -22,6 +22,8 @@ const Admin1CTestPage = () => {
   const [servicesResult, setServicesResult] = useState<TestResult | null>(null);
   const [orderResult, setOrderResult] = useState<TestResult | null>(null);
   const [schemaResult, setSchemaResult] = useState<TestResult | null>(null);
+  const [readDocResult, setReadDocResult] = useState<TestResult | null>(null);
+  const [readOrgResult, setReadOrgResult] = useState<TestResult | null>(null);
 
   const [testOrderData, setTestOrderData] = useState({
     customer_name: 'Иван Тестов',
@@ -132,6 +134,44 @@ const Admin1CTestPage = () => {
         error: error instanceof Error ? error.message : 'Ошибка',
         timestamp: new Date().toISOString()
       });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testReadDoc = async () => {
+    setLoading(true);
+    setReadDocResult(null);
+    try {
+      const response = await fetch('https://functions.poehali.dev/1a8a5028-260f-4d4c-8b91-294a21afdd86?action=read_doc');
+      const data = await response.json();
+      setReadDocResult({
+        success: data.success !== false,
+        data: data,
+        error: data.success === false ? data.error : undefined,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: unknown) {
+      setReadDocResult({ success: false, error: error instanceof Error ? error.message : 'Ошибка', timestamp: new Date().toISOString() });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testReadOrg = async () => {
+    setLoading(true);
+    setReadOrgResult(null);
+    try {
+      const response = await fetch('https://functions.poehali.dev/1a8a5028-260f-4d4c-8b91-294a21afdd86?action=read_org');
+      const data = await response.json();
+      setReadOrgResult({
+        success: data.success !== false,
+        data: data,
+        error: data.success === false ? data.error : undefined,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: unknown) {
+      setReadOrgResult({ success: false, error: error instanceof Error ? error.message : 'Ошибка', timestamp: new Date().toISOString() });
     } finally {
       setLoading(false);
     }
@@ -333,6 +373,44 @@ const Admin1CTestPage = () => {
                 Получить поля документа
               </Button>
               {renderResult(schemaResult)}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="FileText" size={20} />
+                Читать заявку из 1С
+              </CardTitle>
+              <CardDescription>
+                Получить первый документ ЗаявкаНаРемонт — видны реальные поля и GUID
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={testReadDoc} disabled={loading} className="w-full" variant="outline">
+                {loading ? <Icon name="Loader" className="mr-2 animate-spin" size={18} /> : <Icon name="Download" className="mr-2" size={18} />}
+                Читать документ
+              </Button>
+              {renderResult(readDocResult)}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="Building2" size={20} />
+                Список организаций
+              </CardTitle>
+              <CardDescription>
+                Получить GUID организаций из 1С для подстановки в заявку
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={testReadOrg} disabled={loading} className="w-full" variant="outline">
+                {loading ? <Icon name="Loader" className="mr-2 animate-spin" size={18} /> : <Icon name="Download" className="mr-2" size={18} />}
+                Получить организации
+              </Button>
+              {renderResult(readOrgResult)}
             </CardContent>
           </Card>
 
