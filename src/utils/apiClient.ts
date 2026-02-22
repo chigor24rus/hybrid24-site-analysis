@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
     updateStatus: 'https://functions.poehali.dev/10a90c1d-6a39-498f-8e57-4d4ca76b442d', // update-booking-status
     export: 'https://functions.poehali.dev/aec56852-2ec9-4a3d-88bb-f6a21b412e84', // export-bookings
     delete: 'https://functions.poehali.dev/6441c23c-e63f-4a3e-8cd7-aabdb983ca45', // delete-bookings
+    retry1c: 'https://functions.poehali.dev/29203975-9d47-40b3-a5ae-a43247c45935', // retry-1c-sync
   },
   reviews: {
     list: 'https://functions.poehali.dev/fe3a5b5b-90b1-406c-82f5-e74bbf2ebdd9', // get-reviews

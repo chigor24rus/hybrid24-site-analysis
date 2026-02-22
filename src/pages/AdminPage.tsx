@@ -46,6 +46,7 @@ const AdminPage = () => {
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [retrying1cId, setRetrying1cId] = useState<number | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -100,6 +101,31 @@ const AdminPage = () => {
       alert('Ошибка при обновлении статуса');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleRetry1c = async (bookingId: number) => {
+    setRetrying1cId(bookingId);
+    try {
+      const response = await fetch(API_ENDPOINTS.bookings.retry1c, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ booking_id: bookingId }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBookings(prev =>
+          prev.map(b =>
+            b.id === bookingId ? { ...b, synced_to_1c: true, synced_to_1c_at: new Date().toISOString() } : b
+          )
+        );
+      } else {
+        alert(data.error || 'Не удалось передать в 1С');
+      }
+    } catch {
+      alert('Ошибка при отправке в 1С');
+    } finally {
+      setRetrying1cId(null);
     }
   };
 
@@ -376,6 +402,17 @@ const AdminPage = () => {
                           <p className="text-xs text-muted-foreground mb-1">Комментарий:</p>
                           <p className="text-sm">{booking.comment}</p>
                         </div>
+                      )}
+
+                      {!booking.synced_to_1c && (
+                        <button
+                          onClick={() => handleRetry1c(booking.id)}
+                          disabled={retrying1cId === booking.id}
+                          className="w-full mt-1 flex items-center justify-center gap-1.5 text-xs border border-dashed border-amber-400 text-amber-600 hover:bg-amber-50 rounded-md py-1.5 transition-colors disabled:opacity-50"
+                        >
+                          <Icon name={retrying1cId === booking.id ? 'Loader2' : 'RefreshCw'} size={12} className={retrying1cId === booking.id ? 'animate-spin' : ''} />
+                          {retrying1cId === booking.id ? 'Отправка...' : 'Повторить отправку в 1С'}
+                        </button>
                       )}
 
                       <AdminCardActions>
