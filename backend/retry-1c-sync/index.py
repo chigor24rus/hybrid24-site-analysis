@@ -109,7 +109,8 @@ def handler(event: dict, context) -> dict:
         auth=HTTPBasicAuth(odata_user, odata_password),
         headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
         json=doc_data,
-        timeout=15
+        timeout=15,
+        verify=False
     )
 
     print(f"[1C] status: {response.status_code}")
