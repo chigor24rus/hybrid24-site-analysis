@@ -3,6 +3,10 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
+from utils_1c import find_kontragent_by_phone, get_vid_remonta
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def handler(event: dict, context) -> dict:
@@ -28,10 +32,10 @@ def handler(event: dict, context) -> dict:
         }
 
     odata_url = os.environ.get('ODATA_1C_URL', '').rstrip('/')
-    odata_user = os.environ.get('ODATA_1C_USER')
-    odata_password = os.environ.get('ODATA_1C_PASSWORD')
+    doc_user = os.environ.get('ODATA_1C_DOC_USER') or os.environ.get('ODATA_1C_USER')
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD') or os.environ.get('ODATA_1C_PASSWORD')
 
-    if not all([odata_url, odata_user, odata_password]):
+    if not all([odata_url, doc_user, doc_password]):
         return {
             'statusCode': 500,
             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
@@ -58,15 +62,8 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'success': False, 'error': 'Имя и телефон обязательны'})
         }
 
-    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
-    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
     auth = HTTPBasicAuth(doc_user, doc_password)
-    headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-    import urllib3
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 
     description_parts = []
     if service_type:
@@ -87,7 +84,6 @@ def handler(event: dict, context) -> dict:
         description_parts.append(f"Комментарий: {comment}")
 
     description = "\n".join(description_parts)
-
     date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
     doc_data = {
@@ -99,27 +95,18 @@ def handler(event: dict, context) -> dict:
         "Комментарий": description,
     }
 
-    # Получаем ВидРемонта из справочника 1С
-    vid_remont_key = None
-    try:
-        vr_resp = requests.get(
-            f"{odata_url}/Catalog_ВидыРемонта?$top=1&$format=json",
-            auth=auth,
-            headers={'Accept': 'application/json'},
-            timeout=10,
-            verify=False
-        )
-        if vr_resp.status_code == 200:
-            vr_data = vr_resp.json()
-            items = vr_data.get('value', [])
-            if items:
-                vid_remont_key = items[0].get('Ref_Key')
-                print(f"[1C] ВидРемонта_Key: {vid_remont_key} ({items[0].get('Description', '')})")
-    except Exception as e:
-        print(f"[1C] Ошибка получения ВидыРемонта: {e}")
+    # Ищем контрагента по телефону
+    kontragent_key = find_kontragent_by_phone(odata_url, doc_user, doc_password, customer_phone)
+    if kontragent_key:
+        doc_data["Контрагент_Key"] = kontragent_key
 
+    # Получаем Вид ремонта
+    vid_remont_key = get_vid_remonta(odata_url, doc_user, doc_password)
     if vid_remont_key:
         doc_data["ВидРемонта_Key"] = vid_remont_key
+
+    print(f"[1C] POST {odata_url}/Document_ЗаявкаНаРемонт")
+    print(f"[1C] body: {json.dumps(doc_data, ensure_ascii=False)}")
 
     response = requests.post(
         f"{odata_url}/Document_ЗаявкаНаРемонт",
@@ -129,6 +116,9 @@ def handler(event: dict, context) -> dict:
         timeout=15,
         verify=False
     )
+
+    print(f"[1C] status: {response.status_code}")
+    print(f"[1C] response: {response.text[:500]}")
 
     if response.status_code in (200, 201):
         try:
@@ -142,7 +132,8 @@ def handler(event: dict, context) -> dict:
                 'success': True,
                 'message': 'Заявка передана в 1С',
                 '1c_ref': result.get('Ref_Key') or result.get('ref_key', ''),
-                '1c_number': result.get('Number', '')
+                '1c_number': result.get('Number', ''),
+                'kontragent_found': kontragent_key is not None
             }, ensure_ascii=False)
         }
     else:

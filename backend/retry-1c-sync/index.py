@@ -5,6 +5,10 @@ from psycopg2.extras import RealDictCursor
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
+from utils_1c import find_kontragent_by_phone, get_vid_remonta
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def handler(event: dict, context) -> dict:
@@ -101,25 +105,13 @@ def handler(event: dict, context) -> dict:
         "Комментарий": description,
     }
 
-    # Получаем ВидРемонта из справочника 1С
-    vid_remont_key = None
-    try:
-        vr_resp = requests.get(
-            f"{odata_url}/Catalog_ВидыРемонта?$top=1&$format=json",
-            auth=HTTPBasicAuth(odata_user, odata_password),
-            headers={'Accept': 'application/json'},
-            timeout=10,
-            verify=False
-        )
-        if vr_resp.status_code == 200:
-            vr_data = vr_resp.json()
-            items = vr_data.get('value', [])
-            if items:
-                vid_remont_key = items[0].get('Ref_Key')
-                print(f"[1C] ВидРемонта_Key: {vid_remont_key} ({items[0].get('Description', '')})")
-    except Exception as e:
-        print(f"[1C] Ошибка получения ВидыРемонта: {e}")
+    # Ищем контрагента по телефону
+    kontragent_key = find_kontragent_by_phone(odata_url, odata_user, odata_password, booking.get('customer_phone', ''))
+    if kontragent_key:
+        doc_data["Контрагент_Key"] = kontragent_key
 
+    # Получаем Вид ремонта
+    vid_remont_key = get_vid_remonta(odata_url, odata_user, odata_password)
     if vid_remont_key:
         doc_data["ВидРемонта_Key"] = vid_remont_key
 
