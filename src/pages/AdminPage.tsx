@@ -33,6 +33,8 @@ interface Booking {
   status: string;
   created_at: string;
   updated_at: string;
+  synced_to_1c: boolean;
+  synced_to_1c_at: string | null;
 }
 
 const AdminPage = () => {
@@ -310,7 +312,20 @@ const AdminPage = () => {
                     description={formatDateTime(booking.created_at)}
                     icon="User"
                     actions={
-                      <StatusBadge status={booking.status} />
+                      <div className="flex items-center gap-2">
+                        {booking.synced_to_1c ? (
+                          <span title={`Передано в 1С${booking.synced_to_1c_at ? ': ' + formatDateTime(booking.synced_to_1c_at) : ''}`} className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                            <Icon name="CheckCircle" size={14} />
+                            1С
+                          </span>
+                        ) : (
+                          <span title="Не передано в 1С" className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Icon name="Clock" size={14} />
+                            1С
+                          </span>
+                        )}
+                        <StatusBadge status={booking.status} />
+                      </div>
                     }
                   >
                     <div className="space-y-3">

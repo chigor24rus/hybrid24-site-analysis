@@ -8,7 +8,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 
 
-def _send_to_1c(booking_data: dict, booking_id: int):
+def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
     odata_url = os.environ.get('ODATA_1C_URL', '').rstrip('/')
     odata_user = os.environ.get('ODATA_1C_USER')
     odata_password = os.environ.get('ODATA_1C_PASSWORD')
@@ -46,15 +46,30 @@ def _send_to_1c(booking_data: dict, booking_id: int):
     }
 
     try:
-        requests.post(
+        response = requests.post(
             f"{odata_url}/Document_ЗаявкаНаРемонт",
             auth=HTTPBasicAuth(odata_user, odata_password),
             headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
             json=doc_data,
             timeout=10
         )
+        synced = response.status_code in (200, 201)
     except Exception:
-        pass
+        synced = False
+
+    if synced:
+        try:
+            conn2 = psycopg2.connect(dsn)
+            cur2 = conn2.cursor()
+            cur2.execute(
+                "UPDATE bookings SET synced_to_1c = TRUE, synced_to_1c_at = NOW() WHERE id = %s",
+                (booking_id,)
+            )
+            conn2.commit()
+            cur2.close()
+            conn2.close()
+        except Exception:
+            pass
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
@@ -128,7 +143,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cur.close()
         conn.close()
 
-        _send_to_1c(body_data, booking_id)
+        _send_to_1c(body_data, booking_id, dsn)
 
         return {
             'statusCode': 200,

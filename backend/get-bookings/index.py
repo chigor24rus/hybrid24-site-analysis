@@ -55,7 +55,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 """
                 SELECT id, customer_name, customer_phone, customer_email,
                        service_type, car_brand, car_model, preferred_date,
-                       preferred_time, comment, status, created_at, updated_at
+                       preferred_time, comment, status, created_at, updated_at,
+                       synced_to_1c, synced_to_1c_at
                 FROM bookings
                 WHERE status = %s
                 ORDER BY created_at DESC
@@ -67,7 +68,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 """
                 SELECT id, customer_name, customer_phone, customer_email,
                        service_type, car_brand, car_model, preferred_date,
-                       preferred_time, comment, status, created_at, updated_at
+                       preferred_time, comment, status, created_at, updated_at,
+                       synced_to_1c, synced_to_1c_at
                 FROM bookings
                 ORDER BY created_at DESC
                 """
@@ -86,6 +88,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 booking['updated_at'] = booking['updated_at'].isoformat()
             if booking.get('preferred_date'):
                 booking['preferred_date'] = booking['preferred_date'].isoformat()
+            if booking.get('synced_to_1c_at'):
+                booking['synced_to_1c_at'] = booking['synced_to_1c_at'].isoformat()
             bookings.append(booking)
         
         cur.close()
