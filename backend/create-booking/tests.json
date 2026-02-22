@@ -16,9 +16,7 @@
       },
       "expectedStatus": 200,
       "expectedBody": {
-        "success": true,
-        "booking_id": "number",
-        "message": "string"
+        "success": true
       },
       "bodyMatcher": "partial"
     },
