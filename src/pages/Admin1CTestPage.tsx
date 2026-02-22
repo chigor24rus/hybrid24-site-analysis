@@ -9,7 +9,7 @@ import Icon from '@/components/ui/icon';
 
 interface TestResult {
   success: boolean;
-  data?: any;
+  data?: unknown;
   error?: string;
   timestamp: string;
 }
@@ -21,6 +21,7 @@ const Admin1CTestPage = () => {
   const [metadataResult, setMetadataResult] = useState<TestResult | null>(null);
   const [servicesResult, setServicesResult] = useState<TestResult | null>(null);
   const [orderResult, setOrderResult] = useState<TestResult | null>(null);
+  const [schemaResult, setSchemaResult] = useState<TestResult | null>(null);
 
   const [testOrderData, setTestOrderData] = useState({
     customer_name: 'Иван Тестов',
@@ -54,10 +55,10 @@ const Admin1CTestPage = () => {
         error: response.ok ? undefined : data.error || 'Ошибка подключения',
         timestamp: new Date().toISOString()
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setConnectionResult({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Ошибка',
         timestamp: new Date().toISOString()
       });
     } finally {
@@ -78,10 +79,10 @@ const Admin1CTestPage = () => {
         error: response.ok ? undefined : data.error || 'Ошибка получения метаданных',
         timestamp: new Date().toISOString()
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMetadataResult({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Ошибка',
         timestamp: new Date().toISOString()
       });
     } finally {
@@ -102,10 +103,33 @@ const Admin1CTestPage = () => {
         error: response.ok ? undefined : data.error || 'Ошибка получения услуг',
         timestamp: new Date().toISOString()
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setServicesResult({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Ошибка',
+        timestamp: new Date().toISOString()
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const testSchema = async () => {
+    setLoading(true);
+    setSchemaResult(null);
+    try {
+      const response = await fetch('https://functions.poehali.dev/1a8a5028-260f-4d4c-8b91-294a21afdd86?action=schema&entity=Document_ЗаявкаНаРемонт');
+      const data = await response.json();
+      setSchemaResult({
+        success: data.success,
+        data: data,
+        error: data.success ? undefined : data.error || 'Ошибка',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: unknown) {
+      setSchemaResult({
+        success: false,
+        error: error instanceof Error ? error.message : 'Ошибка',
         timestamp: new Date().toISOString()
       });
     } finally {
@@ -132,10 +156,10 @@ const Admin1CTestPage = () => {
         error: response.ok ? undefined : data.error || 'Ошибка создания заказа',
         timestamp: new Date().toISOString()
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       setOrderResult({
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : 'Ошибка',
         timestamp: new Date().toISOString()
       });
     } finally {
@@ -281,6 +305,34 @@ const Admin1CTestPage = () => {
                 Получить услуги
               </Button>
               {renderResult(servicesResult)}
+            </CardContent>
+          </Card>
+
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Icon name="FileSearch" size={20} />
+                Схема Document_ЗаявкаНаРемонт
+              </CardTitle>
+              <CardDescription>
+                Получить реальные поля документа заявки на ремонт из 1С
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={testSchema}
+                disabled={loading}
+                className="w-full"
+                variant="outline"
+              >
+                {loading ? (
+                  <Icon name="Loader" className="mr-2 animate-spin" size={18} />
+                ) : (
+                  <Icon name="Play" className="mr-2" size={18} />
+                )}
+                Получить поля документа
+              </Button>
+              {renderResult(schemaResult)}
             </CardContent>
           </Card>
 
