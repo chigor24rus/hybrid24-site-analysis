@@ -13,7 +13,7 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
     """
     Ищет контрагента в 1С по номеру телефона.
     Сравниваем последние 10 цифр — игнорируем пробелы, скобки, тире.
-    Возвращает dict с ключами kontragent_key и zakazchik_key, или None.
+    Возвращает dict с ключами kontragent_key и ref_key, или None.
     """
     digits = normalize_phone(phone)
     if not digits:
@@ -47,6 +47,42 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
         print(f"[1C] Контрагент по телефону {phone} ({search_tail}) не найден среди {len(items)} записей")
     except Exception as e:
         print(f"[1C] Исключение при поиске контрагента: {e}")
+
+    return None
+
+
+def find_marketing_program_by_name(odata_url: str, user: str, password: str, promotion_name: str) -> str | None:
+    """
+    Ищет маркетинговую программу в 1С по названию (частичное совпадение).
+    Возвращает Ref_Key или None.
+    """
+    if not promotion_name:
+        return None
+
+    try:
+        resp = requests.get(
+            f"{odata_url}/Catalog_МаркетинговыеПрограммы?$format=json&$top=500",
+            auth=HTTPBasicAuth(user, password),
+            headers={'Accept': 'application/json'},
+            timeout=10,
+            verify=False
+        )
+        if resp.status_code != 200:
+            print(f"[1C] Ошибка загрузки маркетинговых программ: {resp.status_code}")
+            return None
+
+        items = resp.json().get('value', [])
+        promo_lower = promotion_name.lower().strip()
+        for item in items:
+            desc = (item.get('Description') or '').lower().strip()
+            if desc and (desc == promo_lower or promo_lower in desc or desc in promo_lower):
+                key = item.get('Ref_Key')
+                print(f"[1C] Найдена маркетинговая программа '{promotion_name}': {key} ('{item.get('Description')}')")
+                return key
+
+        print(f"[1C] Маркетинговая программа '{promotion_name}' не найдена среди {len(items)} записей")
+    except Exception as e:
+        print(f"[1C] Исключение при поиске маркетинговой программы: {e}")
 
     return None
 

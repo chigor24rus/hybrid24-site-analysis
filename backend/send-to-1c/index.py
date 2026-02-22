@@ -3,7 +3,7 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-from utils_1c import find_kontragent_by_phone, get_vid_remonta
+from utils_1c import find_kontragent_by_phone, get_vid_remonta, find_marketing_program_by_name
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -48,6 +48,7 @@ def handler(event: dict, context) -> dict:
     customer_phone = body.get('phone', '').strip()
     customer_email = body.get('email', '').strip()
     service_type = body.get('service', '').strip()
+    promotion = body.get('promotion', '').strip()
     car_brand = body.get('brand', '').strip()
     car_model = body.get('model', '').strip()
     preferred_date = body.get('date', '').strip()
@@ -68,6 +69,8 @@ def handler(event: dict, context) -> dict:
     description_parts = []
     if service_type:
         description_parts.append(f"Услуга: {service_type}")
+    if promotion:
+        description_parts.append(f"Акция: {promotion}")
     if car_brand:
         description_parts.append(f"Марка: {car_brand}")
     if car_model:
@@ -102,6 +105,12 @@ def handler(event: dict, context) -> dict:
         kontragent_key = kontragent_info.get('kontragent_key')
         if kontragent_key:
             doc_data["Контрагент_Key"] = kontragent_key
+
+    # Ищем маркетинговую программу (акцию) по названию
+    if promotion:
+        marketing_key = find_marketing_program_by_name(odata_url, doc_user, doc_password, promotion)
+        if marketing_key:
+            doc_data["МаркетинговаяПрограмма_Key"] = marketing_key
 
     # Получаем Вид ремонта
     vid_remont_key = get_vid_remonta(odata_url, doc_user, doc_password)

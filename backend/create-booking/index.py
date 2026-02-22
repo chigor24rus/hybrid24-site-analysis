@@ -111,6 +111,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         customer_phone = body_data.get('phone', '').strip()
         customer_email = body_data.get('email', '').strip()
         service_type = body_data.get('service', '').strip()
+        promotion = body_data.get('promotion', '').strip()
         car_brand = body_data.get('brand', '').strip()
         car_model = body_data.get('model', '').strip()
         preferred_date = body_data.get('date', '').strip()
@@ -134,12 +135,12 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         cur.execute(
             """
             INSERT INTO bookings
-            (customer_name, customer_phone, customer_email, service_type,
+            (customer_name, customer_phone, customer_email, service_type, promotion,
              car_brand, car_model, preferred_date, preferred_time, comment, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, 'new')
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'new')
             RETURNING id, created_at
             """,
-            (customer_name, customer_phone, customer_email, service_type,
+            (customer_name, customer_phone, customer_email, service_type, promotion,
              car_brand, car_model, preferred_date or None, preferred_time, comment)
         )
 

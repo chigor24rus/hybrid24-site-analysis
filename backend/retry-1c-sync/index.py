@@ -5,7 +5,7 @@ from psycopg2.extras import RealDictCursor
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-from utils_1c import find_kontragent_by_phone, get_vid_remonta
+from utils_1c import find_kontragent_by_phone, get_vid_remonta, find_marketing_program_by_name
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -60,7 +60,7 @@ def handler(event: dict, context) -> dict:
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
         """SELECT id, customer_name, customer_phone, customer_email,
-                  service_type, car_brand, car_model, preferred_date,
+                  service_type, promotion, car_brand, car_model, preferred_date,
                   preferred_time, comment
            FROM bookings WHERE id = %s""",
         (booking_id,)
@@ -79,6 +79,8 @@ def handler(event: dict, context) -> dict:
     parts = []
     if booking.get('service_type'):
         parts.append(f"Услуга: {booking['service_type']}")
+    if booking.get('promotion'):
+        parts.append(f"Акция: {booking['promotion']}")
     if booking.get('car_brand'):
         parts.append(f"Марка: {booking['car_brand']}")
     if booking.get('car_model'):
@@ -111,6 +113,13 @@ def handler(event: dict, context) -> dict:
         kontragent_key = kontragent_info.get('kontragent_key')
         if kontragent_key:
             doc_data["Контрагент_Key"] = kontragent_key
+
+    # Ищем маркетинговую программу (акцию) по названию
+    promotion = booking.get('promotion', '')
+    if promotion:
+        marketing_key = find_marketing_program_by_name(odata_url, odata_user, odata_password, promotion)
+        if marketing_key:
+            doc_data["МаркетинговаяПрограмма_Key"] = marketing_key
 
     # Получаем Вид ремонта
     vid_remont_key = get_vid_remonta(odata_url, odata_user, odata_password)
