@@ -38,6 +38,10 @@ def handler(event: dict, context) -> dict:
     
     auth = HTTPBasicAuth(odata_user, odata_password)
     
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+    doc_auth = HTTPBasicAuth(doc_user, doc_password)
+    
     try:
         query_params = event.get('queryStringParameters', {}) or {}
         action = query_params.get('action', 'ping')
@@ -226,7 +230,7 @@ def handler(event: dict, context) -> dict:
             elif action == 'read_doc':
                 response = requests.get(
                     f"{odata_url}/Document_ЗаявкаНаРемонт?$top=1&$format=json",
-                    auth=auth,
+                    auth=doc_auth,
                     headers={'Accept': 'application/json'},
                     timeout=15
                 )
@@ -244,7 +248,7 @@ def handler(event: dict, context) -> dict:
             elif action == 'read_org':
                 response = requests.get(
                     f"{odata_url}/Catalog_Организации?$top=5&$format=json&$select=Ref_Key,Description",
-                    auth=auth,
+                    auth=doc_auth,
                     headers={'Accept': 'application/json'},
                     timeout=15
                 )
@@ -316,7 +320,7 @@ def handler(event: dict, context) -> dict:
             
             response = requests.post(
                 f"{odata_url}/Document_Orders",
-                auth=auth,
+                auth=doc_auth,
                 headers={
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

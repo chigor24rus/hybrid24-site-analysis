@@ -21,7 +21,7 @@
   "update-promotion-admin": "https://functions.poehali.dev/07f352c0-0a8d-4307-9048-288381aa9f45",
   "delete-promotion-admin": "https://functions.poehali.dev/7198e7ad-0464-4bc3-93f4-9200099874b5",
   "upload-image": "https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b",
-  "models-upload": "https://functions.poehali.dev/158713b5-5bec-4512-afed-3075eb5db319",
+  "models-upload": "https://functions.poehali.dev/5b2da9ae-6907-49bc-8c1b-ca3ffd20d9e7",
   "create-promotion-admin": "https://functions.poehali.dev/5a0a3612-f9b3-4eba-8ac1-3230f81d8bc4",
   "create-booking": "https://functions.poehali.dev/55c039ba-f940-49e1-8589-73ace0f01f05",
   "get-brand-details": "https://functions.poehali.dev/a19b0c72-97a3-4d31-978e-35840f99a22c",
