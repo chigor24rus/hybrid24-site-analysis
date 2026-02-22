@@ -96,9 +96,13 @@ def handler(event: dict, context) -> dict:
     }
 
     # Ищем контрагента по телефону
-    kontragent_key = find_kontragent_by_phone(odata_url, doc_user, doc_password, customer_phone)
-    if kontragent_key:
-        doc_data["Контрагент_Key"] = kontragent_key
+    kontragent_info = find_kontragent_by_phone(odata_url, doc_user, doc_password, customer_phone)
+    kontragent_key = None
+    if kontragent_info:
+        kontragent_key = kontragent_info.get('kontragent_key')
+        if kontragent_key:
+            doc_data["Контрагент_Key"] = kontragent_key
+            doc_data["Заказчик_Key"] = kontragent_key
 
     # Получаем Вид ремонта
     vid_remont_key = get_vid_remonta(odata_url, doc_user, doc_password)
@@ -133,7 +137,7 @@ def handler(event: dict, context) -> dict:
                 'message': 'Заявка передана в 1С',
                 '1c_ref': result.get('Ref_Key') or result.get('ref_key', ''),
                 '1c_number': result.get('Number', ''),
-                'kontragent_found': kontragent_key is not None
+                'kontragent_found': kontragent_info is not None
             }, ensure_ascii=False)
         }
     else:

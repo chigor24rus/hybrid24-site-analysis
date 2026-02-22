@@ -106,9 +106,12 @@ def handler(event: dict, context) -> dict:
     }
 
     # Ищем контрагента по телефону
-    kontragent_key = find_kontragent_by_phone(odata_url, odata_user, odata_password, booking.get('customer_phone', ''))
-    if kontragent_key:
-        doc_data["Контрагент_Key"] = kontragent_key
+    kontragent_info = find_kontragent_by_phone(odata_url, odata_user, odata_password, booking.get('customer_phone', ''))
+    if kontragent_info:
+        kontragent_key = kontragent_info.get('kontragent_key')
+        if kontragent_key:
+            doc_data["Контрагент_Key"] = kontragent_key
+            doc_data["Заказчик_Key"] = kontragent_key
 
     # Получаем Вид ремонта
     vid_remont_key = get_vid_remonta(odata_url, odata_user, odata_password)

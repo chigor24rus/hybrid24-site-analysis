@@ -1,4 +1,5 @@
 import re
+import json
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -8,11 +9,11 @@ def normalize_phone(phone: str) -> str:
     return re.sub(r'\D', '', phone or '')
 
 
-def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: str) -> str | None:
+def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: str) -> dict | None:
     """
     Ищет контрагента в 1С по номеру телефона.
     Сравниваем последние 10 цифр — игнорируем пробелы, скобки, тире.
-    Возвращает Ref_Key контрагента или None.
+    Возвращает dict с ключами kontragent_key и zakazchik_key, или None.
     """
     digits = normalize_phone(phone)
     if not digits:
@@ -21,7 +22,6 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
     search_tail = digits[-10:] if len(digits) >= 10 else digits
 
     try:
-        # Тянем телефонные записи контрагентов (тип ТелефонРабочий / Телефон)
         resp = requests.get(
             f"{odata_url}/Catalog_Контрагенты_КонтактнаяИнформация"
             f"?$format=json&$top=2000",
@@ -41,8 +41,10 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
             item_tail = item_digits[-10:] if len(item_digits) >= 10 else item_digits
             if item_tail and item_tail == search_tail:
                 ref_key = item.get('Ref_Key')
-                print(f"[1C] Найден контрагент по телефону {phone}: {ref_key} ('{raw}')")
-                return ref_key
+                object_id = item.get('ObjectId')
+                print(f"[1C] Найден контрагент по телефону {phone}: ref={ref_key}, object={object_id} ('{raw}')")
+                print(f"[1C] Полная запись КонтактнаяИнформация: {json.dumps(item, ensure_ascii=False)}")
+                return {'kontragent_key': object_id, 'zakazchik_key': object_id, 'ref_key': ref_key}
 
         print(f"[1C] Контрагент по телефону {phone} ({search_tail}) не найден среди {len(items)} записей")
     except Exception as e:
