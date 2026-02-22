@@ -42,6 +42,10 @@ def handler(event: dict, context) -> dict:
     doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
     doc_auth = HTTPBasicAuth(doc_user, doc_password)
     
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    ssl_verify = False
+    
     try:
         query_params = event.get('queryStringParameters', {}) or {}
         action = query_params.get('action', 'ping')
@@ -52,7 +56,8 @@ def handler(event: dict, context) -> dict:
                     odata_url,
                     auth=auth,
                     timeout=10,
-                    headers={'Accept': 'application/json'}
+                    headers={'Accept': 'application/json'},
+                    verify=ssl_verify
                 )
                 
                 try:
@@ -94,7 +99,8 @@ def handler(event: dict, context) -> dict:
                 response = requests.get(
                     f"{odata_url}/$metadata",
                     auth=auth,
-                    timeout=10
+                    timeout=10,
+                    verify=ssl_verify
                 )
                 
                 try:
@@ -163,7 +169,8 @@ def handler(event: dict, context) -> dict:
                     f"{odata_url}/Catalog_Services",
                     auth=auth,
                     headers={'Accept': 'application/json'},
-                    timeout=10
+                    timeout=10,
+                    verify=ssl_verify
                 )
                 
                 data = response.json()
@@ -188,7 +195,8 @@ def handler(event: dict, context) -> dict:
                 response = requests.get(
                     f"{odata_url}/$metadata",
                     auth=auth,
-                    timeout=15
+                    timeout=15,
+                    verify=ssl_verify
                 )
                 try:
                     root = ET.fromstring(response.text)
@@ -232,7 +240,8 @@ def handler(event: dict, context) -> dict:
                     f"{odata_url}/Document_ЗаявкаНаРемонт?$top=1&$format=json",
                     auth=doc_auth,
                     headers={'Accept': 'application/json'},
-                    timeout=15
+                    timeout=15,
+                    verify=ssl_verify
                 )
                 return {
                     'statusCode': 200,
@@ -250,7 +259,8 @@ def handler(event: dict, context) -> dict:
                     f"{odata_url}/Catalog_Организации?$top=5&$format=json&$select=Ref_Key,Description",
                     auth=doc_auth,
                     headers={'Accept': 'application/json'},
-                    timeout=15
+                    timeout=15,
+                    verify=ssl_verify
                 )
                 return {
                     'statusCode': 200,
@@ -284,7 +294,8 @@ def handler(event: dict, context) -> dict:
                     f"{odata_url}/InformationRegister_сфпИсторияЗвонков?{filter_query}&$orderby=Period desc&$top=50",
                     auth=auth,
                     headers={'Accept': 'application/json'},
-                    timeout=30
+                    timeout=30,
+                    verify=ssl_verify
                 )
                 
                 data = response.json()
@@ -326,7 +337,8 @@ def handler(event: dict, context) -> dict:
                     'Content-Type': 'application/json'
                 },
                 json=order_data,
-                timeout=10
+                timeout=10,
+                verify=ssl_verify
             )
             
             if response.status_code in [200, 201]:
