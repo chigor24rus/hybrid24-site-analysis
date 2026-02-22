@@ -178,6 +178,40 @@ def handler(event: dict, context) -> dict:
                     })
                 }
             
+            elif action == 'schema':
+                entity = query_params.get('entity', 'Document_ЗаявкаНаРемонт')
+                response = requests.get(
+                    f"{odata_url}/{entity}?$top=1",
+                    auth=auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=15
+                )
+                try:
+                    data = response.json()
+                    sample = data.get('value', [{}])[0] if data.get('value') else {}
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'success': True,
+                            'entity': entity,
+                            'status_code': response.status_code,
+                            'fields': list(sample.keys()) if sample else [],
+                            'sample': sample
+                        }, ensure_ascii=False)
+                    }
+                except Exception as e:
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'success': False,
+                            'status_code': response.status_code,
+                            'raw': response.text[:1000],
+                            'error': str(e)
+                        }, ensure_ascii=False)
+                    }
+
             elif action == 'calls':
                 phone = query_params.get('phone', '')
                 if not phone:
