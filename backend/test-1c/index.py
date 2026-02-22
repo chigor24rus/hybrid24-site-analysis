@@ -179,25 +179,37 @@ def handler(event: dict, context) -> dict:
                 }
             
             elif action == 'schema':
+                import xml.etree.ElementTree as ET
                 entity = query_params.get('entity', 'Document_ЗаявкаНаРемонт')
                 response = requests.get(
-                    f"{odata_url}/{entity}?$top=1",
+                    f"{odata_url}/$metadata",
                     auth=auth,
-                    headers={'Accept': 'application/json'},
                     timeout=15
                 )
                 try:
-                    data = response.json()
-                    sample = data.get('value', [{}])[0] if data.get('value') else {}
+                    root = ET.fromstring(response.text)
+                    ns = {
+                        'edmx': 'http://schemas.microsoft.com/ado/2007/06/edmx',
+                        'edm': 'http://schemas.microsoft.com/ado/2009/11/edm',
+                    }
+                    fields = []
+                    for et in root.findall('.//edm:EntityType', ns):
+                        if et.get('Name') == entity:
+                            for prop in et.findall('.//edm:Property', ns):
+                                fields.append({
+                                    'name': prop.get('Name'),
+                                    'type': prop.get('Type'),
+                                    'nullable': prop.get('Nullable', 'true')
+                                })
+                            break
                     return {
                         'statusCode': 200,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({
                             'success': True,
                             'entity': entity,
-                            'status_code': response.status_code,
-                            'fields': list(sample.keys()) if sample else [],
-                            'sample': sample
+                            'fields_count': len(fields),
+                            'fields': fields
                         }, ensure_ascii=False)
                     }
                 except Exception as e:
@@ -206,9 +218,8 @@ def handler(event: dict, context) -> dict:
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({
                             'success': False,
-                            'status_code': response.status_code,
-                            'raw': response.text[:1000],
-                            'error': str(e)
+                            'error': str(e),
+                            'raw': response.text[:500]
                         }, ensure_ascii=False)
                     }
 
