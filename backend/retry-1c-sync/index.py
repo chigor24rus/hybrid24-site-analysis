@@ -41,8 +41,8 @@ def handler(event: dict, context) -> dict:
         }
 
     odata_url = os.environ.get('ODATA_1C_URL', '').rstrip('/')
-    odata_user = os.environ.get('ODATA_1C_USER')
-    odata_password = os.environ.get('ODATA_1C_PASSWORD')
+    odata_user = os.environ.get('ODATA_1C_DOC_USER') or os.environ.get('ODATA_1C_USER')
+    odata_password = os.environ.get('ODATA_1C_DOC_PASSWORD') or os.environ.get('ODATA_1C_PASSWORD')
     dsn = os.environ.get('DATABASE_URL')
 
     if not all([odata_url, odata_user, odata_password, dsn]):
