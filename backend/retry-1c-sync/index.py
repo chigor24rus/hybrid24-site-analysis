@@ -111,7 +111,6 @@ def handler(event: dict, context) -> dict:
         kontragent_key = kontragent_info.get('kontragent_key')
         if kontragent_key:
             doc_data["Контрагент_Key"] = kontragent_key
-            doc_data["Заказчик_Key"] = kontragent_key
 
     # Получаем Вид ремонта
     vid_remont_key = get_vid_remonta(odata_url, odata_user, odata_password)

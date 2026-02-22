@@ -41,10 +41,8 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
             item_tail = item_digits[-10:] if len(item_digits) >= 10 else item_digits
             if item_tail and item_tail == search_tail:
                 ref_key = item.get('Ref_Key')
-                object_id = item.get('ObjectId')
-                print(f"[1C] Найден контрагент по телефону {phone}: ref={ref_key}, object={object_id} ('{raw}')")
-                print(f"[1C] Полная запись КонтактнаяИнформация: {json.dumps(item, ensure_ascii=False)}")
-                return {'kontragent_key': object_id, 'zakazchik_key': object_id, 'ref_key': ref_key}
+                print(f"[1C] Найден контрагент по телефону {phone}: ref={ref_key} ('{raw}')")
+                return {'kontragent_key': ref_key, 'ref_key': ref_key}
 
         print(f"[1C] Контрагент по телефону {phone} ({search_tail}) не найден среди {len(items)} записей")
     except Exception as e:
