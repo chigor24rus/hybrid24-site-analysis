@@ -88,11 +88,11 @@ def handler(event: dict, context) -> dict:
 
     doc_data = {
         "Date": date_str,
-        "Контрагент_Key": "00000000-0000-0000-0000-000000000000",
-        "ИмяКлиента": customer_name,
-        "ТелефонКлиента": customer_phone,
-        "КомментарийКлиента": description,
-        "ОписаниеНеисправности": description
+        "ОбращениеККлиенту": customer_name,
+        "ПредставлениеТелефонаСтрокой": customer_phone,
+        "АдресЭлектроннойПочтыСтрокой": customer_email,
+        "ОписаниеПричиныОбращения": description,
+        "Комментарий": description,
     }
 
     response = requests.post(

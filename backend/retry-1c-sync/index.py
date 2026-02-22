@@ -94,11 +94,11 @@ def handler(event: dict, context) -> dict:
 
     doc_data = {
         "Date": date_str,
-        "Контрагент_Key": "00000000-0000-0000-0000-000000000000",
-        "ИмяКлиента": booking.get('customer_name', ''),
-        "ТелефонКлиента": booking.get('customer_phone', ''),
-        "КомментарийКлиента": description,
-        "ОписаниеНеисправности": description
+        "ОбращениеККлиенту": booking.get('customer_name', ''),
+        "ПредставлениеТелефонаСтрокой": booking.get('customer_phone', ''),
+        "АдресЭлектроннойПочтыСтрокой": booking.get('customer_email', ''),
+        "ОписаниеПричиныОбращения": description,
+        "Комментарий": description,
     }
 
     response = requests.post(

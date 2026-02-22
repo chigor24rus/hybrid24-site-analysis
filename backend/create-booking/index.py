@@ -38,11 +38,11 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
 
     doc_data = {
         "Date": date_str,
-        "Контрагент_Key": "00000000-0000-0000-0000-000000000000",
-        "ИмяКлиента": booking_data.get('name', ''),
-        "ТелефонКлиента": booking_data.get('phone', ''),
-        "КомментарийКлиента": description,
-        "ОписаниеНеисправности": description
+        "ОбращениеККлиенту": booking_data.get('name', ''),
+        "ПредставлениеТелефонаСтрокой": booking_data.get('phone', ''),
+        "АдресЭлектроннойПочтыСтрокой": booking_data.get('email', ''),
+        "ОписаниеПричиныОбращения": description,
+        "Комментарий": description,
     }
 
     try:
