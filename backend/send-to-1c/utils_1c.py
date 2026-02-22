@@ -17,7 +17,8 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
     if not digits:
         return None
 
-    search_digits = digits[-10:] if len(digits) >= 10 else digits
+    # Берём последние 7 цифр — они есть в строке даже при форматировании "+7 (908) 2120812"
+    search_digits = digits[-7:] if len(digits) >= 7 else digits
 
     try:
         resp = requests.get(
