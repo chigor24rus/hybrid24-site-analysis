@@ -2,6 +2,7 @@ import json
 import os
 import requests
 from requests.auth import HTTPBasicAuth
+from datetime import datetime
 
 def handler(event: dict, context) -> dict:
     '''API для тестирования интеграции с 1С через OData'''
@@ -315,57 +316,56 @@ def handler(event: dict, context) -> dict:
         
         elif method == 'POST':
             body = json.loads(event.get('body', '{}'))
-            
-            order_data = {
-                'CustomerName': body.get('customer_name'),
-                'CustomerPhone': body.get('customer_phone'),
-                'CustomerEmail': body.get('customer_email'),
-                'ServiceType': body.get('service_type'),
-                'CarBrand': body.get('car_brand'),
-                'CarModel': body.get('car_model'),
-                'PreferredDate': body.get('preferred_date'),
-                'PreferredTime': body.get('preferred_time'),
-                'Comment': body.get('comment')
+
+            parts = []
+            if body.get('service_type'):
+                parts.append(f"Услуга: {body['service_type']}")
+            if body.get('car_brand'):
+                parts.append(f"Марка: {body['car_brand']}")
+            if body.get('car_model'):
+                parts.append(f"Модель: {body['car_model']}")
+            if body.get('preferred_date'):
+                parts.append(f"Желаемая дата: {body['preferred_date']}")
+            if body.get('preferred_time'):
+                parts.append(f"Желаемое время: {body['preferred_time']}")
+            if body.get('customer_email'):
+                parts.append(f"Email: {body['customer_email']}")
+            if body.get('comment'):
+                parts.append(f"Комментарий: {body['comment']}")
+            description = "\n".join(parts)
+
+            doc_data = {
+                "Date": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+                "ОбращениеККлиенту": body.get('customer_name', ''),
+                "ПредставлениеТелефонаСтрокой": body.get('customer_phone', ''),
+                "АдресЭлектроннойПочтыСтрокой": body.get('customer_email', ''),
+                "ОписаниеПричиныОбращения": description,
+                "Комментарий": description,
             }
-            
+
             response = requests.post(
-                f"{odata_url}/Document_Orders",
+                f"{odata_url}/Document_ЗаявкаНаРемонт",
                 auth=doc_auth,
                 headers={
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                json=order_data,
-                timeout=10,
+                json=doc_data,
+                timeout=15,
                 verify=ssl_verify
             )
-            
-            if response.status_code in [200, 201]:
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'success': True,
-                        'message': 'Заказ успешно создан в 1С',
-                        'order': response.json()
-                    })
-                }
-            else:
-                return {
-                    'statusCode': response.status_code,
-                    'headers': {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    'body': json.dumps({
-                        'success': False,
-                        'error': f'Ошибка создания заказа: {response.status_code}',
-                        'details': response.text
-                    })
-                }
+
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({
+                    'success': response.status_code in [200, 201],
+                    'status_code': response.status_code,
+                    'message': 'Заявка создана в 1С' if response.status_code in [200, 201] else f'Ошибка {response.status_code}',
+                    'data': response.json() if response.ok else None,
+                    'raw': response.text[:1000]
+                }, ensure_ascii=False)
+            }
         
         return {
             'statusCode': 405,
