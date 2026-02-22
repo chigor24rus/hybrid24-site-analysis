@@ -101,6 +101,28 @@ def handler(event: dict, context) -> dict:
         "Комментарий": description,
     }
 
+    # Получаем ВидРемонта из справочника 1С
+    vid_remont_key = None
+    try:
+        vr_resp = requests.get(
+            f"{odata_url}/Catalog_ВидыРемонта?$top=1&$format=json",
+            auth=HTTPBasicAuth(odata_user, odata_password),
+            headers={'Accept': 'application/json'},
+            timeout=10,
+            verify=False
+        )
+        if vr_resp.status_code == 200:
+            vr_data = vr_resp.json()
+            items = vr_data.get('value', [])
+            if items:
+                vid_remont_key = items[0].get('Ref_Key')
+                print(f"[1C] ВидРемонта_Key: {vid_remont_key} ({items[0].get('Description', '')})")
+    except Exception as e:
+        print(f"[1C] Ошибка получения ВидыРемонта: {e}")
+
+    if vid_remont_key:
+        doc_data["ВидРемонта_Key"] = vid_remont_key
+
     print(f"[1C] POST {odata_url}/Document_ЗаявкаНаРемонт")
     print(f"[1C] body: {json.dumps(doc_data, ensure_ascii=False)}")
 
