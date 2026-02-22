@@ -38,13 +38,10 @@ def handler(event: dict, context) -> dict:
     
     auth = HTTPBasicAuth(odata_user, odata_password)
     
-    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
-    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
-    doc_auth = HTTPBasicAuth(doc_user, doc_password)
-    
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     ssl_verify = False
+    doc_auth = auth
     
     try:
         query_params = event.get('queryStringParameters', {}) or {}

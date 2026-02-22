@@ -19,8 +19,7 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
     if not all([odata_url, odata_user, odata_password]):
         return
 
-    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
-    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+
 
     parts = []
     if booking_data.get('service'):
