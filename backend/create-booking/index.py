@@ -9,12 +9,18 @@ from requests.auth import HTTPBasicAuth
 
 
 def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
     odata_url = os.environ.get('ODATA_1C_URL', '').rstrip('/')
     odata_user = os.environ.get('ODATA_1C_USER')
     odata_password = os.environ.get('ODATA_1C_PASSWORD')
 
     if not all([odata_url, odata_user, odata_password]):
         return
+
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
 
     parts = []
     if booking_data.get('service'):

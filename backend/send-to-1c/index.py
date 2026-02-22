@@ -58,11 +58,15 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'success': False, 'error': 'Имя и телефон обязательны'})
         }
 
-    auth = HTTPBasicAuth(odata_user, odata_password)
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+    auth = HTTPBasicAuth(doc_user, doc_password)
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
+    import urllib3
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     description_parts = []
     if service_type:
@@ -100,7 +104,8 @@ def handler(event: dict, context) -> dict:
         auth=auth,
         headers=headers,
         json=doc_data,
-        timeout=15
+        timeout=15,
+        verify=False
     )
 
     if response.status_code in (200, 201):
