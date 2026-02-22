@@ -223,6 +223,42 @@ def handler(event: dict, context) -> dict:
                         }, ensure_ascii=False)
                     }
 
+            elif action == 'read_doc':
+                response = requests.get(
+                    f"{odata_url}/Document_ЗаявкаНаРемонт?$top=1&$format=json",
+                    auth=auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=15
+                )
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'status_code': response.status_code,
+                        'data': response.json() if response.ok else None,
+                        'raw': response.text[:2000]
+                    }, ensure_ascii=False)
+                }
+
+            elif action == 'read_org':
+                response = requests.get(
+                    f"{odata_url}/Catalog_Организации?$top=5&$format=json&$select=Ref_Key,Description",
+                    auth=auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=15
+                )
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'status_code': response.status_code,
+                        'data': response.json() if response.ok else None,
+                        'raw': response.text[:2000]
+                    }, ensure_ascii=False)
+                }
+
             elif action == 'calls':
                 phone = query_params.get('phone', '')
                 if not phone:
