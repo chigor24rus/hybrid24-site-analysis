@@ -101,6 +101,9 @@ def handler(event: dict, context) -> dict:
         "Комментарий": description,
     }
 
+    print(f"[1C] POST {odata_url}/Document_ЗаявкаНаРемонт")
+    print(f"[1C] body: {json.dumps(doc_data, ensure_ascii=False)}")
+
     response = requests.post(
         f"{odata_url}/Document_ЗаявкаНаРемонт",
         auth=HTTPBasicAuth(odata_user, odata_password),
@@ -108,6 +111,9 @@ def handler(event: dict, context) -> dict:
         json=doc_data,
         timeout=15
     )
+
+    print(f"[1C] status: {response.status_code}")
+    print(f"[1C] response: {response.text[:2000]}")
 
     if response.status_code in (200, 201):
         conn2 = psycopg2.connect(dsn)
