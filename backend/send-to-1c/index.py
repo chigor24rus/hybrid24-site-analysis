@@ -58,7 +58,9 @@ def handler(event: dict, context) -> dict:
             'body': json.dumps({'success': False, 'error': 'Имя и телефон обязательны'})
         }
 
-    auth = HTTPBasicAuth(odata_user, odata_password)
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+    auth = HTTPBasicAuth(doc_user, doc_password)
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'

@@ -50,10 +50,13 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
         "Комментарий": description,
     }
 
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+
     try:
         response = requests.post(
             f"{odata_url}/Document_ЗаявкаНаРемонт",
-            auth=HTTPBasicAuth(odata_user, odata_password),
+            auth=HTTPBasicAuth(doc_user, doc_password),
             headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
             json=doc_data,
             timeout=10
