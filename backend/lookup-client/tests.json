@@ -3,6 +3,7 @@
     {
       "name": "Lookup without phone",
       "method": "GET",
+      "path": "/?phone=",
       "expectedStatus": 400,
       "expectedBody": {"error": "string"},
       "bodyMatcher": "partial"
@@ -10,7 +11,7 @@
     {
       "name": "Lookup with unknown phone",
       "method": "GET",
-      "queryParams": {"phone": "+79232833121"},
+      "path": "/?phone=%2B70000000000",
       "expectedStatus": 200,
       "expectedBody": {"found": false},
       "bodyMatcher": "partial"
