@@ -96,7 +96,7 @@ const ServiceSelector = ({
             <SelectContent>
               <SelectItem value="none">Без акции</SelectItem>
               {promotions.map(promo => (
-                <SelectItem key={promo.id} value={promo.id.toString()}>
+                <SelectItem key={promo.id} value={promo.title}>
                   {promo.title} ({promo.discount})
                 </SelectItem>
               ))}

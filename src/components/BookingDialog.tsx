@@ -56,7 +56,6 @@ const BookingDialog = ({
     formData: { ...formData, brand: selectedBrand },
     brands,
     models,
-    promotions,
     setIsBookingOpen,
   });
 

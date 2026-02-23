@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { API_ENDPOINTS } from '@/utils/apiClient';
 import { services } from './ServiceSelector';
 import { BOOKING_CONSTANTS } from './constants';
-import type { Brand, Model, Promotion, BookingFormData } from './types';
+import type { Brand, Model, BookingFormData } from './types';
 
 interface UseBookingSubmitParams {
   selectedServices: number[];
@@ -13,7 +13,6 @@ interface UseBookingSubmitParams {
   formData: BookingFormData;
   brands: Brand[];
   models: Model[];
-  promotions: Promotion[];
   setIsBookingOpen: (open: boolean) => void;
 }
 
@@ -25,7 +24,6 @@ export const useBookingSubmit = ({
   formData,
   brands,
   models,
-  promotions,
   setIsBookingOpen,
 }: UseBookingSubmitParams) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,14 +37,12 @@ export const useBookingSubmit = ({
 
     const selectedBrand = brands.find(b => b.id.toString() === formData.brand);
     const selectedModel = models.find(m => m.id.toString() === formData.model);
-    const selectedPromotionData = promotions.find(p => p.id.toString() === selectedPromotion);
-
     return {
       name: formData.name,
       phone: formData.phone,
       email: formData.email,
       service: selectedServiceTitles || BOOKING_CONSTANTS.PLACEHOLDER_VALUE,
-      promotion: selectedPromotionData?.title || '',
+      promotion: selectedPromotion === 'none' ? '' : selectedPromotion,
       brand: selectedBrand?.name || '',
       model: selectedModel?.name || '',
       date: date ? format(date, 'yyyy-MM-dd') : '',
