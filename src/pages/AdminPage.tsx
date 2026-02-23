@@ -413,16 +413,18 @@ const AdminPage = () => {
                         </div>
                       )}
 
-                      {!booking.synced_to_1c && (
-                        <button
-                          onClick={() => handleRetry1c(booking.id)}
-                          disabled={retrying1cId === booking.id}
-                          className="w-full mt-1 flex items-center justify-center gap-1.5 text-xs border border-dashed border-amber-400 text-amber-600 hover:bg-amber-50 rounded-md py-1.5 transition-colors disabled:opacity-50"
-                        >
-                          <Icon name={retrying1cId === booking.id ? 'Loader2' : 'RefreshCw'} size={12} className={retrying1cId === booking.id ? 'animate-spin' : ''} />
-                          {retrying1cId === booking.id ? 'Отправка...' : 'Повторить отправку в 1С'}
-                        </button>
-                      )}
+                      <button
+                        onClick={() => handleRetry1c(booking.id)}
+                        disabled={retrying1cId === booking.id}
+                        className={`w-full mt-1 flex items-center justify-center gap-1.5 text-xs rounded-md py-1.5 transition-colors disabled:opacity-50 ${
+                          booking.synced_to_1c
+                            ? 'border border-dashed border-green-400 text-green-600 hover:bg-green-50'
+                            : 'border border-dashed border-amber-400 text-amber-600 hover:bg-amber-50'
+                        }`}
+                      >
+                        <Icon name={retrying1cId === booking.id ? 'Loader2' : 'RefreshCw'} size={12} className={retrying1cId === booking.id ? 'animate-spin' : ''} />
+                        {retrying1cId === booking.id ? 'Отправка...' : booking.synced_to_1c ? 'Обновить заявку в 1С' : 'Повторить отправку в 1С'}
+                      </button>
 
                       <AdminCardActions>
                         <Select
