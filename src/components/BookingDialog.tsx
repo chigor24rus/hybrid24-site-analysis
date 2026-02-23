@@ -34,6 +34,10 @@ const BookingDialog = ({
     }
   }, [initialSelectedServices]);
   const [selectedPromotion, setSelectedPromotion] = useState<string>(initialPromotion);
+
+  useEffect(() => {
+    setSelectedPromotion(initialPromotion);
+  }, [initialPromotion]);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
   const [formData, setFormData] = useState<BookingFormData>(INITIAL_FORM_DATA);

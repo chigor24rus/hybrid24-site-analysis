@@ -76,7 +76,7 @@ const Index = () => {
       
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
-      <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+      <Dialog open={isBookingOpen} onOpenChange={(open) => { setIsBookingOpen(open); if (!open) setBookingPromotion(''); }}>
         <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} initialPromotion={bookingPromotion} />
       </Dialog>
 
