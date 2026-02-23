@@ -21,9 +21,65 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
 
 
 
+    import re
+
+    def normalize_phone(phone):
+        return re.sub(r'\D', '', phone or '')
+
+    def find_kontragent_by_phone(url, user, pwd, phone):
+        digits = normalize_phone(phone)
+        if not digits:
+            return None
+        search_tail = digits[-10:] if len(digits) >= 10 else digits
+        try:
+            resp = requests.get(
+                f"{url}/Catalog_Контрагенты_КонтактнаяИнформация?$format=json&$top=2000",
+                auth=HTTPBasicAuth(user, pwd),
+                headers={'Accept': 'application/json'},
+                timeout=10,
+                verify=False
+            )
+            if resp.status_code == 200:
+                for item in resp.json().get('value', []):
+                    raw = item.get('Представление', '') or ''
+                    item_tail = normalize_phone(raw)[-10:]
+                    if item_tail and item_tail == search_tail:
+                        key = item.get('ObjectId') or item.get('Ref_Key')
+                        print(f"[1C create] Контрагент найден: {key}")
+                        return key
+        except Exception as e:
+            print(f"[1C create] Ошибка поиска контрагента: {e}")
+        return None
+
+    def find_marketing_by_name(url, user, pwd, name):
+        if not name:
+            return None
+        try:
+            resp = requests.get(
+                f"{url}/Catalog_МаркетинговыеПрограммы?$format=json&$top=500",
+                auth=HTTPBasicAuth(user, pwd),
+                headers={'Accept': 'application/json'},
+                timeout=10,
+                verify=False
+            )
+            if resp.status_code == 200:
+                name_lower = name.lower().strip()
+                for item in resp.json().get('value', []):
+                    desc = (item.get('Description') or '').lower().strip()
+                    if desc and (desc == name_lower or name_lower in desc or desc in name_lower):
+                        print(f"[1C create] Акция найдена: {item.get('Ref_Key')}")
+                        return item.get('Ref_Key')
+        except Exception as e:
+            print(f"[1C create] Ошибка поиска акции: {e}")
+        return None
+
     parts = []
+    if booking_data.get('phone'):
+        parts.append(f"Телефон: {booking_data['phone']}")
     if booking_data.get('service'):
         parts.append(f"Услуга: {booking_data['service']}")
+    if booking_data.get('promotion'):
+        parts.append(f"Акция: {booking_data['promotion']}")
     if booking_data.get('brand'):
         parts.append(f"Марка: {booking_data['brand']}")
     if booking_data.get('model'):
@@ -41,6 +97,9 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
     description = "\n".join(parts)
     date_str = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
+    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
+    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+
     doc_data = {
         "Date": date_str,
         "ОбращениеККлиенту": booking_data.get('name', ''),
@@ -50,16 +109,31 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
         "Комментарий": description,
     }
 
-    doc_user = os.environ.get('ODATA_1C_DOC_USER', odata_user)
-    doc_password = os.environ.get('ODATA_1C_DOC_PASSWORD', odata_password)
+    # Контрагент по телефону
+    kontragent_key = find_kontragent_by_phone(odata_url, doc_user, doc_password, booking_data.get('phone', ''))
+    if kontragent_key:
+        doc_data["Заказчик_Key"] = kontragent_key
+        doc_data["Контрагент_Key"] = kontragent_key
+
+    # Маркетинговая программа
+    promotion_name = booking_data.get('promotion', '')
+    if promotion_name:
+        marketing_key = find_marketing_by_name(odata_url, doc_user, doc_password, promotion_name)
+        if marketing_key:
+            doc_data["МаркетинговаяПрограмма_Key"] = marketing_key
+
+    print(f"[1C create] body: {json.dumps(doc_data, ensure_ascii=False)}")
 
     try:
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
         response = requests.post(
             f"{odata_url}/Document_ЗаявкаНаРемонт",
             auth=HTTPBasicAuth(doc_user, doc_password),
             headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
             json=doc_data,
-            timeout=10
+            timeout=10,
+            verify=False
         )
         synced = response.status_code in (200, 201)
     except Exception:
