@@ -93,6 +93,7 @@ export const useBookingSubmit = ({
 
     try {
       const bookingData = prepareBookingData();
+      console.log('[Booking] Submitting data:', JSON.stringify(bookingData));
 
       const response = await fetch(API_ENDPOINTS.bookings.create, {
         method: 'POST',
