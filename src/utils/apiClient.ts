@@ -41,6 +41,9 @@ export const API_ENDPOINTS = {
   admin: {
     verify: 'https://functions.poehali.dev/f154dcd8-cf73-4c58-b0c2-63e293d16b4a', // verify-admin
   },
+  client: {
+    lookup: 'https://functions.poehali.dev/877ade05-9f3a-48c3-a77f-2e611bb9993e', // lookup-client
+  },
   images: {
     upload: 'https://functions.poehali.dev/0c2538b8-020a-4ffa-a9dc-cb7b0574de2b', // upload-image
   },

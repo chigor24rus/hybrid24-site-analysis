@@ -36,6 +36,14 @@ interface Booking {
   updated_at: string;
   synced_to_1c: boolean;
   synced_to_1c_at: string | null;
+  // Поля из 1С
+  kontragent_key?: string;
+  avtomobil_key?: string;
+  car_full_name?: string;
+  plate_number?: string;
+  vin?: string;
+  car_year?: string;
+  client_found_in_1c?: boolean;
 }
 
 const AdminPage = () => {
@@ -395,11 +403,27 @@ const AdminPage = () => {
                         />
                       )}
                       
+                      {booking.client_found_in_1c && (
+                        <AdminCardItem
+                          icon="UserCheck"
+                          label="Клиент 1С"
+                          value={<span className="text-green-600 text-sm font-medium">Найден в базе</span>}
+                        />
+                      )}
+
                       <AdminCardItem
                         icon="Car"
                         label="Автомобиль"
-                        value={`${booking.car_brand} ${booking.car_model}`}
+                        value={booking.car_full_name || `${booking.car_brand} ${booking.car_model}`.trim() || '—'}
                       />
+
+                      {booking.plate_number && (
+                        <AdminCardItem icon="Hash" label="Гос.номер" value={booking.plate_number} />
+                      )}
+
+                      {booking.vin && (
+                        <AdminCardItem icon="Fingerprint" label="VIN" value={booking.vin} />
+                      )}
                       
                       {booking.preferred_date && (
                         <AdminCardItem

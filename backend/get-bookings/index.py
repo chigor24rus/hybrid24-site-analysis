@@ -56,7 +56,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 SELECT id, customer_name, customer_phone, customer_email,
                        service_type, promotion, car_brand, car_model, preferred_date,
                        preferred_time, comment, status, created_at, updated_at,
-                       synced_to_1c, synced_to_1c_at
+                       synced_to_1c, synced_to_1c_at,
+                       kontragent_key, avtomobil_key, car_full_name, plate_number, vin, car_year, client_found_in_1c
                 FROM bookings
                 WHERE status = %s
                 ORDER BY created_at DESC
@@ -69,7 +70,8 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 SELECT id, customer_name, customer_phone, customer_email,
                        service_type, promotion, car_brand, car_model, preferred_date,
                        preferred_time, comment, status, created_at, updated_at,
-                       synced_to_1c, synced_to_1c_at
+                       synced_to_1c, synced_to_1c_at,
+                       kontragent_key, avtomobil_key, car_full_name, plate_number, vin, car_year, client_found_in_1c
                 FROM bookings
                 ORDER BY created_at DESC
                 """

@@ -1,4 +1,5 @@
 {
+  "lookup-client": "https://functions.poehali.dev/877ade05-9f3a-48c3-a77f-2e611bb9993e",
   "create-booking-v2": "https://functions.poehali.dev/b7a2c72b-9709-4775-8f67-f367c173d81d",
   "retry-1c-sync": "https://functions.poehali.dev/29203975-9d47-40b3-a5ae-a43247c45935",
   "send-to-1c": "https://functions.poehali.dev/2f3adc24-8a06-406a-b6f1-c0d2a0a01379",

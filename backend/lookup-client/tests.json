@@ -1,0 +1,19 @@
+{
+  "tests": [
+    {
+      "name": "Lookup without phone",
+      "method": "GET",
+      "expectedStatus": 400,
+      "expectedBody": {"error": "string"},
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Lookup with unknown phone",
+      "method": "GET",
+      "queryParams": {"phone": "+70000000000"},
+      "expectedStatus": 200,
+      "expectedBody": {"found": false},
+      "bodyMatcher": "partial"
+    }
+  ]
+}

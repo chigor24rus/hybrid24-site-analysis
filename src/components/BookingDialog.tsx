@@ -7,6 +7,7 @@ import DateTimeSelector from './booking/DateTimeSelector';
 import ContactForm from './booking/ContactForm';
 import { useBookingData } from './booking/useBookingData';
 import { useBookingSubmit } from './booking/useBookingSubmit';
+import { useClientLookup } from './booking/useClientLookup';
 import type { BookingDialogProps, BookingFormData } from './booking/types';
 
 const INITIAL_FORM_DATA: BookingFormData = {
@@ -34,6 +35,7 @@ const BookingDialog = ({
     }
   }, [initialSelectedServices]);
   const [selectedPromotion, setSelectedPromotion] = useState<string>(initialPromotion);
+  const { lookup, lookupLoading, clientData } = useClientLookup();
 
   useEffect(() => {
     setSelectedPromotion(initialPromotion);
@@ -62,6 +64,7 @@ const BookingDialog = ({
     brands,
     models,
     setIsBookingOpen,
+    clientData,
   });
 
   const toggleService = (id: number) => {
@@ -81,6 +84,19 @@ const BookingDialog = ({
     setSelectedBrand(value);
     updateFormField('model', '');
   };
+
+  // Автоподстановка данных из 1С при нахождении клиента
+  useEffect(() => {
+    if (!clientData?.found) return;
+    if (clientData.name && !formData.name) {
+      updateFormField('name', clientData.name);
+    }
+    if (clientData.email && !formData.email) {
+      updateFormField('email', clientData.email);
+    }
+    if (clientData.car?.vin) updateFormField('vin', clientData.car.vin);
+    if (clientData.car?.plate_number) updateFormField('plateNumber', clientData.car.plate_number);
+  }, [clientData]);
 
   if (submitSuccess) {
     return (
@@ -139,8 +155,10 @@ const BookingDialog = ({
           models={models}
           loadingBrands={loadingBrands}
           agreedToTerms={agreedToTerms}
+          lookupLoading={lookupLoading}
+          clientData={clientData}
           onNameChange={(value) => updateFormField('name', value)}
-          onPhoneChange={(value) => updateFormField('phone', value)}
+          onPhoneChange={(value) => { updateFormField('phone', value); lookup(value); }}
           onEmailChange={(value) => updateFormField('email', value)}
           onBrandChange={handleBrandChange}
           onModelChange={(value) => updateFormField('model', value)}

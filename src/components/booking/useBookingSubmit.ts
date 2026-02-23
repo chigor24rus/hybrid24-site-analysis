@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from '@/utils/apiClient';
 import { services } from './ServiceSelector';
 import { BOOKING_CONSTANTS } from './constants';
 import type { Brand, Model, BookingFormData } from './types';
+import type { ClientFromCrm } from './useClientLookup';
 
 interface UseBookingSubmitParams {
   selectedServices: number[];
@@ -14,6 +15,7 @@ interface UseBookingSubmitParams {
   brands: Brand[];
   models: Model[];
   setIsBookingOpen: (open: boolean) => void;
+  clientData?: ClientFromCrm | null;
 }
 
 export const useBookingSubmit = ({
@@ -25,6 +27,7 @@ export const useBookingSubmit = ({
   brands,
   models,
   setIsBookingOpen,
+  clientData,
 }: UseBookingSubmitParams) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -48,6 +51,13 @@ export const useBookingSubmit = ({
       date: date ? format(date, 'yyyy-MM-dd') : '',
       time,
       comment: formData.comment,
+      // Данные из 1С
+      kontragent_key: clientData?.kontragent_key || '',
+      avtomobil_key: clientData?.car?.avtomobil_key || '',
+      car_full_name: clientData?.car?.car_full_name || '',
+      plate_number: formData.plateNumber || clientData?.car?.plate_number || '',
+      vin: formData.vin || clientData?.car?.vin || '',
+      car_year: clientData?.car?.god_vypuska || '',
     };
   };
 

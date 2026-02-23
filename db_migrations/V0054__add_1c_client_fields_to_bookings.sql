@@ -1,0 +1,9 @@
+-- Добавляем поля из 1С в таблицу bookings
+ALTER TABLE bookings
+  ADD COLUMN IF NOT EXISTS kontragent_key TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS avtomobil_key TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS car_full_name TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS plate_number TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS vin TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS car_year TEXT DEFAULT '',
+  ADD COLUMN IF NOT EXISTS client_found_in_1c BOOLEAN DEFAULT FALSE;
