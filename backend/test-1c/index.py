@@ -273,6 +273,69 @@ def handler(event: dict, context) -> dict:
                     }, ensure_ascii=False)
                 }
 
+            elif action == 'sample':
+                entity = query_params.get('entity', 'Catalog_Автомобили')
+                top = int(query_params.get('top', '2'))
+                response = requests.get(
+                    f"{odata_url}/{entity}?$top={top}&$format=json",
+                    auth=doc_auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=15,
+                    verify=ssl_verify
+                )
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': response.ok,
+                        'status_code': response.status_code,
+                        'entity': entity,
+                        'data': response.json().get('value', []) if response.ok else None,
+                        'raw': response.text[:3000]
+                    }, ensure_ascii=False)
+                }
+
+            elif action == 'kontragent':
+                import re
+                phone = query_params.get('phone', '')
+                def norm(p): return re.sub(r'\D', '', p or '')
+                digits = norm(phone)
+                tail = digits[-10:] if len(digits) >= 10 else digits
+                resp_ci = requests.get(
+                    f"{odata_url}/Catalog_Контрагенты_КонтактнаяИнформация?$format=json&$top=2000",
+                    auth=doc_auth, headers={'Accept': 'application/json'}, timeout=15, verify=ssl_verify
+                )
+                kontragent_key = None
+                if resp_ci.ok:
+                    for item in resp_ci.json().get('value', []):
+                        raw = item.get('Представление', '') or ''
+                        it = norm(raw)[-10:]
+                        if it and it == tail:
+                            kontragent_key = item.get('ObjectId') or item.get('Ref_Key')
+                            break
+                if not kontragent_key:
+                    return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'success': False, 'error': f'Контрагент не найден по телефону {phone}', 'tail': tail}, ensure_ascii=False)}
+                resp_k = requests.get(
+                    f"{odata_url}/Catalog_Контрагенты(guid'{kontragent_key}')?$format=json",
+                    auth=doc_auth, headers={'Accept': 'application/json'}, timeout=15, verify=ssl_verify
+                )
+                resp_cars = requests.get(
+                    f"{odata_url}/Catalog_Автомобили?$format=json&$top=10&$filter=Владелец_Key eq guid'{kontragent_key}'",
+                    auth=doc_auth, headers={'Accept': 'application/json'}, timeout=15, verify=ssl_verify
+                )
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'kontragent_key': kontragent_key,
+                        'kontragent': resp_k.json() if resp_k.ok else resp_k.text[:500],
+                        'cars_status': resp_cars.status_code,
+                        'cars': resp_cars.json().get('value', []) if resp_cars.ok else resp_cars.text[:500]
+                    }, ensure_ascii=False)
+                }
+
             elif action == 'calls':
                 phone = query_params.get('phone', '')
                 if not phone:
