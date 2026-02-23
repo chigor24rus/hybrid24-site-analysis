@@ -5,7 +5,7 @@ from psycopg2.extras import RealDictCursor
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
-from utils_1c import find_kontragent_by_phone, get_vid_remonta, find_marketing_program_by_name
+from utils_1c import find_kontragent_by_phone, get_vid_remonta, find_marketing_program_by_name, find_existing_order_by_booking_id
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -77,6 +77,8 @@ def handler(event: dict, context) -> dict:
         }
 
     parts = []
+    if booking.get('customer_phone'):
+        parts.append(f"Телефон: {booking['customer_phone']}")
     if booking.get('service_type'):
         parts.append(f"Услуга: {booking['service_type']}")
     if booking.get('promotion'):
@@ -127,17 +129,31 @@ def handler(event: dict, context) -> dict:
     if vid_remont_key:
         doc_data["ВидРемонта_Key"] = vid_remont_key
 
-    print(f"[1C] POST {odata_url}/Document_ЗаявкаНаРемонт")
+    # Ищем существующий документ в 1С по ID заявки сайта
+    existing_ref = find_existing_order_by_booking_id(odata_url, odata_user, odata_password, booking['id'])
+
     print(f"[1C] body: {json.dumps(doc_data, ensure_ascii=False)}")
 
-    response = requests.post(
-        f"{odata_url}/Document_ЗаявкаНаРемонт",
-        auth=HTTPBasicAuth(odata_user, odata_password),
-        headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
-        json=doc_data,
-        timeout=15,
-        verify=False
-    )
+    if existing_ref:
+        print(f"[1C] PATCH {odata_url}/Document_ЗаявкаНаРемонт(guid'{existing_ref}')")
+        response = requests.patch(
+            f"{odata_url}/Document_ЗаявкаНаРемонт(guid'{existing_ref}')",
+            auth=HTTPBasicAuth(odata_user, odata_password),
+            headers={'Content-Type': 'application/json', 'Accept': 'application/json', 'If-Match': '*'},
+            json=doc_data,
+            timeout=15,
+            verify=False
+        )
+    else:
+        print(f"[1C] POST {odata_url}/Document_ЗаявкаНаРемонт")
+        response = requests.post(
+            f"{odata_url}/Document_ЗаявкаНаРемонт",
+            auth=HTTPBasicAuth(odata_user, odata_password),
+            headers={'Content-Type': 'application/json', 'Accept': 'application/json'},
+            json=doc_data,
+            timeout=15,
+            verify=False
+        )
 
     print(f"[1C] status: {response.status_code}")
     print(f"[1C] response: {response.text[:2000]}")

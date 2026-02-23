@@ -67,6 +67,8 @@ def handler(event: dict, context) -> dict:
     headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 
     description_parts = []
+    if customer_phone:
+        description_parts.append(f"Телефон: {customer_phone}")
     if service_type:
         description_parts.append(f"Услуга: {service_type}")
     if promotion:

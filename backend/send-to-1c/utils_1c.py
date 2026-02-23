@@ -88,6 +88,37 @@ def find_marketing_program_by_name(odata_url: str, user: str, password: str, pro
     return None
 
 
+def find_existing_order_by_booking_id(odata_url: str, user: str, password: str, booking_id: int) -> str | None:
+    """
+    Ищет существующую Заявку на ремонт в 1С по ID заявки сайта в поле ОписаниеПричиныОбращения.
+    Возвращает Ref_Key документа или None.
+    """
+    try:
+        search_text = f"ID заявки сайта: {booking_id}"
+        resp = requests.get(
+            f"{odata_url}/Document_ЗаявкаНаРемонт?$format=json&$top=500&$orderby=Date desc",
+            auth=HTTPBasicAuth(user, password),
+            headers={'Accept': 'application/json'},
+            timeout=15,
+            verify=False
+        )
+        if resp.status_code == 200:
+            items = resp.json().get('value', [])
+            for item in items:
+                desc = item.get('ОписаниеПричиныОбращения', '') or ''
+                comment = item.get('Комментарий', '') or ''
+                if search_text in desc or search_text in comment:
+                    ref_key = item.get('Ref_Key')
+                    print(f"[1C] Найден существующий документ для заявки {booking_id}: {ref_key}")
+                    return ref_key
+            print(f"[1C] Существующий документ для заявки {booking_id} не найден среди {len(items)} документов")
+        else:
+            print(f"[1C] Ошибка поиска документов: {resp.status_code}")
+    except Exception as e:
+        print(f"[1C] Исключение при поиске документа: {e}")
+    return None
+
+
 def get_vid_remonta(odata_url: str, user: str, password: str) -> str | None:
     """Получает первый доступный Вид ремонта из справочника 1С"""
     try:
