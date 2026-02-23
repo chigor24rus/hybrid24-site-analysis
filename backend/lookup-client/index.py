@@ -11,7 +11,7 @@ def normalize_phone(phone: str) -> str:
 
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    '''Ищет клиента в 1С по номеру телефона, возвращает ФИО и последний автомобиль'''
+    '''Ищет клиента в 1С по номеру телефона, возвращает ФИО и автомобиль из Catalog_Автомобили'''
 
     if event.get('httpMethod') == 'OPTIONS':
         return {
@@ -96,6 +96,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             middle = (k.get('Отчество') or '').strip()
             full_name = ' '.join(filter(None, [last, first, middle])) or k.get('Description', '')
             client_data['name'] = full_name
+            client_data['last_name'] = last
             client_data['email'] = ''
             for ci in k.get('КонтактнаяИнформация', []):
                 if ci.get('Тип') == 'АдресЭлектроннойПочты':
@@ -150,66 +151,34 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
     car_data = {}
 
-    # 3. Ищем авто через Catalog_Автомобили — загружаем постранично и ищем по коду контрагента
-    # Поле владельца в OData не фильтруется, поэтому грузим все авто и ищем по Description/Code
-    # Также ищем через контактную информацию контрагента — берём первый Ref_Key из списка авто
+    # 3. Ищем авто: загружаем все Catalog_Автомобили и ищем по фамилии клиента в Description
+    last_name = client_data.get('last_name', '')
+    if last_name:
+        try:
+            resp_cars = requests.get(
+                f"{odata_url}/Catalog_Автомобили?$format=json&$top=2000"
+                f"&$filter=contains(Description,'{last_name}') and DeletionMark eq false",
+                auth=auth, headers={'Accept': 'application/json'}, timeout=15, verify=False
+            )
+            if resp_cars.ok:
+                cars = [c for c in resp_cars.json().get('value', []) if not c.get('IsFolder')]
+                if cars:
+                    # Берём авто с VIN если есть
+                    best = next((c for c in cars if c.get('VIN')), cars[0])
+                    car_data = resolve_car(best.get('Ref_Key'))
+        except Exception:
+            pass
 
-    # Запрашиваем все авто с кодом контрагента в Description (иногда так бывает)
-    # Основной способ — получить все авто и найти совпадение через Ref_Key нарядов
-
-    # Получаем наряды контрагента (до 100)
-    try:
-        resp_zn = requests.get(
-            f"{odata_url}/Document_ЗаказНаряд?$format=json&$top=100&$orderby=Date desc"
-            f"&$filter=Контрагент_Key eq guid'{kontragent_key}'",
-            auth=auth, headers={'Accept': 'application/json'}, timeout=15, verify=False
-        )
-        if resp_zn.ok:
-            docs = resp_zn.json().get('value', [])
-            # Собираем все уникальные Ref_Key нарядов
-            all_refs = set(doc['Ref_Key'] for doc in docs if doc.get('Ref_Key'))
-
-            # Для каждого наряда берём его табличную часть Автомобили через expand
-            for doc in docs[:20]:  # Ограничиваем 20 нарядами
-                ref = doc.get('Ref_Key')
-                if not ref:
-                    continue
-                try:
-                    resp_doc = requests.get(
-                        f"{odata_url}/Document_ЗаказНаряд(guid'{ref}')?$format=json&$expand=Автомобили",
-                        auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
-                    )
-                    if resp_doc.ok:
-                        d = resp_doc.json()
-                        auto_list = d.get('Автомобили') or []
-                        vin = (d.get('VIN') or '').strip()
-                        gos = (d.get('ГосНомер') or '').strip()
-                        if auto_list:
-                            auto_key = auto_list[0].get('Автомобиль_Key')
-                            if auto_key and auto_key != null_guid:
-                                car_data = resolve_car(auto_key)
-                                if car_data:
-                                    break
-                        elif vin or gos:
-                            car_data = {'vin': vin, 'plate_number': gos, 'car_full_name': '', 'car_brand': '', 'car_model': '', 'god_vypuska': ''}
-                            break
-                except Exception:
-                    continue
-    except Exception:
-        pass
-
-    # 4. Если не нашли — ищем через ЗаказНаряды клиента
+    # 4. Если не нашли по фамилии — ищем через ЗаказНаряды
     if not car_data:
         try:
             resp_zn = requests.get(
-                f"{odata_url}/Document_ЗаказНаряд?$format=json&$top=100&$orderby=Date desc"
+                f"{odata_url}/Document_ЗаказНаряд?$format=json&$top=50&$orderby=Date desc"
                 f"&$filter=Контрагент_Key eq guid'{kontragent_key}'",
-                auth=auth, headers={'Accept': 'application/json'}, timeout=20, verify=False
+                auth=auth, headers={'Accept': 'application/json'}, timeout=12, verify=False
             )
             if resp_zn.ok:
-                docs = resp_zn.json().get('value', [])
-                doc_refs = []
-                for doc in docs:
+                for doc in resp_zn.json().get('value', []):
                     vin = (doc.get('VIN') or '').strip()
                     gos = (doc.get('ГосНомер') or '').strip()
                     auto_list = doc.get('Автомобили') or []
@@ -230,30 +199,6 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                             'god_vypuska': doc_car.get('god_vypuska', ''),
                         }
                         break
-                    ref = doc.get('Ref_Key')
-                    if ref:
-                        doc_refs.append(ref)
-
-                # Ищем через Document_ЗаказНаряд_Автомобили по Ref_Key нарядов
-                if not car_data and doc_refs:
-                    for ref_key in doc_refs[:10]:
-                        try:
-                            resp_autos = requests.get(
-                                f"{odata_url}/Document_ЗаказНаряд_Автомобили?$format=json"
-                                f"&$filter=Ref_Key eq guid'{ref_key}'",
-                                auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
-                            )
-                            if resp_autos.ok:
-                                for a in resp_autos.json().get('value', []):
-                                    auto_key = a.get('Автомобиль_Key')
-                                    if auto_key and auto_key != null_guid:
-                                        car_data = resolve_car(auto_key)
-                                        if car_data:
-                                            break
-                            if car_data:
-                                break
-                        except Exception:
-                            pass
         except Exception:
             pass
 
