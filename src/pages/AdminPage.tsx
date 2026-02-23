@@ -48,6 +48,7 @@ const AdminPage = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [retrying1cId, setRetrying1cId] = useState<number | null>(null);
+  const [successId, setSuccessId] = useState<number | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -120,6 +121,8 @@ const AdminPage = () => {
             b.id === bookingId ? { ...b, synced_to_1c: true, synced_to_1c_at: new Date().toISOString() } : b
           )
         );
+        setSuccessId(bookingId);
+        setTimeout(() => setSuccessId(null), 3000);
       } else {
         alert(data.error || 'Не удалось передать в 1С');
       }
@@ -410,6 +413,13 @@ const AdminPage = () => {
                         <div className="pt-2">
                           <p className="text-xs text-muted-foreground mb-1">Комментарий:</p>
                           <p className="text-sm">{booking.comment}</p>
+                        </div>
+                      )}
+
+                      {successId === booking.id && (
+                        <div className="flex items-center gap-1.5 text-xs text-green-600 bg-green-50 border border-green-200 rounded-md px-3 py-1.5">
+                          <Icon name="CheckCircle" size={12} />
+                          Заявка успешно передана в 1С
                         </div>
                       )}
 
