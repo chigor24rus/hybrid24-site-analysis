@@ -11,12 +11,14 @@ interface ConnectionTestCardsProps {
   schemaResult: TestResult | null;
   readDocResult: TestResult | null;
   readOrgResult: TestResult | null;
+  readZnResult: TestResult | null;
   onTestConnection: () => void;
   onTestMetadata: () => void;
   onTestServices: () => void;
   onTestSchema: () => void;
   onTestReadDoc: () => void;
   onTestReadOrg: () => void;
+  onTestReadZn: () => void;
 }
 
 const ConnectionTestCards = ({
@@ -27,12 +29,14 @@ const ConnectionTestCards = ({
   schemaResult,
   readDocResult,
   readOrgResult,
+  readZnResult,
   onTestConnection,
   onTestMetadata,
   onTestServices,
   onTestSchema,
   onTestReadDoc,
   onTestReadOrg,
+  onTestReadZn,
 }: ConnectionTestCardsProps) => {
   return (
     <>
@@ -147,6 +151,25 @@ const ConnectionTestCards = ({
             Получить организации
           </Button>
           <TestResultBlock result={readOrgResult} />
+        </CardContent>
+      </Card>
+
+      <Card className="md:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Icon name="Car" size={20} />
+            Первый проведённый ЗаказНаряд (с автомобилями)
+          </CardTitle>
+          <CardDescription>
+            Получить первый закрытый ЗаказНаряд — видны реальные поля и expand Автомобили. Можно передать kontragent_key через URL (?kontragent_key=...) для фильтрации по клиенту.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={onTestReadZn} disabled={loading} className="w-full" variant="outline">
+            {loading ? <Icon name="Loader" className="mr-2 animate-spin" size={18} /> : <Icon name="Download" className="mr-2" size={18} />}
+            Получить ЗаказНаряд с автомобилями
+          </Button>
+          <TestResultBlock result={readZnResult} />
         </CardContent>
       </Card>
     </>

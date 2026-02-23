@@ -19,6 +19,7 @@ const Admin1CTestPage = () => {
   const [schemaResult, setSchemaResult] = useState<TestResult | null>(null);
   const [readDocResult, setReadDocResult] = useState<TestResult | null>(null);
   const [readOrgResult, setReadOrgResult] = useState<TestResult | null>(null);
+  const [readZnResult, setReadZnResult] = useState<TestResult | null>(null);
 
   const [testOrderData, setTestOrderData] = useState<OrderData>({
     customer_name: 'Иван Тестов',
@@ -153,6 +154,28 @@ const Admin1CTestPage = () => {
     }
   };
 
+  const testReadZn = async () => {
+    setLoading(true);
+    setReadZnResult(null);
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const kontragentKey = urlParams.get('kontragent_key') || '';
+      const qs = kontragentKey ? `&kontragent_key=${encodeURIComponent(kontragentKey)}` : '';
+      const response = await fetch(`${API_URL}?action=read_zn${qs}`);
+      const data = await response.json();
+      setReadZnResult({
+        success: data.success !== false,
+        data: data,
+        error: data.success === false ? data.error : undefined,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: unknown) {
+      setReadZnResult({ success: false, error: error instanceof Error ? error.message : 'Ошибка', timestamp: new Date().toISOString() });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const testCreateOrder = async () => {
     setLoading(true);
     setOrderResult(null);
@@ -199,12 +222,14 @@ const Admin1CTestPage = () => {
             schemaResult={schemaResult}
             readDocResult={readDocResult}
             readOrgResult={readOrgResult}
+            readZnResult={readZnResult}
             onTestConnection={testConnection}
             onTestMetadata={testMetadata}
             onTestServices={testServices}
             onTestSchema={testSchema}
             onTestReadDoc={testReadDoc}
             onTestReadOrg={testReadOrg}
+            onTestReadZn={testReadZn}
           />
 
           <CreateOrderCard

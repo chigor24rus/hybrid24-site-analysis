@@ -336,6 +336,50 @@ def handler(event: dict, context) -> dict:
                     }, ensure_ascii=False)
                 }
 
+            elif action == 'read_zn':
+                kontragent_key = query_params.get('kontragent_key', '')
+                filter_part = f"&$filter=Контрагент_Key eq guid'{kontragent_key}' and Posted eq true" if kontragent_key else '&$filter=Posted eq true'
+                response = requests.get(
+                    f"{odata_url}/Document_ЗаказНаряд?$top=1&$format=json&$orderby=Date desc{filter_part}",
+                    auth=doc_auth,
+                    headers={'Accept': 'application/json'},
+                    timeout=15,
+                    verify=ssl_verify
+                )
+                doc = None
+                doc_key = None
+                if response.ok:
+                    items = response.json().get('value', [])
+                    if items:
+                        doc = items[0]
+                        doc_key = doc.get('Ref_Key')
+                expand_result = None
+                if doc_key:
+                    resp_expand = requests.get(
+                        f"{odata_url}/Document_ЗаказНаряд(guid'{doc_key}')/Автомобили?$format=json&$expand=Автомобиль",
+                        auth=doc_auth,
+                        headers={'Accept': 'application/json'},
+                        timeout=15,
+                        verify=ssl_verify
+                    )
+                    expand_result = {
+                        'status': resp_expand.status_code,
+                        'data': resp_expand.json() if resp_expand.ok else None,
+                        'raw': resp_expand.text[:2000]
+                    }
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': response.ok,
+                        'status_code': response.status_code,
+                        'doc': doc,
+                        'doc_key': doc_key,
+                        'expand_avtomobili': expand_result,
+                        'raw': response.text[:2000]
+                    }, ensure_ascii=False)
+                }
+
             elif action == 'calls':
                 phone = query_params.get('phone', '')
                 if not phone:
