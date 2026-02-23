@@ -54,7 +54,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cur.execute(
                 """
                 SELECT id, customer_name, customer_phone, customer_email,
-                       service_type, car_brand, car_model, preferred_date,
+                       service_type, promotion, car_brand, car_model, preferred_date,
                        preferred_time, comment, status, created_at, updated_at,
                        synced_to_1c, synced_to_1c_at
                 FROM bookings
@@ -67,7 +67,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             cur.execute(
                 """
                 SELECT id, customer_name, customer_phone, customer_email,
-                       service_type, car_brand, car_model, preferred_date,
+                       service_type, promotion, car_brand, car_model, preferred_date,
                        preferred_time, comment, status, created_at, updated_at,
                        synced_to_1c, synced_to_1c_at
                 FROM bookings

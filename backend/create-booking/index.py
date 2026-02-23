@@ -179,7 +179,10 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
     try:
-        body_data = json.loads(event.get('body', '{}'))
+        raw_body = event.get('body', '{}')
+        print(f"[create-booking] raw body: {raw_body}")
+        body_data = json.loads(raw_body)
+        print(f"[create-booking] parsed promotion: '{body_data.get('promotion', '')}'")
 
         customer_name = body_data.get('name', '').strip()
         customer_phone = body_data.get('phone', '').strip()
