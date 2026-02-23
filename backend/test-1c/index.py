@@ -380,6 +380,43 @@ def handler(event: dict, context) -> dict:
                     }, ensure_ascii=False)
                 }
 
+            elif action == 'read_svod_zn':
+                kontragent_key = query_params.get('kontragent_key', '')
+                filter_part = f"&$filter=Контрагент_Key eq guid'{kontragent_key}' and Posted eq true" if kontragent_key else '&$filter=Posted eq true'
+                resp_zn = requests.get(
+                    f"{odata_url}/Document_ЗаказНаряд?$top=1&$format=json&$orderby=Date desc{filter_part}",
+                    auth=doc_auth, headers={'Accept': 'application/json'}, timeout=15, verify=ssl_verify
+                )
+                if not resp_zn.ok or not resp_zn.json().get('value'):
+                    return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({'success': False, 'error': 'ЗаказНаряд не найден', 'status': resp_zn.status_code}, ensure_ascii=False)}
+                zn = resp_zn.json()['value'][0]
+                svod_key = zn.get('СводныйРемонтныйЗаказ_Key', '')
+                null_guid = '00000000-0000-0000-0000-000000000000'
+                svod_data = None
+                svod_status = None
+                svod_raw = None
+                if svod_key and svod_key != null_guid:
+                    resp_svod = requests.get(
+                        f"{odata_url}/Document_СводныйРемонтныйЗаказ(guid'{svod_key}')?$format=json",
+                        auth=doc_auth, headers={'Accept': 'application/json'}, timeout=15, verify=ssl_verify
+                    )
+                    svod_status = resp_svod.status_code
+                    svod_raw = resp_svod.text[:3000]
+                    if resp_svod.ok:
+                        svod_data = resp_svod.json()
+                return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'success': True,
+                            'zn_key': zn.get('Ref_Key'),
+                            'zn_number': zn.get('Number'),
+                            'zn_probeg': zn.get('Пробег'),
+                            'svod_key': svod_key,
+                            'svod_status': svod_status,
+                            'svod_data': svod_data,
+                            'svod_raw': svod_raw
+                        }, ensure_ascii=False)}
+
             elif action == 'calls':
                 phone = query_params.get('phone', '')
                 if not phone:

@@ -12,6 +12,7 @@ interface ConnectionTestCardsProps {
   readDocResult: TestResult | null;
   readOrgResult: TestResult | null;
   readZnResult: TestResult | null;
+  readSvodZnResult: TestResult | null;
   onTestConnection: () => void;
   onTestMetadata: () => void;
   onTestServices: () => void;
@@ -19,6 +20,7 @@ interface ConnectionTestCardsProps {
   onTestReadDoc: () => void;
   onTestReadOrg: () => void;
   onTestReadZn: () => void;
+  onTestReadSvodZn: () => void;
 }
 
 const ConnectionTestCards = ({
@@ -30,6 +32,7 @@ const ConnectionTestCards = ({
   readDocResult,
   readOrgResult,
   readZnResult,
+  readSvodZnResult,
   onTestConnection,
   onTestMetadata,
   onTestServices,
@@ -37,6 +40,7 @@ const ConnectionTestCards = ({
   onTestReadDoc,
   onTestReadOrg,
   onTestReadZn,
+  onTestReadSvodZn,
 }: ConnectionTestCardsProps) => {
   return (
     <>
@@ -170,6 +174,25 @@ const ConnectionTestCards = ({
             Получить ЗаказНаряд с автомобилями
           </Button>
           <TestResultBlock result={readZnResult} />
+        </CardContent>
+      </Card>
+
+      <Card className="md:col-span-2">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Icon name="FolderOpen" size={20} />
+            СводныйРемонтныйЗаказ (автомобиль клиента)
+          </CardTitle>
+          <CardDescription>
+            Читает СводныйРемонтныйЗаказ из первого ЗаказНаряда — именно там может быть привязан автомобиль
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={onTestReadSvodZn} disabled={loading} className="w-full" variant="outline">
+            {loading ? <Icon name="Loader" className="mr-2 animate-spin" size={18} /> : <Icon name="Download" className="mr-2" size={18} />}
+            Читать СводныйРемонтныйЗаказ
+          </Button>
+          <TestResultBlock result={readSvodZnResult} />
         </CardContent>
       </Card>
     </>
