@@ -31,6 +31,7 @@ interface Promotion {
 const PromotionsPage = () => {
   const location = useLocation();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [bookingPromotion, setBookingPromotion] = useState('');
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [loading, setLoading] = useState(true);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
@@ -98,7 +99,7 @@ const PromotionsPage = () => {
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <BookingDialog setIsBookingOpen={setIsBookingOpen} />
+        <BookingDialog setIsBookingOpen={setIsBookingOpen} initialPromotion={bookingPromotion} />
       </Dialog>
 
       <section className="relative pt-32 pb-24 bg-gray-800 overflow-hidden">
@@ -154,7 +155,7 @@ const PromotionsPage = () => {
                 </div>
                 <CardHeader>
                   <div className="w-14 h-14 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={promo.icon as any} size={28} className="text-white" />
+                    <Icon name={promo.icon as string} fallback="Tag" size={28} className="text-white" />
                   </div>
                   <CardTitle className="text-2xl">{promo.title}</CardTitle>
                   <CardDescription className="text-base mt-2">{promo.description}</CardDescription>
@@ -170,7 +171,7 @@ const PromotionsPage = () => {
                     </div>
                     <PromotionTimer validUntil={promo.validUntil} />
                     <div className="flex gap-2">
-                      <Button className="flex-1 gradient-primary btn-glow" onClick={() => setIsBookingOpen(true)}>
+                      <Button className="flex-1 gradient-primary btn-glow" onClick={() => { setBookingPromotion(promo.title); setIsBookingOpen(true); }}>
                         Воспользоваться
                       </Button>
                     </div>

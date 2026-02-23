@@ -22,7 +22,7 @@ interface PromotionsSectionProps {
   promotions: Promotion[];
   loading: boolean;
   onPromotionClick: (promotion: Promotion) => void;
-  onBookingClick: () => void;
+  onBookingClick: (promo?: Promotion) => void;
   onRefresh: () => void;
   hasMore: boolean;
   totalCount: number;
@@ -99,7 +99,7 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
                 </div>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg gradient-primary flex items-center justify-center mb-4">
-                    <Icon name={promo.icon as any} size={24} className="text-white" />
+                    <Icon name={promo.icon as string} fallback="Tag" size={24} className="text-white" />
                   </div>
                   <CardTitle className="text-2xl">{promo.title}</CardTitle>
                   <CardDescription className="text-base mt-2">{promo.description}</CardDescription>
@@ -120,7 +120,7 @@ const PromotionsSection = ({ promotions, loading, onPromotionClick, onBookingCli
                       className="w-full gradient-primary btn-glow mt-4" 
                       onClick={(e) => {
                         e.stopPropagation();
-                        onBookingClick();
+                        onBookingClick(promo);
                       }}
                     >
                       Воспользоваться

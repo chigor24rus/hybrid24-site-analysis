@@ -90,13 +90,13 @@ const FreeDiagnosticsDialog = ({ setIsOpen }: FreeDiagnosticsDialogProps) => {
         name,
         phone,
         email,
+        service: 'Бесплатная диагностика по 100+ пунктам',
+        promotion: 'Бесплатная диагностика по 100+ пунктам',
         brand: selectedBrandName,
         model: selectedModelName,
         plateNumber,
         vin,
         comment,
-        services: [],
-        promotion: 'Бесплатная диагностика по 100+ пунктам',
         date: date ? format(date, 'yyyy-MM-dd', { locale: ru }) : '',
         time: time || ''
       };

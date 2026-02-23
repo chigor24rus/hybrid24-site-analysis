@@ -15,7 +15,8 @@ const Index = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [bookingPromotion, setBookingPromotion] = useState('');
+  const [reviews, setReviews] = useState<object[]>([]);
   const canonicalUrl = `${SITE_CONFIG.domain}${location.pathname}`;
 
   useEffect(() => {
@@ -25,8 +26,8 @@ const Index = () => {
         const data = await response.json();
         if (response.ok && data.reviews) {
           const formattedReviews = data.reviews
-            .filter((r: any) => r.is_visible)
-            .map((r: any) => ({
+            .filter((r: {is_visible: boolean}) => r.is_visible)
+            .map((r: {id: number; customer_name: string; rating: number; review_date: string; review_text: string; service_name: string}) => ({
               id: r.id,
               name: r.customer_name,
               rating: r.rating,
@@ -76,14 +77,14 @@ const Index = () => {
       <Header isBookingOpen={isBookingOpen} setIsBookingOpen={setIsBookingOpen} />
       
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} />
+        <BookingDialog setIsBookingOpen={setIsBookingOpen} initialSelectedServices={selectedServices} initialPromotion={bookingPromotion} />
       </Dialog>
 
       <Dialog open={isDiagnosticsOpen} onOpenChange={setIsDiagnosticsOpen}>
         <FreeDiagnosticsDialog setIsOpen={setIsDiagnosticsOpen} />
       </Dialog>
 
-      <Sections setIsBookingOpen={setIsBookingOpen} setIsDiagnosticsOpen={setIsDiagnosticsOpen} setSelectedServices={setSelectedServices} />
+      <Sections setIsBookingOpen={setIsBookingOpen} setIsDiagnosticsOpen={setIsDiagnosticsOpen} setSelectedServices={setSelectedServices} setBookingPromotion={setBookingPromotion} />
       
       <Footer />
     </div>

@@ -37,4 +37,5 @@ export interface BookingDialogProps {
   setIsBookingOpen: (open: boolean) => void;
   initialSelectedServices?: number[];
   initialBrandId?: number;
+  initialPromotion?: string;
 }

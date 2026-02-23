@@ -11,9 +11,10 @@ interface SectionsProps {
   setIsBookingOpen: (open: boolean) => void;
   setIsDiagnosticsOpen: (open: boolean) => void;
   setSelectedServices: (services: number[]) => void;
+  setBookingPromotion?: (promotion: string) => void;
 }
 
-const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices }: SectionsProps) => {
+const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices, setBookingPromotion }: SectionsProps) => {
   return (
     <>
       <HeroSection setIsBookingOpen={setIsBookingOpen} />
@@ -21,7 +22,7 @@ const Sections = ({ setIsBookingOpen, setIsDiagnosticsOpen, setSelectedServices 
       <BrandsSection />
       <ServicesSection setIsBookingOpen={setIsBookingOpen} setSelectedServices={setSelectedServices} />
       {/* <AwardsSection /> */}
-      <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} />
+      <PromotionsReviewsSection setIsBookingOpen={setIsBookingOpen} setBookingPromotion={setBookingPromotion} />
       <ContactsSection />
       <AdvantagesSection />
     </>

@@ -23,7 +23,8 @@ const INITIAL_FORM_DATA: BookingFormData = {
 const BookingDialog = ({ 
   setIsBookingOpen, 
   initialSelectedServices = [], 
-  initialBrandId 
+  initialBrandId,
+  initialPromotion = ''
 }: BookingDialogProps) => {
   const [selectedServices, setSelectedServices] = useState<number[]>(initialSelectedServices);
 
@@ -32,7 +33,7 @@ const BookingDialog = ({
       setSelectedServices(initialSelectedServices);
     }
   }, [initialSelectedServices]);
-  const [selectedPromotion, setSelectedPromotion] = useState<string>('');
+  const [selectedPromotion, setSelectedPromotion] = useState<string>(initialPromotion);
   const [date, setDate] = useState<Date>();
   const [time, setTime] = useState('');
   const [formData, setFormData] = useState<BookingFormData>(INITIAL_FORM_DATA);

@@ -12,9 +12,10 @@ import Icon from '@/components/ui/icon';
 
 interface PromotionsReviewsSectionProps {
   setIsBookingOpen: (open: boolean) => void;
+  setBookingPromotion?: (promotion: string) => void;
 }
 
-const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSectionProps) => {
+const PromotionsReviewsSection = ({ setIsBookingOpen, setBookingPromotion }: PromotionsReviewsSectionProps) => {
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [allPromotions, setAllPromotions] = useState<Promotion[]>([]);
   const [loadingPromotions, setLoadingPromotions] = useState(true);
@@ -121,6 +122,7 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           promotion={selectedPromotion} 
           onBookingClick={() => {
             setIsPromotionDetailOpen(false);
+            if (selectedPromotion) setBookingPromotion?.(selectedPromotion.title);
             setIsBookingOpen(true);
           }}
         />
@@ -133,7 +135,10 @@ const PromotionsReviewsSection = ({ setIsBookingOpen }: PromotionsReviewsSection
           setSelectedPromotion(promo);
           setIsPromotionDetailOpen(true);
         }}
-        onBookingClick={() => setIsBookingOpen(true)}
+        onBookingClick={(promo) => {
+          if (promo) setBookingPromotion?.(promo.title);
+          setIsBookingOpen(true);
+        }}
         onRefresh={refreshPromotions}
         hasMore={allPromotions.length > 3}
         totalCount={allPromotions.length}
