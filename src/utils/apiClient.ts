@@ -1,7 +1,7 @@
 export const API_ENDPOINTS = {
   bookings: {
     list: 'https://functions.poehali.dev/07871607-696c-49db-b330-8d0d08b2896e', // get-bookings
-    create: 'https://functions.poehali.dev/a6d5798a-4b6c-4b15-8fd8-0264c1c51660', // create-booking
+    create: 'https://functions.poehali.dev/b7a2c72b-9709-4775-8f67-f367c173d81d', // create-booking-v2
     updateStatus: 'https://functions.poehali.dev/10a90c1d-6a39-498f-8e57-4d4ca76b442d', // update-booking-status
     export: 'https://functions.poehali.dev/aec56852-2ec9-4a3d-88bb-f6a21b412e84', // export-bookings
     delete: 'https://functions.poehali.dev/6441c23c-e63f-4a3e-8cd7-aabdb983ca45', // delete-bookings

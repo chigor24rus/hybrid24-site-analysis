@@ -1,6 +1,34 @@
 {
   "tests": [
     {
+      "name": "Version check",
+      "method": "GET",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "version": "v5-debug-promotion"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create booking with promotion",
+      "method": "POST",
+      "body": {
+        "name": "Тест Акция",
+        "phone": "+79000000001",
+        "service": "Диагностика",
+        "promotion": "Скидка на диагностику 20%",
+        "date": "2026-03-01",
+        "time": "11:00",
+        "comment": "Тест акции"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "promotion": "Скидка на диагностику 20%"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
       "name": "Create booking with all fields",
       "method": "POST",
       "body": {

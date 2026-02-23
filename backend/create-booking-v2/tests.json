@@ -1,0 +1,49 @@
+{
+  "tests": [
+    {
+      "name": "Create booking with promotion",
+      "method": "POST",
+      "body": {
+        "name": "Тест Акция v2",
+        "phone": "+79000000002",
+        "service": "Диагностика",
+        "promotion": "Скидка на диагностику 20%",
+        "date": "2026-03-01",
+        "time": "11:00",
+        "comment": "Тест новой функции"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "promotion": "Скидка на диагностику 20%"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create booking without promotion",
+      "method": "POST",
+      "body": {
+        "name": "Тест Без Акции",
+        "phone": "+79000000003",
+        "service": "ТО"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Reject without required fields",
+      "method": "POST",
+      "body": {
+        "email": "test@test.com"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

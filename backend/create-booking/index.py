@@ -154,8 +154,13 @@ def _send_to_1c(booking_data: dict, booking_id: int, dsn: str):
             pass
 
 
+VERSION = 'v5-debug-promotion'
+
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     '''Сохраняет заявку клиента в БД и передаёт её в 1С через OData'''
+
+    if event.get('httpMethod') == 'GET':
+        return {'statusCode': 200, 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}, 'body': json.dumps({'version': VERSION, 'status': 'alive'})}
 
     method: str = event.get('httpMethod', 'POST')
 
@@ -179,10 +184,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         }
 
     try:
-        raw_body = event.get('body', '{}')
-        print(f"[create-booking] raw body: {raw_body}")
+        import base64
+        raw_body = event.get('body') or '{}'
+        if event.get('isBase64Encoded'):
+            raw_body = base64.b64decode(raw_body).decode('utf-8')
+        print(f"[create-booking] v2 body keys: {list(json.loads(raw_body).keys()) if raw_body else 'empty'}")
         body_data = json.loads(raw_body)
-        print(f"[create-booking] parsed promotion: '{body_data.get('promotion', '')}'")
+        print(f"[create-booking] v2 promotion='{body_data.get('promotion')}' service='{body_data.get('service')}'")
 
         customer_name = body_data.get('name', '').strip()
         customer_phone = body_data.get('phone', '').strip()
@@ -209,13 +217,14 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         conn = psycopg2.connect(dsn)
         cur = conn.cursor(cursor_factory=RealDictCursor)
 
+        print(f"[create-booking] v3 before INSERT promotion='{promotion}' type={type(promotion)}")
         cur.execute(
             """
             INSERT INTO bookings
             (customer_name, customer_phone, customer_email, service_type, promotion,
              car_brand, car_model, preferred_date, preferred_time, comment, status)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'new')
-            RETURNING id, created_at
+            RETURNING id, created_at, promotion
             """,
             (customer_name, customer_phone, customer_email, service_type, promotion,
              car_brand, car_model, preferred_date or None, preferred_time, comment)
@@ -223,7 +232,9 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
         result = cur.fetchone()
         booking_id = result['id']
+        saved_promotion = result.get('promotion', '')
         created_at = result['created_at'].isoformat() if result['created_at'] else None
+        print(f"[create-booking] v3 after INSERT saved_promotion='{saved_promotion}'")
 
         conn.commit()
         cur.close()
@@ -239,6 +250,11 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'success': True,
                 'booking_id': booking_id,
                 'created_at': created_at,
+                'promotion': promotion,
+                'saved_promotion': saved_promotion,
+                'version': VERSION,
+                'debug_body_type': str(type(event.get('body'))),
+                'debug_keys': list(body_data.keys()),
                 'message': 'Заявка успешно создана'
             })
         }
