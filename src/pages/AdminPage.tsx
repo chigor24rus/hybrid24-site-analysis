@@ -29,6 +29,7 @@ interface Booking {
   car_model: string;
   preferred_date: string | null;
   preferred_time: string;
+  promotion: string;
   comment: string;
   status: string;
   created_at: string;
@@ -382,6 +383,14 @@ const AdminPage = () => {
                         label="Услуга"
                         value={booking.service_type}
                       />
+
+                      {booking.promotion && (
+                        <AdminCardItem
+                          icon="Percent"
+                          label="Акция"
+                          value={booking.promotion}
+                        />
+                      )}
                       
                       <AdminCardItem
                         icon="Car"

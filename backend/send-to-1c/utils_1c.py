@@ -12,8 +12,9 @@ def normalize_phone(phone: str) -> str:
 def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: str) -> dict | None:
     """
     Ищет контрагента в 1С по номеру телефона.
-    Сравниваем последние 10 цифр — игнорируем пробелы, скобки, тире.
-    Возвращает dict с ключами kontragent_key и zakazchik_key, или None.
+    Сначала ищет в контактной информации контрагентов (Catalog_Контрагенты_КонтактнаяИнформация).
+    Если найден — получает Ref_Key самого контрагента через ObjectId (поле Ref_Key записи = Ref контрагента).
+    Возвращает dict с ключом kontragent_key, или None.
     """
     digits = normalize_phone(phone)
     if not digits:
@@ -22,29 +23,29 @@ def find_kontragent_by_phone(odata_url: str, user: str, password: str, phone: st
     search_tail = digits[-10:] if len(digits) >= 10 else digits
 
     try:
+        # Ищем в контактной информации контрагентов
         resp = requests.get(
-            f"{odata_url}/Catalog_Контрагенты_КонтактнаяИнформация"
-            f"?$format=json&$top=2000",
+            f"{odata_url}/Catalog_Контрагенты_КонтактнаяИнформация?$format=json&$top=2000",
             auth=HTTPBasicAuth(user, password),
             headers={'Accept': 'application/json'},
             timeout=15,
             verify=False
         )
-        if resp.status_code != 200:
-            print(f"[1C] Ошибка поиска контрагента: {resp.status_code} {resp.text[:200]}")
-            return None
+        if resp.status_code == 200:
+            items = resp.json().get('value', [])
+            for item in items:
+                raw = item.get('Представление', '') or ''
+                item_digits = normalize_phone(raw)
+                item_tail = item_digits[-10:] if len(item_digits) >= 10 else item_digits
+                if item_tail and item_tail == search_tail:
+                    # ObjectId — это Ref_Key самого контрагента (родительского объекта)
+                    kontragent_key = item.get('ObjectId') or item.get('Ref_Key')
+                    print(f"[1C] Найден контрагент по телефону {phone}: ObjectId={item.get('ObjectId')} Ref_Key={item.get('Ref_Key')} ('{raw}')")
+                    return {'kontragent_key': kontragent_key}
 
-        items = resp.json().get('value', [])
-        for item in items:
-            raw = item.get('Представление', '') or ''
-            item_digits = normalize_phone(raw)
-            item_tail = item_digits[-10:] if len(item_digits) >= 10 else item_digits
-            if item_tail and item_tail == search_tail:
-                ref_key = item.get('Ref_Key')
-                print(f"[1C] Найден контрагент по телефону {phone}: ref={ref_key} ('{raw}')")
-                return {'kontragent_key': ref_key, 'ref_key': ref_key}
-
-        print(f"[1C] Контрагент по телефону {phone} ({search_tail}) не найден среди {len(items)} записей")
+            print(f"[1C] Контрагент по телефону {phone} ({search_tail}) не найден среди {len(items)} записей КонтактнаяИнформация")
+        else:
+            print(f"[1C] Ошибка КонтактнаяИнформация: {resp.status_code}")
     except Exception as e:
         print(f"[1C] Исключение при поиске контрагента: {e}")
 

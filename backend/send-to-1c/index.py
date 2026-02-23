@@ -104,6 +104,7 @@ def handler(event: dict, context) -> dict:
     if kontragent_info:
         kontragent_key = kontragent_info.get('kontragent_key')
         if kontragent_key:
+            doc_data["Заказчик_Key"] = kontragent_key
             doc_data["Контрагент_Key"] = kontragent_key
 
     # Ищем маркетинговую программу (акцию) по названию
