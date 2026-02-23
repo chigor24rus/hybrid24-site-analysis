@@ -106,69 +106,86 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     except Exception:
         pass
 
-    # 3. Ищем последние заявки на ремонт этого клиента → берём автомобиль
+    def resolve_car(auto_key: str) -> dict:
+        result = {}
+        if not auto_key or auto_key == '00000000-0000-0000-0000-000000000000':
+            return result
+        try:
+            resp_a = requests.get(
+                f"{odata_url}/Catalog_Автомобили(guid'{auto_key}')?$format=json",
+                auth=auth, headers={'Accept': 'application/json'}, timeout=10, verify=False
+            )
+            if resp_a.ok:
+                a = resp_a.json()
+                print(f"[DEBUG] Catalog_Автомобили keys: {list(a.keys())}")
+                print(f"[DEBUG] VIN={a.get('VIN')}, ГосНомер={a.get('ГосНомер')}, НомерГаражный={a.get('НомерГаражный')}, НомерКузова={a.get('НомерКузова')}")
+                result['avtomobil_key'] = auto_key
+                result['car_full_name'] = (a.get('НаименованиеПолное') or a.get('Description') or '').strip()
+                result['vin'] = (a.get('VIN') or a.get('НомерКузова') or '').strip()
+                result['plate_number'] = (a.get('НомерГаражный') or a.get('ГосНомер') or a.get('РегНомер') or '').strip()
+                result['god_vypuska'] = str(a.get('ГодВыпуска') or '')[:4]
+                maraka_key = a.get('Марка_Key')
+                model_key_a = a.get('Модель_Key')
+                if maraka_key and maraka_key != '00000000-0000-0000-0000-000000000000':
+                    try:
+                        rm = requests.get(
+                            f"{odata_url}/Catalog_МаркиАвтомобилей(guid'{maraka_key}')?$format=json",
+                            auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
+                        )
+                        if rm.ok:
+                            result['car_brand'] = (rm.json().get('Description') or '').strip()
+                    except Exception:
+                        pass
+                if model_key_a and model_key_a != '00000000-0000-0000-0000-000000000000':
+                    try:
+                        rmod = requests.get(
+                            f"{odata_url}/Catalog_МоделиАвтомобилей(guid'{model_key_a}')?$format=json",
+                            auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
+                        )
+                        if rmod.ok:
+                            result['car_model'] = (rmod.json().get('Description') or '').strip()
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        return result
+
+    # 3. Ищем автомобиль через заявки на ремонт
     car_data = {}
     try:
         resp_d = requests.get(
             f"{odata_url}/Document_ЗаявкаНаРемонт?$format=json&$top=50&$orderby=Date desc"
             f"&$filter=Контрагент_Key eq guid'{kontragent_key}' or Заказчик_Key eq guid'{kontragent_key}'",
-            auth=auth, headers={'Accept': 'application/json'}, timeout=15, verify=False
+            auth=auth, headers={'Accept': 'application/json'}, timeout=20, verify=False
         )
+        print(f"[DEBUG] ЗаявкаНаРемонт: status={resp_d.status_code}")
         if resp_d.ok:
             docs = resp_d.json().get('value', [])
+            print(f"[DEBUG] ЗаявкаНаРемонт docs count={len(docs)}")
+            null_guid = '00000000-0000-0000-0000-000000000000'
+            if docs:
+                first = docs[0]
+                print(f"[DEBUG] First doc VIN={first.get('VIN')}, ГосНомер={first.get('ГосНомер')}, Автомобиль_Key={first.get('Автомобиль_Key')}")
             for doc in docs:
                 vin = (doc.get('VIN') or '').strip()
                 gos = (doc.get('ГосНомер') or '').strip()
                 auto_key = doc.get('Автомобиль_Key')
-                model_key = doc.get('Модель_Key')
-                god = doc.get('ГодВыпуска')
-
+                if auto_key == null_guid:
+                    auto_key = None
                 if vin or gos or auto_key:
-                    car_data['vin'] = vin
-                    car_data['plate_number'] = gos
-                    car_data['avtomobil_key'] = auto_key
-                    car_data['god_vypuska'] = god[:4] if god else ''
-
-                    # Расшифровываем автомобиль по ключу
-                    if auto_key and auto_key != '00000000-0000-0000-0000-000000000000':
-                        try:
-                            resp_a = requests.get(
-                                f"{odata_url}/Catalog_Автомобили(guid'{auto_key}')?$format=json",
-                                auth=auth, headers={'Accept': 'application/json'}, timeout=10, verify=False
-                            )
-                            if resp_a.ok:
-                                a = resp_a.json()
-                                car_data['car_full_name'] = (a.get('НаименованиеПолное') or a.get('Description') or '').strip()
-                                car_data['vin'] = car_data['vin'] or (a.get('VIN') or '').strip()
-                                car_data['plate_number'] = car_data['plate_number'] or (a.get('НомерГаражный') or '').strip()
-                                maraka_key = a.get('Марка_Key')
-                                model_key_a = a.get('Модель_Key')
-                                # Расшифруем марку и модель
-                                if maraka_key and maraka_key != '00000000-0000-0000-0000-000000000000':
-                                    try:
-                                        rm = requests.get(
-                                            f"{odata_url}/Catalog_МаркиАвтомобилей(guid'{maraka_key}')?$format=json",
-                                            auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
-                                        )
-                                        if rm.ok:
-                                            car_data['car_brand'] = (rm.json().get('Description') or '').strip()
-                                    except Exception:
-                                        pass
-                                if model_key_a and model_key_a != '00000000-0000-0000-0000-000000000000':
-                                    try:
-                                        rmod = requests.get(
-                                            f"{odata_url}/Catalog_МоделиАвтомобилей(guid'{model_key_a}')?$format=json",
-                                            auth=auth, headers={'Accept': 'application/json'}, timeout=8, verify=False
-                                        )
-                                        if rmod.ok:
-                                            car_data['car_model'] = (rmod.json().get('Description') or '').strip()
-                                    except Exception:
-                                        pass
-                        except Exception:
-                            pass
+                    doc_car = resolve_car(auto_key) if auto_key else {}
+                    car_data = {
+                        'vin': vin or doc_car.get('vin', ''),
+                        'plate_number': gos or doc_car.get('plate_number', ''),
+                        'avtomobil_key': auto_key,
+                        'car_full_name': doc_car.get('car_full_name', ''),
+                        'car_brand': doc_car.get('car_brand', ''),
+                        'car_model': doc_car.get('car_model', ''),
+                        'god_vypuska': doc_car.get('god_vypuska', ''),
+                    }
                     break
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[DEBUG] ЗаявкаНаРемонт exception: {e}")
 
     return {
         'statusCode': 200,

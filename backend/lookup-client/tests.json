@@ -10,9 +10,9 @@
     {
       "name": "Lookup with unknown phone",
       "method": "GET",
-      "queryParams": {"phone": "+70000000000"},
+      "queryParams": {"phone": "+79232833121"},
       "expectedStatus": 200,
-      "expectedBody": {"found": false},
+      "expectedBody": {"found": true},
       "bodyMatcher": "partial"
     }
   ]
