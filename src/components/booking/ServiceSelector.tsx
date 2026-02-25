@@ -124,7 +124,6 @@ const ServiceSelector = ({
                     <CardTitle className="text-base">{service.title}</CardTitle>
                     <CardDescription className="text-sm mt-1">{service.description}</CardDescription>
                     <div className="flex gap-4 mt-2 text-sm">
-                      <span className="text-primary font-semibold">{service.price}</span>
                       <span className="text-muted-foreground">{service.duration}</span>
                     </div>
                   </div>
@@ -146,10 +145,7 @@ const ServiceSelector = ({
 
       {selectedServices.length > 0 && (
         <div className="bg-primary/10 p-4 rounded-lg">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Предварительная стоимость:</span>
-            <span className="text-2xl font-bold text-primary">{calculateTotal().toLocaleString()} ₽</span>
-          </div>
+          <p className="text-sm text-muted-foreground">Точная стоимость будет рассчитана после указания марки и модели автомобиля</p>
         </div>
       )}
     </>
